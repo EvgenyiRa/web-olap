@@ -15,7 +15,7 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with Web-olap.  If not, see <https://www.gnu.org/licenses/>.-->
-<?php                
+<?php  
     require_once(realpath('../get-data-func.php'));
     require_once(realpath('../classes/cache/value/CacheRight.php'));
     session_start(); 
@@ -44,7 +44,7 @@ along with Web-olap.  If not, see <https://www.gnu.org/licenses/>.-->
         }
     }
 ?>
-?<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ru-RU">
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8; Cache-Control: no-cache"/>
@@ -97,28 +97,28 @@ along with Web-olap.  If not, see <https://www.gnu.org/licenses/>.-->
         <script src="/js/jquery.percentageloader-0.1.js"></script>
         <link rel="stylesheet" href="/css/jquery.percentageloader-0.1.css">
         
-        <title>РВК.Платформа</title>
+        <title>Р Р’Рљ.РџР»Р°С‚С„РѕСЂРјР°</title>
     </head>
     <body style="margin: 0;"> 
-        <div id="toTop" > ^ Наверх </div>
+        <div id="toTop" > ^ РќР°РІРµСЂС… </div>
         <input type="hidden" id="db_type" value="<?php echo db_type();?>">
         
         <img src="/img/loading.gif" id="loading_img" style="margin:0;padding:0;width:480px;height:320px;position:fixed;display:none;">
         
         
-        <div id="modal_form"><!-- модальное oкнo редактирования/добавления -->
+        <div id="modal_form"><!-- РјРѕРґР°Р»СЊРЅРѕРµ oРєРЅo СЂРµРґР°РєС‚РёСЂРѕРІР°РЅРёСЏ/РґРѕР±Р°РІР»РµРЅРёСЏ -->
             <div class="modal_header">
-                <span id="modal_close">X</span> <!-- Кнoпкa зaкрыть -->       
+                <span id="modal_close">X</span> <!-- РљРЅoРїРєa Р·aРєСЂС‹С‚СЊ -->       
                 <p id="modal_head_p"></p>
             </div> 
             <div class="modal_content">        
             </div>
             <div class="modal_footer">
-                <button class="modal_button_c" id="modal_cancel">Отмена</button>
-                <button class="modal_button_c" id="modal_save" place="" tr_id="">Сохранить</button>
+                <button class="modal_button_c" id="modal_cancel">РћС‚РјРµРЅР°</button>
+                <button class="modal_button_c" id="modal_save" place="" tr_id="">РЎРѕС…СЂР°РЅРёС‚СЊ</button>
             </div>    
         </div>        
-        <div id="overlay"></div><!-- Пoдлoжкa модального окна-->  
+        <div id="overlay"></div><!-- РџoРґР»oР¶Рєa РјРѕРґР°Р»СЊРЅРѕРіРѕ РѕРєРЅР°-->  
 	
         <div class="container" style="display:none;">
           <div class="hero-unit">
@@ -196,15 +196,15 @@ along with Web-olap.  If not, see <https://www.gnu.org/licenses/>.-->
         </div>
 
         <div class="header-top">
-            <a class="open-left-menu" title="Показать меню форм"><img src="/img/get_menu.png" title="Показать меню форм"></a>
+            <a class="open-left-menu" title="РџРѕРєР°Р·Р°С‚СЊ РјРµРЅСЋ С„РѕСЂРј"><img src="/img/get_menu.png" title="РџРѕРєР°Р·Р°С‚СЊ РјРµРЅСЋ С„РѕСЂРј"></a>
             <div class="header-logo">
                 <img src="/logo.png">
             </div>|
             <ul class="top-menu">
                 <?php echo $menu->getTopLi();?>
             </ul>| 
-            <a id="menu_gen" href="/index.php?form_id=<?php echo get_gen_form_id();?>" <?php echo (get_gen_form_id()==$form_id) ? 'class="active header-top-right"':'class="header-top-right"' ?>>ГЛАВНАЯ</a>
-            <a id="exit" class="header-top-right">Выход</a>
+            <a id="menu_gen" href="/index.php?form_id=<?php echo get_gen_form_id();?>" <?php echo (get_gen_form_id()==$form_id) ? 'class="active header-top-right"':'class="header-top-right"' ?>>Р“Р›РђР’РќРђРЇ</a>
+            <a id="exit" class="header-top-right">Р’С‹С…РѕРґ</a>
         </div>
         <div class="content_value no_panel">
             <div id="div_name_rep">
@@ -214,7 +214,7 @@ along with Web-olap.  If not, see <https://www.gnu.org/licenses/>.-->
                     unset($m_get['form_id']);
                     unset($m_get['cat_id']);
                 ?>
-                <input id="in_name_rep" type="hidden" placeholder="Введите наименование отчета" style="width: 333px">
+                <input id="in_name_rep" type="hidden" placeholder="Р’РІРµРґРёС‚Рµ РЅР°РёРјРµРЅРѕРІР°РЅРёРµ РѕС‚С‡РµС‚Р°" style="width: 333px">
                 <input type="hidden" id="in_rep_id" value="<?php echo $form_id;?>" pr_view="1" usr_fio="<?php echo $user['FIO'];?>" get_mass='<?php echo json_encode($m_get);?>'>
                 <input type="hidden" id="in_action_value">
                 <input type="hidden" id="in_rep_last_upd">

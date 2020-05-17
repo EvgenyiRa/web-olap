@@ -88,39 +88,39 @@ along with Web-olap.  If not, see <https://www.gnu.org/licenses/>.-->
             }            
         ?>
           
-        <title>—ÓÁ‰‡ÌËÂ web-olap ÓÚ˜ÂÚ‡</title>
+        <title>–°–æ–∑–¥–∞–Ω–∏–µ web-olap –æ—Ç—á–µ—Ç–∞</title>
     </head>
     <body style="margin: 0;">
-        <div id="toTop" > ^ Õ‡‚Âı </div>
+        <div id="toTop" > ^ –ù–∞–≤–µ—Ä—Ö </div>
         <input type="hidden" id="db_type" value="<?php echo db_type();?>">
         
         <img src="/img/loading.gif" id="loading_img" style="margin:0;padding:0;width:480px;height:320px;position:fixed;display:none;">
         
         <div class="sql_group_panel">
-            <a title="–Â‰‡ÍÚËÓ‚‡Ú¸ SQL-Á‡ÔÓÒ" class="sql_group_edite">
+            <a title="–†–µ–¥–∞–∫—Ç–∏—Ä–æ–≤–∞—Ç—å SQL-–∑–∞–ø—Ä–æ—Å" class="sql_group_edite">
                 <img src="/img/edit_sql.png" width=30 height="auto">
             </a>
-            <a title="Œ·ÌÓ‚ËÚ¸ ÂÁÛÎ¸Ú‡Ú" class="sql_refreshe">
+            <a title="–û–±–Ω–æ–≤–∏—Ç—å —Ä–µ–∑—É–ª—å—Ç–∞—Ç" class="sql_refreshe">
                 <img src="/img/refreshe.png" width=30 height="auto">
             </a>
-            <a title="”‰‡ÎËÚ¸" class="sql_remove">
+            <a title="–£–¥–∞–ª–∏—Ç—å" class="sql_remove">
                 <img src="/img/rep_del.png" width=30 height="auto">
             </a>                                         
-       </div><!-- Ô‡ÌÂÎ¸ ‰Îˇ Â‰‡ÍÚËÓ‚‡ÌËˇ sql-ˇ˜ÂÈÍË -->
+       </div><!-- –ø–∞–Ω–µ–ª—å –¥–ª—è —Ä–µ–¥–∞–∫—Ç–∏—Ä–æ–≤–∞–Ω–∏—è sql-—è—á–µ–π–∫–∏ -->
         
-        <div id="modal_form"><!-- ÏÓ‰‡Î¸ÌÓÂ oÍÌo Â‰‡ÍÚËÓ‚‡ÌËˇ/‰Ó·‡‚ÎÂÌËˇ -->
+        <div id="modal_form"><!-- –º–æ–¥–∞–ª—å–Ω–æ–µ o–∫–Ωo —Ä–µ–¥–∞–∫—Ç–∏—Ä–æ–≤–∞–Ω–∏—è/–¥–æ–±–∞–≤–ª–µ–Ω–∏—è -->
             <div class="modal_header">
-                <span id="modal_close">X</span> <!--  ÌoÔÍa ÁaÍ˚Ú¸ -->       
+                <span id="modal_close">X</span> <!-- –ö–Ωo–ø–∫a –∑a–∫—Ä—ã—Ç—å -->       
                 <p id="modal_head_p"></p>
             </div> 
             <div class="modal_content">        
             </div>
             <div class="modal_footer">
-                <button class="modal_button_c" id="modal_cancel">ŒÚÏÂÌ‡</button>
-                <button class="modal_button_c" id="modal_save" place="" tr_id="">—Óı‡ÌËÚ¸</button>
+                <button class="modal_button_c" id="modal_cancel">–û—Ç–º–µ–Ω–∞</button>
+                <button class="modal_button_c" id="modal_save" place="" tr_id="">–°–æ—Ö—Ä–∞–Ω–∏—Ç—å</button>
             </div>    
         </div>        
-        <div id="overlay"></div><!-- œo‰ÎoÊÍa ÏÓ‰‡Î¸ÌÓ„Ó ÓÍÌ‡-->  
+        <div id="overlay"></div><!-- –üo–¥–ªo–∂–∫a –º–æ–¥–∞–ª—å–Ω–æ–≥–æ –æ–∫–Ω–∞-->  
 	
 <div class="container" style="display:none;">
   <div class="hero-unit">
@@ -187,213 +187,213 @@ along with Web-olap.  If not, see <https://www.gnu.org/licenses/>.-->
   
 </div>
         
-        <a class="a_open_panel" title="ŒÚÍ˚Ú¸ Ô‡ÌÂÎ¸"><img src="/img/panel_open.png" style="height:43px;width:auto"></a>
+        <a class="a_open_panel" title="–û—Ç–∫—Ä—ã—Ç—å –ø–∞–Ω–µ–ª—å"><img src="/img/panel_open.png" style="height:43px;width:auto"></a>
         <div class="rep_add_all">
             <div class="slide_panel">	
-                <div class="close_panel"><a class="a_close_panel" title="—Í˚Ú¸ Ô‡ÌÂÎ¸"><img src="/img/rep_del.png" style="height:13px;width:auto"></a></div>
+                <div class="close_panel"><a class="a_close_panel" title="–°–∫—Ä—ã—Ç—å –ø–∞–Ω–µ–ª—å"><img src="/img/rep_del.png" style="height:13px;width:auto"></a></div>
                 <div class="div_action_one" style="text-align: right;padding-right: 10px;">                        
                     <ul class="ul_cons top-level">
-                        <li class="li_cons export li_cons_top" style="background: none;"><a href="/"><img src="/img/home.png" style="height:27px;width:auto" title="Õ‡ „Î‡‚ÌÛ˛"></a></li>
-                        <li id="save_rap" class="li_cons panel_action export li_cons_top" style="background: none;"><img src="/img/save.png" style="height:27px;width:auto" title="—Óı‡ÌËÚ¸ ÙÓÏÛ ÓÚ˜ÂÚ‡"></li>
+                        <li class="li_cons export li_cons_top" style="background: none;"><a href="/"><img src="/img/home.png" style="height:27px;width:auto" title="–ù–∞ –≥–ª–∞–≤–Ω—É—é"></a></li>
+                        <li id="save_rap" class="li_cons panel_action export li_cons_top" style="background: none;"><img src="/img/save.png" style="height:27px;width:auto" title="–°–æ—Ö—Ä–∞–Ω–∏—Ç—å —Ñ–æ—Ä–º—É –æ—Ç—á–µ—Ç–∞"></li>
                         <li id="import_ras" class="li_cons panel_action export li_cons_top" style="background: none;vertical-align: bottom;">                            
                             <label class="file_upload">
-                                <span class="button"><img src="/img/import.png" style="height:27px;width:auto" title="«‡„ÛÁËÚ¸ ÓÚ˜ÂÚ ‚ ÙÓÏ‡ÚÂ .RAS"></span>
+                                <span class="button"><img src="/img/import.png" style="height:27px;width:auto" title="–ó–∞–≥—Ä—É–∑–∏—Ç—å –æ—Ç—á–µ—Ç –≤ —Ñ–æ—Ä–º–∞—Ç–µ .RAS"></span>
                                 <mark></mark>
                                 <input type="file">
                             </label>
                         </li>
-                        <li id="export" class="li_cons export li_cons_top" style="background: none;"><img src="/img/export.png" style="height:27px;width:auto;"title="›ÍÒÔÓÚ">
+                        <li id="export" class="li_cons export li_cons_top" style="background: none;"><img src="/img/export.png" style="height:27px;width:auto;"title="–≠–∫—Å–ø–æ—Ä—Ç">
                             <ul class="ul_cons second-level" style="width: 50px;text-align: center;">
-                                <li id="export_excel" class="li_cons panel_action" title="›ÍÒÔÓÚ ‚ .XLSX" style="height: 34px;"><img src="/img/UPLOAD-Excel.png" style="height:33px;width:auto">                                    
+                                <li id="export_excel" class="li_cons panel_action" title="–≠–∫—Å–ø–æ—Ä—Ç –≤ .XLSX" style="height: 34px;"><img src="/img/UPLOAD-Excel.png" style="height:33px;width:auto">                                    
                                 </li>
-                                <li id="export_ras" class="li_cons panel_action" title="›ÍÒÔÓÚ ‚ .RAS" style="height: 34px;"><img src="/img/ra.png" style="height:33px;width:auto">
+                                <li id="export_ras" class="li_cons panel_action" title="–≠–∫—Å–ø–æ—Ä—Ç –≤ .RAS" style="height: 34px;"><img src="/img/ra.png" style="height:33px;width:auto">
                                 </li>                                
                             </ul>
                         </li>
                         <?php
                             if (exists_right($user_right,'View')) {
                                 echo '<li id="rep_view" class="li_cons export li_cons_top" style="background: none;">'
-                                        . '<a class="rep_view" id="'.$_GET['id'].'" title="œÓÒÏÓÚ ÓÚ˜ÂÚ‡" href="/rep_view.php?id='.$_GET['id'].'"><img src="/img/rep_view.png" style="height:27px;width:auto" title="œÓÒÏÓÚ ÔÓÎÛ˜ÂÌÌÓÈ ÙÓÏ˚"></a>'
+                                        . '<a class="rep_view" id="'.$_GET['id'].'" title="–ü—Ä–æ—Å–º–æ—Ç—Ä –æ—Ç—á–µ—Ç–∞" href="/rep_view.php?id='.$_GET['id'].'"><img src="/img/rep_view.png" style="height:27px;width:auto" title="–ü—Ä–æ—Å–º–æ—Ç—Ä –ø–æ–ª—É—á–µ–Ω–Ω–æ–π —Ñ–æ—Ä–º—ã"></a>'
                                     . '</li>';
                             }
                         ?>    
                             
                     </ul>
-                    <!--<a class="panel_action" id="upload_excel" title="›ÍÒÔÓÚ ‚ Excel"><img src="/img/UPLOAD-Excel.png" style="height:33px;width:auto" title="›ÍÒÔÓÚ ‚ Excel"></a> -->
+                    <!--<a class="panel_action" id="upload_excel" title="–≠–∫—Å–ø–æ—Ä—Ç –≤ Excel"><img src="/img/UPLOAD-Excel.png" style="height:33px;width:auto" title="–≠–∫—Å–ø–æ—Ä—Ç –≤ Excel"></a> -->
                 </div>   
                 <div class="div_action_one">
                     <img src="/img/border_pointer.png" class="border_pointer">
-                    <!--<a class="panel_action" id="cell_bord" title="ÕËÊÌˇˇ „‡ÌËˆ‡" cb_name="cell_bord_bottom"><img src="/img/cell_bord_bottom.png" style="height:26px;width:auto"title="ÕËÊÌˇˇ „‡ÌËˆ‡"></a><a class="panel_action" id="cell_bord" title="¬ÂıÌˇˇ „‡ÌËˆ‡" cb_name="cell_bord_top"><img src="/img/cell_bord_top.png" style="height:30px;width:auto" title="¬ÂıÌˇˇ „‡ÌËˆ‡"></a><a class="panel_action" id="cell_bord" title="ÀÂ‚‡ˇ „‡ÌËˆ‡" cb_name="cell_bord_left"><img src="/img/cell_bord_left.png" style="height:30px;width:auto" title="ÀÂ‚‡ˇ „‡ÌËˆ‡"></a><a class="panel_action" id="cell_bord" title="œ‡‚‡ˇ „‡ÌËˆ‡" cb_name="cell_bord_right"><img src="/img/cell_bord_right.png" style="height:30px;width:auto" title="œ‡‚‡ˇ „‡ÌËˆ‡"></a><a class="panel_action" id="cell_bord" title="¬ÒÂ „‡ÌËˆ˚" cb_name="cell_bord_all"><img src="/img/cell_bord_all.png" style="height:30px;width:auto" title="œ‡‚‡ˇ „‡ÌËˆ‡"></a>-->
+                    <!--<a class="panel_action" id="cell_bord" title="–ù–∏–∂–Ω—è—è –≥—Ä–∞–Ω–∏—Ü–∞" cb_name="cell_bord_bottom"><img src="/img/cell_bord_bottom.png" style="height:26px;width:auto"title="–ù–∏–∂–Ω—è—è –≥—Ä–∞–Ω–∏—Ü–∞"></a><a class="panel_action" id="cell_bord" title="–í–µ—Ä—Ö–Ω—è—è –≥—Ä–∞–Ω–∏—Ü–∞" cb_name="cell_bord_top"><img src="/img/cell_bord_top.png" style="height:30px;width:auto" title="–í–µ—Ä—Ö–Ω—è—è –≥—Ä–∞–Ω–∏—Ü–∞"></a><a class="panel_action" id="cell_bord" title="–õ–µ–≤–∞—è –≥—Ä–∞–Ω–∏—Ü–∞" cb_name="cell_bord_left"><img src="/img/cell_bord_left.png" style="height:30px;width:auto" title="–õ–µ–≤–∞—è –≥—Ä–∞–Ω–∏—Ü–∞"></a><a class="panel_action" id="cell_bord" title="–ü—Ä–∞–≤–∞—è –≥—Ä–∞–Ω–∏—Ü–∞" cb_name="cell_bord_right"><img src="/img/cell_bord_right.png" style="height:30px;width:auto" title="–ü—Ä–∞–≤–∞—è –≥—Ä–∞–Ω–∏—Ü–∞"></a><a class="panel_action" id="cell_bord" title="–í—Å–µ –≥—Ä–∞–Ω–∏—Ü—ã" cb_name="cell_bord_all"><img src="/img/cell_bord_all.png" style="height:30px;width:auto" title="–ü—Ä–∞–≤–∞—è –≥—Ä–∞–Ω–∏—Ü–∞"></a>-->
                     <ul class="ul_cons top-level">
-                        <li class="li_cons panel_action cell_bord_style li_cons_top bord_orient" id="cell_bord" bord_orient="bottom"><img src="/img/cell_bord_bottom.png" style="height:26px;width:auto"title="ÕËÊÌˇˇ „‡ÌËˆ‡">
+                        <li class="li_cons panel_action cell_bord_style li_cons_top bord_orient" id="cell_bord" bord_orient="bottom"><img src="/img/cell_bord_bottom.png" style="height:26px;width:auto"title="–ù–∏–∂–Ω—è—è –≥—Ä–∞–Ω–∏—Ü–∞">
                             <ul class="ul_cons second-level">
                                 <li id="cell_bord" class="li_cons panel_action cell_bord_style a_cell_bord_s_solid" name_style="solid">Solid
-                                    <input type="number" class="a_cell_bord_w" title="ÿËËÌ‡ ÎËÌËË" value="1">
+                                    <input type="number" class="a_cell_bord_w" title="–®–∏—Ä–∏–Ω–∞ –ª–∏–Ω–∏–∏" value="1">
                                 </li>
                                 <li id="cell_bord" class="li_cons panel_action cell_bord_style a_cell_bord_s_double" name_style="double">Double
-                                    <input type="number" class="a_cell_bord_w" title="ÿËËÌ‡ ÎËÌËË" value="1">
+                                    <input type="number" class="a_cell_bord_w" title="–®–∏—Ä–∏–Ω–∞ –ª–∏–Ω–∏–∏" value="1">
                                 </li>
                                 <li id="cell_bord" class="li_cons panel_action cell_bord_style a_cell_bord_s_groove" name_style="groove">Groove
-                                    <input type="number" class="a_cell_bord_w" title="ÿËËÌ‡ ÎËÌËË" value="1">
+                                    <input type="number" class="a_cell_bord_w" title="–®–∏—Ä–∏–Ω–∞ –ª–∏–Ω–∏–∏" value="1">
                                 </li>
                                 <li id="cell_bord" class="li_cons panel_action cell_bord_style a_cell_bord_s_ridge" name_style="ridge">Ridge
-                                    <input type="number" class="a_cell_bord_w" title="ÿËËÌ‡ ÎËÌËË" value="1">
+                                    <input type="number" class="a_cell_bord_w" title="–®–∏—Ä–∏–Ω–∞ –ª–∏–Ω–∏–∏" value="1">
                                 </li>                                
                                 <li id="cell_bord" class="li_cons panel_action cell_bord_style a_cell_bord_s_inset" name_style="inset">Inset
-                                    <input type="number" class="a_cell_bord_w" title="ÿËËÌ‡ ÎËÌËË" value="1">
+                                    <input type="number" class="a_cell_bord_w" title="–®–∏—Ä–∏–Ω–∞ –ª–∏–Ω–∏–∏" value="1">
                                 </li>
                                 <li id="cell_bord" class="li_cons panel_action cell_bord_style a_cell_bord_s_outset" name_style="outset">Outset
-                                    <input type="number" class="a_cell_bord_w" title="ÿËËÌ‡ ÎËÌËË" value="1">
+                                    <input type="number" class="a_cell_bord_w" title="–®–∏—Ä–∏–Ω–∞ –ª–∏–Ω–∏–∏" value="1">
                                 </li>                                
                                 <li id="cell_bord" class="li_cons panel_action cell_bord_style a_cell_bord_s_dotted" name_style="dotted">Dotted
-                                    <input type="number" class="a_cell_bord_w" title="ÿËËÌ‡ ÎËÌËË" value="1">
+                                    <input type="number" class="a_cell_bord_w" title="–®–∏—Ä–∏–Ω–∞ –ª–∏–Ω–∏–∏" value="1">
                                 </li>                                 
                                 <li id="cell_bord" class="li_cons panel_action cell_bord_style a_cell_bord_s_dashed" name_style="dashed">Dashed
-                                    <input type="number" class="a_cell_bord_w" title="ÿËËÌ‡ ÎËÌËË" value="1">
+                                    <input type="number" class="a_cell_bord_w" title="–®–∏—Ä–∏–Ω–∞ –ª–∏–Ω–∏–∏" value="1">
                                 </li>
                             </ul>
                         </li>
-                        <li class="li_cons panel_action cell_bord_style li_cons_top bord_orient" id="cell_bord" bord_orient="top"><img src="/img/cell_bord_top.png" style="height:26px;width:auto" title="¬ÂıÌˇˇ „‡ÌËˆ‡">
+                        <li class="li_cons panel_action cell_bord_style li_cons_top bord_orient" id="cell_bord" bord_orient="top"><img src="/img/cell_bord_top.png" style="height:26px;width:auto" title="–í–µ—Ä—Ö–Ω—è—è –≥—Ä–∞–Ω–∏—Ü–∞">
                             <ul class="ul_cons second-level">
                                 <li id="cell_bord" class="li_cons panel_action cell_bord_style a_cell_bord_s_solid" name_style="solid">Solid
-                                    <input type="number" class="a_cell_bord_w" title="ÿËËÌ‡ ÎËÌËË" value="1">
+                                    <input type="number" class="a_cell_bord_w" title="–®–∏—Ä–∏–Ω–∞ –ª–∏–Ω–∏–∏" value="1">
                                 </li>
                                 <li id="cell_bord" class="li_cons panel_action cell_bord_style a_cell_bord_s_double" name_style="double">Double
-                                    <input type="number" class="a_cell_bord_w" title="ÿËËÌ‡ ÎËÌËË" value="1">
+                                    <input type="number" class="a_cell_bord_w" title="–®–∏—Ä–∏–Ω–∞ –ª–∏–Ω–∏–∏" value="1">
                                 </li>
                                 <li id="cell_bord" class="li_cons panel_action cell_bord_style a_cell_bord_s_groove" name_style="groove">Groove
-                                    <input type="number" class="a_cell_bord_w" title="ÿËËÌ‡ ÎËÌËË" value="1">
+                                    <input type="number" class="a_cell_bord_w" title="–®–∏—Ä–∏–Ω–∞ –ª–∏–Ω–∏–∏" value="1">
                                 </li>
                                 <li id="cell_bord" class="li_cons panel_action cell_bord_style a_cell_bord_s_ridge" name_style="ridge">Ridge
-                                    <input type="number" class="a_cell_bord_w" title="ÿËËÌ‡ ÎËÌËË" value="1">
+                                    <input type="number" class="a_cell_bord_w" title="–®–∏—Ä–∏–Ω–∞ –ª–∏–Ω–∏–∏" value="1">
                                 </li>                                
                                 <li id="cell_bord" class="li_cons panel_action cell_bord_style a_cell_bord_s_inset" name_style="inset">Inset
-                                    <input type="number" class="a_cell_bord_w" title="ÿËËÌ‡ ÎËÌËË" value="1">
+                                    <input type="number" class="a_cell_bord_w" title="–®–∏—Ä–∏–Ω–∞ –ª–∏–Ω–∏–∏" value="1">
                                 </li>
                                 <li id="cell_bord" class="li_cons panel_action cell_bord_style a_cell_bord_s_outset" name_style="outset">Outset
-                                    <input type="number" class="a_cell_bord_w" title="ÿËËÌ‡ ÎËÌËË" value="1">
+                                    <input type="number" class="a_cell_bord_w" title="–®–∏—Ä–∏–Ω–∞ –ª–∏–Ω–∏–∏" value="1">
                                 </li>                                
                                 <li id="cell_bord" class="li_cons panel_action cell_bord_style a_cell_bord_s_dotted" name_style="dotted">Dotted
-                                    <input type="number" class="a_cell_bord_w" title="ÿËËÌ‡ ÎËÌËË" value="1">
+                                    <input type="number" class="a_cell_bord_w" title="–®–∏—Ä–∏–Ω–∞ –ª–∏–Ω–∏–∏" value="1">
                                 </li>                                 
                                 <li id="cell_bord" class="li_cons panel_action cell_bord_style a_cell_bord_s_dashed" name_style="dashed">Dashed
-                                    <input type="number" class="a_cell_bord_w" title="ÿËËÌ‡ ÎËÌËË" value="1">
+                                    <input type="number" class="a_cell_bord_w" title="–®–∏—Ä–∏–Ω–∞ –ª–∏–Ω–∏–∏" value="1">
                                 </li>                               
                             </ul>
                         </li>
-                        <li class="li_cons panel_action cell_bord_style li_cons_top bord_orient" id="cell_bord" bord_orient="left"><img src="/img/cell_bord_left.png" style="height:26px;width:auto" title="ÀÂ‚‡ˇ „‡ÌËˆ‡">
+                        <li class="li_cons panel_action cell_bord_style li_cons_top bord_orient" id="cell_bord" bord_orient="left"><img src="/img/cell_bord_left.png" style="height:26px;width:auto" title="–õ–µ–≤–∞—è –≥—Ä–∞–Ω–∏—Ü–∞">
                             <ul class="ul_cons second-level">
                                 <li id="cell_bord" class="li_cons panel_action cell_bord_style a_cell_bord_s_solid" name_style="solid">Solid
-                                    <input type="number" class="a_cell_bord_w" title="ÿËËÌ‡ ÎËÌËË" value="1">
+                                    <input type="number" class="a_cell_bord_w" title="–®–∏—Ä–∏–Ω–∞ –ª–∏–Ω–∏–∏" value="1">
                                 </li>
                                 <li id="cell_bord" class="li_cons panel_action cell_bord_style a_cell_bord_s_double" name_style="double">Double
-                                    <input type="number" class="a_cell_bord_w" title="ÿËËÌ‡ ÎËÌËË" value="1">
+                                    <input type="number" class="a_cell_bord_w" title="–®–∏—Ä–∏–Ω–∞ –ª–∏–Ω–∏–∏" value="1">
                                 </li>
                                 <li id="cell_bord" class="li_cons panel_action cell_bord_style a_cell_bord_s_groove" name_style="groove">Groove
-                                    <input type="number" class="a_cell_bord_w" title="ÿËËÌ‡ ÎËÌËË" value="1">
+                                    <input type="number" class="a_cell_bord_w" title="–®–∏—Ä–∏–Ω–∞ –ª–∏–Ω–∏–∏" value="1">
                                 </li>
                                 <li id="cell_bord" class="li_cons panel_action cell_bord_style a_cell_bord_s_ridge" name_style="ridge">Ridge
-                                    <input type="number" class="a_cell_bord_w" title="ÿËËÌ‡ ÎËÌËË" value="1">
+                                    <input type="number" class="a_cell_bord_w" title="–®–∏—Ä–∏–Ω–∞ –ª–∏–Ω–∏–∏" value="1">
                                 </li>                                
                                 <li id="cell_bord" class="li_cons panel_action cell_bord_style a_cell_bord_s_inset" name_style="inset">Inset
-                                    <input type="number" class="a_cell_bord_w" title="ÿËËÌ‡ ÎËÌËË" value="1">
+                                    <input type="number" class="a_cell_bord_w" title="–®–∏—Ä–∏–Ω–∞ –ª–∏–Ω–∏–∏" value="1">
                                 </li>
                                 <li id="cell_bord" class="li_cons panel_action cell_bord_style a_cell_bord_s_outset" name_style="outset">Outset
-                                    <input type="number" class="a_cell_bord_w" title="ÿËËÌ‡ ÎËÌËË" value="1">
+                                    <input type="number" class="a_cell_bord_w" title="–®–∏—Ä–∏–Ω–∞ –ª–∏–Ω–∏–∏" value="1">
                                 </li>                                
                                 <li id="cell_bord" class="li_cons panel_action cell_bord_style a_cell_bord_s_dotted" name_style="dotted">Dotted
-                                    <input type="number" class="a_cell_bord_w" title="ÿËËÌ‡ ÎËÌËË" value="1">
+                                    <input type="number" class="a_cell_bord_w" title="–®–∏—Ä–∏–Ω–∞ –ª–∏–Ω–∏–∏" value="1">
                                 </li>                                 
                                 <li id="cell_bord" class="li_cons panel_action cell_bord_style a_cell_bord_s_dashed" name_style="dashed">Dashed
-                                    <input type="number" class="a_cell_bord_w" title="ÿËËÌ‡ ÎËÌËË" value="1">
+                                    <input type="number" class="a_cell_bord_w" title="–®–∏—Ä–∏–Ω–∞ –ª–∏–Ω–∏–∏" value="1">
                                 </li>                                
                             </ul>
                         </li>
-                        <li class="li_cons panel_action cell_bord_style li_cons_top bord_orient" id="cell_bord" bord_orient="right"><img src="/img/cell_bord_right.png" style="height:26px;width:auto" title="œ‡‚‡ˇ „‡ÌËˆ‡">
+                        <li class="li_cons panel_action cell_bord_style li_cons_top bord_orient" id="cell_bord" bord_orient="right"><img src="/img/cell_bord_right.png" style="height:26px;width:auto" title="–ü—Ä–∞–≤–∞—è –≥—Ä–∞–Ω–∏—Ü–∞">
                             <ul class="ul_cons second-level">
                                 <li id="cell_bord" class="li_cons panel_action cell_bord_style a_cell_bord_s_solid" name_style="solid">Solid
-                                    <input type="number" class="a_cell_bord_w" title="ÿËËÌ‡ ÎËÌËË" value="1">
+                                    <input type="number" class="a_cell_bord_w" title="–®–∏—Ä–∏–Ω–∞ –ª–∏–Ω–∏–∏" value="1">
                                 </li>
                                 <li id="cell_bord" class="li_cons panel_action cell_bord_style a_cell_bord_s_double" name_style="double">Double
-                                    <input type="number" class="a_cell_bord_w" title="ÿËËÌ‡ ÎËÌËË" value="1">
+                                    <input type="number" class="a_cell_bord_w" title="–®–∏—Ä–∏–Ω–∞ –ª–∏–Ω–∏–∏" value="1">
                                 </li>
                                 <li id="cell_bord" class="li_cons panel_action cell_bord_style a_cell_bord_s_groove" name_style="groove">Groove
-                                    <input type="number" class="a_cell_bord_w" title="ÿËËÌ‡ ÎËÌËË" value="1">
+                                    <input type="number" class="a_cell_bord_w" title="–®–∏—Ä–∏–Ω–∞ –ª–∏–Ω–∏–∏" value="1">
                                 </li>
                                 <li id="cell_bord" class="li_cons panel_action cell_bord_style a_cell_bord_s_ridge" name_style="ridge">Ridge
-                                    <input type="number" class="a_cell_bord_w" title="ÿËËÌ‡ ÎËÌËË" value="1">
+                                    <input type="number" class="a_cell_bord_w" title="–®–∏—Ä–∏–Ω–∞ –ª–∏–Ω–∏–∏" value="1">
                                 </li>                                
                                 <li id="cell_bord" class="li_cons panel_action cell_bord_style a_cell_bord_s_inset" name_style="inset">Inset
-                                    <input type="number" class="a_cell_bord_w" title="ÿËËÌ‡ ÎËÌËË" value="1">
+                                    <input type="number" class="a_cell_bord_w" title="–®–∏—Ä–∏–Ω–∞ –ª–∏–Ω–∏–∏" value="1">
                                 </li>
                                 <li id="cell_bord" class="li_cons panel_action cell_bord_style a_cell_bord_s_outset" name_style="outset">Outset
-                                    <input type="number" class="a_cell_bord_w" title="ÿËËÌ‡ ÎËÌËË" value="1">
+                                    <input type="number" class="a_cell_bord_w" title="–®–∏—Ä–∏–Ω–∞ –ª–∏–Ω–∏–∏" value="1">
                                 </li>                                
                                 <li id="cell_bord" class="li_cons panel_action cell_bord_style a_cell_bord_s_dotted" name_style="dotted">Dotted
-                                    <input type="number" class="a_cell_bord_w" title="ÿËËÌ‡ ÎËÌËË" value="1">
+                                    <input type="number" class="a_cell_bord_w" title="–®–∏—Ä–∏–Ω–∞ –ª–∏–Ω–∏–∏" value="1">
                                 </li>                                 
                                 <li id="cell_bord" class="li_cons panel_action cell_bord_style a_cell_bord_s_dashed" name_style="dashed">Dashed
-                                    <input type="number" class="a_cell_bord_w" title="ÿËËÌ‡ ÎËÌËË" value="1">
+                                    <input type="number" class="a_cell_bord_w" title="–®–∏—Ä–∏–Ω–∞ –ª–∏–Ω–∏–∏" value="1">
                                 </li>                                 
                             </ul>
                         </li>
-                        <li class="li_cons panel_action cell_bord_style li_cons_top bord_orient" id="cell_bord" bord_orient="all"><img src="/img/cell_bord_all.png" style="height:26px;width:auto" title="¬ÒÂ „‡ÌËˆ˚">
+                        <li class="li_cons panel_action cell_bord_style li_cons_top bord_orient" id="cell_bord" bord_orient="all"><img src="/img/cell_bord_all.png" style="height:26px;width:auto" title="–í—Å–µ –≥—Ä–∞–Ω–∏—Ü—ã">
                             <ul class="ul_cons second-level">
                                 <li id="cell_bord" class="li_cons panel_action cell_bord_style a_cell_bord_s_solid" name_style="solid">Solid
-                                    <input type="number" class="a_cell_bord_w" title="ÿËËÌ‡ ÎËÌËË" value="1">
+                                    <input type="number" class="a_cell_bord_w" title="–®–∏—Ä–∏–Ω–∞ –ª–∏–Ω–∏–∏" value="1">
                                 </li>
                                 <li id="cell_bord" class="li_cons panel_action cell_bord_style a_cell_bord_s_double" name_style="double">Double
-                                    <input type="number" class="a_cell_bord_w" title="ÿËËÌ‡ ÎËÌËË" value="1">
+                                    <input type="number" class="a_cell_bord_w" title="–®–∏—Ä–∏–Ω–∞ –ª–∏–Ω–∏–∏" value="1">
                                 </li>
                                 <li id="cell_bord" class="li_cons panel_action cell_bord_style a_cell_bord_s_groove" name_style="groove">Groove
-                                    <input type="number" class="a_cell_bord_w" title="ÿËËÌ‡ ÎËÌËË" value="1">
+                                    <input type="number" class="a_cell_bord_w" title="–®–∏—Ä–∏–Ω–∞ –ª–∏–Ω–∏–∏" value="1">
                                 </li>
                                 <li id="cell_bord" class="li_cons panel_action cell_bord_style a_cell_bord_s_ridge" name_style="ridge">Ridge
-                                    <input type="number" class="a_cell_bord_w" title="ÿËËÌ‡ ÎËÌËË" value="1">
+                                    <input type="number" class="a_cell_bord_w" title="–®–∏—Ä–∏–Ω–∞ –ª–∏–Ω–∏–∏" value="1">
                                 </li>                                
                                 <li id="cell_bord" class="li_cons panel_action cell_bord_style a_cell_bord_s_inset" name_style="inset">Inset
-                                    <input type="number" class="a_cell_bord_w" title="ÿËËÌ‡ ÎËÌËË" value="1">
+                                    <input type="number" class="a_cell_bord_w" title="–®–∏—Ä–∏–Ω–∞ –ª–∏–Ω–∏–∏" value="1">
                                 </li>
                                 <li id="cell_bord" class="li_cons panel_action cell_bord_style a_cell_bord_s_outset" name_style="outset">Outset
-                                    <input type="number" class="a_cell_bord_w" title="ÿËËÌ‡ ÎËÌËË" value="1">
+                                    <input type="number" class="a_cell_bord_w" title="–®–∏—Ä–∏–Ω–∞ –ª–∏–Ω–∏–∏" value="1">
                                 </li>                                
                                 <li id="cell_bord" class="li_cons panel_action cell_bord_style a_cell_bord_s_dotted" name_style="dotted">Dotted
-                                    <input type="number" class="a_cell_bord_w" title="ÿËËÌ‡ ÎËÌËË" value="1">
+                                    <input type="number" class="a_cell_bord_w" title="–®–∏—Ä–∏–Ω–∞ –ª–∏–Ω–∏–∏" value="1">
                                 </li>                                 
                                 <li id="cell_bord" class="li_cons panel_action cell_bord_style a_cell_bord_s_dashed" name_style="dashed">Dashed
-                                    <input type="number" class="a_cell_bord_w" title="ÿËËÌ‡ ÎËÌËË" value="1">
+                                    <input type="number" class="a_cell_bord_w" title="–®–∏—Ä–∏–Ω–∞ –ª–∏–Ω–∏–∏" value="1">
                                 </li>                                 
                             </ul>
                         </li>
-                        <li class="li_cons panel_action cell_bord_style li_cons_top bord_orient" id="cell_bord" bord_orient="none"><img src="/img/cell_bord_none.png" style="height:26px;width:auto" title="ÕÂÚ „‡ÌËˆ˚">
+                        <li class="li_cons panel_action cell_bord_style li_cons_top bord_orient" id="cell_bord" bord_orient="none"><img src="/img/cell_bord_none.png" style="height:26px;width:auto" title="–ù–µ—Ç –≥—Ä–∞–Ω–∏—Ü—ã">
                         <div class="clear"></div>
                     </ul>
                 </div>
                 <div class="div_action_one">
-                    <input id="border_color" value="#000000" title="»ÁÏÂÌËÚ¸ ˆ‚ÂÚ ‡ÏÍË"><div id="border_color_ex" class="shestgran" title="Œ·‡ÁÂˆ ˆ‚ÂÚ‡ ‡ÏÍË ˇ˜ÂÈÍË"></div><button id="border_color_change" title="¬˚·‡Ú¸ ˆ‚ÂÚ ‡ÏÍË">...</button>
+                    <input id="border_color" value="#000000" title="–ò–∑–º–µ–Ω–∏—Ç—å —Ü–≤–µ—Ç —Ä–∞–º–∫–∏"><div id="border_color_ex" class="shestgran" title="–û–±—Ä–∞–∑–µ—Ü —Ü–≤–µ—Ç–∞ —Ä–∞–º–∫–∏ —è—á–µ–π–∫–∏"></div><button id="border_color_change" title="–í—ã–±—Ä–∞—Ç—å —Ü–≤–µ—Ç —Ä–∞–º–∫–∏">...</button>
                     <div id="Inline_bc"></div>
-                    <input type="number" title="“ÓÎ˘ËÌ‡ ÎËÌËË ‡ÏÍË" id="cell_bord_size" value="1" style="margin: 0 0 0 2px;width: 30px;">                    
+                    <input type="number" title="–¢–æ–ª—â–∏–Ω–∞ –ª–∏–Ω–∏–∏ —Ä–∞–º–∫–∏" id="cell_bord_size" value="1" style="margin: 0 0 0 2px;width: 30px;">                    
                 </div>
                 
-                <div class="div_action_one"><a class="panel_action" id="col_plus" title="Œ·˙Â‰ËÌËÚ¸/‡Á˙Â‰ËÌËÚ¸ ‚˚‰ÂÎÂÌÌ˚Â ˇ˜ÂÈÍË" style="margin-right: 2px;"><img src="/img/col_plus.png" style="height:33px;width:auto" title="Œ·˙Â‰ËÌËÚ¸/‡Á˙Â‰ËÌËÚ¸ ‚˚‰ÂÎÂÌÌ˚Â ˇ˜ÂÈÍË"></a><a class="panel_action" id="tab_clear" title="Œ˜ËÒÚËÚ¸ Ú‡·ÎËˆÛ"><img src="/img/clear.png" style="height:33px;width:auto" title="Œ˜ËÒÚËÚ¸ Ú‡·ÎËˆÛ"></a><a class="panel_action" id="td_clear" title="Œ˜ËÒÚËÚ¸ ˇ˜ÂÈÍÛ Ú‡·ÎËˆ˚"><img src="/img/clear_one.png" style="height:33px;width:auto" title="Œ˜ËÒÚËÚ¸ ˇ˜ÂÈÍÛ Ú‡·ÎËˆ˚"></a><a class="panel_action" id="td_get_panel_action" title="œËÌÛ‰ËÚÂÎ¸ÌÓ ‚˚Á‚‡Ú¸ Ô‡ÌÂÎ¸ ‰ÂÈÒÚ‚ËÈ ‚ ˇ˜ÂÈÍÂ"><img src="/img/actions.png" style="height:33px;width:auto" title="œËÌÛ‰ËÚÂÎ¸ÌÓ ‚˚Á‚‡Ú¸ Ô‡ÌÂÎ¸ ‰ÂÈÒÚ‚ËÈ ‚ ˇ˜ÂÈÍÂ"></a></div>
+                <div class="div_action_one"><a class="panel_action" id="col_plus" title="–û–±—ä–µ–¥–∏–Ω–∏—Ç—å/—Ä–∞–∑—ä–µ–¥–∏–Ω–∏—Ç—å –≤—ã–¥–µ–ª–µ–Ω–Ω—ã–µ —è—á–µ–π–∫–∏" style="margin-right: 2px;"><img src="/img/col_plus.png" style="height:33px;width:auto" title="–û–±—ä–µ–¥–∏–Ω–∏—Ç—å/—Ä–∞–∑—ä–µ–¥–∏–Ω–∏—Ç—å –≤—ã–¥–µ–ª–µ–Ω–Ω—ã–µ —è—á–µ–π–∫–∏"></a><a class="panel_action" id="tab_clear" title="–û—á–∏—Å—Ç–∏—Ç—å —Ç–∞–±–ª–∏—Ü—É"><img src="/img/clear.png" style="height:33px;width:auto" title="–û—á–∏—Å—Ç–∏—Ç—å —Ç–∞–±–ª–∏—Ü—É"></a><a class="panel_action" id="td_clear" title="–û—á–∏—Å—Ç–∏—Ç—å —è—á–µ–π–∫—É —Ç–∞–±–ª–∏—Ü—ã"><img src="/img/clear_one.png" style="height:33px;width:auto" title="–û—á–∏—Å—Ç–∏—Ç—å —è—á–µ–π–∫—É —Ç–∞–±–ª–∏—Ü—ã"></a><a class="panel_action" id="td_get_panel_action" title="–ü—Ä–∏–Ω—É–¥–∏—Ç–µ–ª—å–Ω–æ –≤—ã–∑–≤–∞—Ç—å –ø–∞–Ω–µ–ª—å –¥–µ–π—Å—Ç–≤–∏–π –≤ —è—á–µ–π–∫–µ"><img src="/img/actions.png" style="height:33px;width:auto" title="–ü—Ä–∏–Ω—É–¥–∏—Ç–µ–ª—å–Ω–æ –≤—ã–∑–≤–∞—Ç—å –ø–∞–Ω–µ–ª—å –¥–µ–π—Å—Ç–≤–∏–π –≤ —è—á–µ–π–∫–µ"></a></div>
                 <!--<div class="div_action_one">
-                    <select name="type_col" id="type_col" title="»ÁÏÂÌËÚ¸ ÚËÔ ÒÚÓÎ·ˆ‡" style="width: 170px;margin:0;">
-                        <option selected value="text">“ÂÍÒÚ</option>
-                        <option value="number">◊ËÒÎÓ</option>
-                        <option value="checkbox">◊ÂÍ·ÓÍÒ</option>
-                        <option value="autocomplete">œÂÂ˜ËÒÎÂÌËÂ</option>
-                        <option value="calendar">ƒ‡Ú‡</option>                        
+                    <select name="type_col" id="type_col" title="–ò–∑–º–µ–Ω–∏—Ç—å —Ç–∏–ø —Å—Ç–æ–ª–±—Ü–∞" style="width: 170px;margin:0;">
+                        <option selected value="text">–¢–µ–∫—Å—Ç</option>
+                        <option value="number">–ß–∏—Å–ª–æ</option>
+                        <option value="checkbox">–ß–µ–∫–±–æ–∫—Å</option>
+                        <option value="autocomplete">–ü–µ—Ä–µ—á–∏—Å–ª–µ–Ω–∏–µ</option>
+                        <option value="calendar">–î–∞—Ç–∞</option>                        
                     </select>
                 </div>-->
                 <div class="div_action_one">
-                    <a class="panel_action" id="format_right" title="¬˚‡‚ÌË‚‡ÌËÂ ÔÓ Ô‡‚ÓÏÛ Í‡˛" td_format="right"><img src="/img/formatjustifyright.png" style="height:33px;width:auto" title="¬˚‡‚ÌË‚‡ÌËÂ ÔÓ Ô‡‚ÓÏÛ Í‡˛"></a><a class="panel_action" id="format_center" title="¬˚‡‚ÌË‚‡ÌËÂ ÔÓ ˆÂÌÚÛ" td_format="center"><img src="/img/centrejust.png" style="height:33px;width:auto" title="¬˚‡‚ÌË‚‡ÌËÂ ÔÓ ˆÂÌÚÛ"></a><a class="panel_action" id="format_left" title="¬˚‡‚ÌË‚‡ÌËÂ ÔÓ ÎÂ‚ÓÏÛ Í‡˛" td_format="left"><img src="/img/formatjustifyleft.png" style="height:33px;width:auto" title="¬˚‡‚ÌË‚‡ÌËÂ ÔÓ ÎÂ‚ÓÏÛ Í‡˛"></a><a class="panel_action" id="format_all" title="¬˚‡‚ÌË‚‡ÌËÂ ÔÓ ‚ÒÂÈ ¯ËËÌÂ" td_format="justify"><img src="/img/formatjustifyfill.png" style="height:33px;width:auto" title="¬˚‡‚ÌË‚‡ÌËÂ ÔÓ ‚ÒÂÈ ¯ËËÌÂ"></a>
+                    <a class="panel_action" id="format_right" title="–í—ã—Ä–∞–≤–Ω–∏–≤–∞–Ω–∏–µ –ø–æ –ø—Ä–∞–≤–æ–º—É –∫—Ä–∞—é" td_format="right"><img src="/img/formatjustifyright.png" style="height:33px;width:auto" title="–í—ã—Ä–∞–≤–Ω–∏–≤–∞–Ω–∏–µ –ø–æ –ø—Ä–∞–≤–æ–º—É –∫—Ä–∞—é"></a><a class="panel_action" id="format_center" title="–í—ã—Ä–∞–≤–Ω–∏–≤–∞–Ω–∏–µ –ø–æ —Ü–µ–Ω—Ç—Ä—É" td_format="center"><img src="/img/centrejust.png" style="height:33px;width:auto" title="–í—ã—Ä–∞–≤–Ω–∏–≤–∞–Ω–∏–µ –ø–æ —Ü–µ–Ω—Ç—Ä—É"></a><a class="panel_action" id="format_left" title="–í—ã—Ä–∞–≤–Ω–∏–≤–∞–Ω–∏–µ –ø–æ –ª–µ–≤–æ–º—É –∫—Ä–∞—é" td_format="left"><img src="/img/formatjustifyleft.png" style="height:33px;width:auto" title="–í—ã—Ä–∞–≤–Ω–∏–≤–∞–Ω–∏–µ –ø–æ –ª–µ–≤–æ–º—É –∫—Ä–∞—é"></a><a class="panel_action" id="format_all" title="–í—ã—Ä–∞–≤–Ω–∏–≤–∞–Ω–∏–µ –ø–æ –≤—Å–µ–π —à–∏—Ä–∏–Ω–µ" td_format="justify"><img src="/img/formatjustifyfill.png" style="height:33px;width:auto" title="–í—ã—Ä–∞–≤–Ω–∏–≤–∞–Ω–∏–µ –ø–æ –≤—Å–µ–π —à–∏—Ä–∏–Ω–µ"></a>
                 </div>
                 <div class="div_action_one">
-                    <a class="panel_action" id="format_v_top" title="¬ÂÚËÍ‡Î¸ÌÓÂ ‚˚‡‚ÌË‚‡ÌËÂ ÔÓ ‚ÂıÌÂÏÛ Í‡˛" td_format_v="top"><img src="/img/format_td_v_top.png" style="height:33px;width:auto" title="¬ÂÚËÍ‡Î¸ÌÓÂ ‚˚‡‚ÌË‚‡ÌËÂ ÔÓ ‚ÂıÌÂÏÛ Í‡˛"></a><a class="panel_action" id="format_v_center" title="¬ÂÚËÍ‡Î¸ÌÓÂ ‚˚‡‚ÌË‚‡ÌËÂ ÔÓ ˆÂÌÚÛ" td_format_v="middle"><img src="/img/format_td_v_center.png" style="height:33px;width:auto" title="¬ÂÚËÍ‡Î¸ÌÓÂ ‚˚‡‚ÌË‚‡ÌËÂ ÔÓ ˆÂÌÚÛ"></a><a class="panel_action" id="format_v_bottom" title="¬ÂÚËÍ‡Î¸ÌÓÂ ‚˚‡‚ÌË‚‡ÌËÂ ÔÓ ÌËÊÌÂÏÛ Í‡˛" td_format_v="bottom"><img src="/img/format_td_v_bottom.png" style="height:33px;width:auto" title="¬ÂÚËÍ‡Î¸ÌÓÂ ‚˚‡‚ÌË‚‡ÌËÂ ÔÓ ÌËÊÌÂÏÛ Í‡˛"></a>
-                    <input type="number" title="–‡ÁÏÂ ¯ËÙÚ‡" id="font_size" value="16" style="margin: 0;">                    
+                    <a class="panel_action" id="format_v_top" title="–í–µ—Ä—Ç–∏–∫–∞–ª—å–Ω–æ–µ –≤—ã—Ä–∞–≤–Ω–∏–≤–∞–Ω–∏–µ –ø–æ –≤–µ—Ä—Ö–Ω–µ–º—É –∫—Ä–∞—é" td_format_v="top"><img src="/img/format_td_v_top.png" style="height:33px;width:auto" title="–í–µ—Ä—Ç–∏–∫–∞–ª—å–Ω–æ–µ –≤—ã—Ä–∞–≤–Ω–∏–≤–∞–Ω–∏–µ –ø–æ –≤–µ—Ä—Ö–Ω–µ–º—É –∫—Ä–∞—é"></a><a class="panel_action" id="format_v_center" title="–í–µ—Ä—Ç–∏–∫–∞–ª—å–Ω–æ–µ –≤—ã—Ä–∞–≤–Ω–∏–≤–∞–Ω–∏–µ –ø–æ —Ü–µ–Ω—Ç—Ä—É" td_format_v="middle"><img src="/img/format_td_v_center.png" style="height:33px;width:auto" title="–í–µ—Ä—Ç–∏–∫–∞–ª—å–Ω–æ–µ –≤—ã—Ä–∞–≤–Ω–∏–≤–∞–Ω–∏–µ –ø–æ —Ü–µ–Ω—Ç—Ä—É"></a><a class="panel_action" id="format_v_bottom" title="–í–µ—Ä—Ç–∏–∫–∞–ª—å–Ω–æ–µ –≤—ã—Ä–∞–≤–Ω–∏–≤–∞–Ω–∏–µ –ø–æ –Ω–∏–∂–Ω–µ–º—É –∫—Ä–∞—é" td_format_v="bottom"><img src="/img/format_td_v_bottom.png" style="height:33px;width:auto" title="–í–µ—Ä—Ç–∏–∫–∞–ª—å–Ω–æ–µ –≤—ã—Ä–∞–≤–Ω–∏–≤–∞–Ω–∏–µ –ø–æ –Ω–∏–∂–Ω–µ–º—É –∫—Ä–∞—é"></a>
+                    <input type="number" title="–†–∞–∑–º–µ—Ä —à—Ä–∏—Ñ—Ç–∞" id="font_size" value="16" style="margin: 0;">                    
                 </div>
                 <div class="div_action_one">
-                    <select id="font_type" title="»ÁÏÂÌËÚ¸ ÚËÔ ¯ËÙÚ‡" style="width: 170px;margin:0;">
+                    <select id="font_type" title="–ò–∑–º–µ–Ω–∏—Ç—å —Ç–∏–ø —à—Ä–∏—Ñ—Ç–∞" style="width: 170px;margin:0;">
                         <option><font face="Academy Engraved LET">academy engraved let</font></option>
                         <option><font face="algerian">algerian</font></option>
                         <option><font face="Amaze">amaze</font></option>
@@ -530,30 +530,30 @@ along with Web-olap.  If not, see <https://www.gnu.org/licenses/>.-->
                     </select>
                 </div>
                 <div class="div_action_one">
-                    <a class="panel_action" id="font_bold" title="∆ËÌ˚È ¯ËÙÚ ˇ˜ÂÈÍË(-ÂÍ)" font_name="font-weight" font_value="bold"><img src="/img/font_bold.png" style="height:33px;width:auto"title="∆ËÌ˚È ¯ËÙÚ ˇ˜ÂÈÍË(-ÂÍ)"></a><a class="panel_action" id="font_kursiv" title="ÿËÙÚ ÍÛÒË‚ÓÏ ˇ˜ÂÈÍË(-ÂÍ)" font_name="font-style" font_value="italic"><img src="/img/font_kursiv.png" style="height:33px;width:auto" title="ÿËÙÚ ÍÛÒË‚ÓÏ ˇ˜ÂÈÍË(-ÂÍ)"></a><a class="panel_action" id="font_zacherk" title="«‡˜ÂÍÌÛÚ˚È ¯ËÙÚ ˇ˜ÂÈÍË(-ÂÍ)" font_name="text-decoration" font_value="line-through"><img src="/img/font_zacherk.png" style="height:33px;width:auto" title="«‡˜ÂÍÌÛÚ˚È ¯ËÙÚ ˇ˜ÂÈÍË(-ÂÍ)"></a><a class="panel_action" id="font_podcherk" title="œÓ‰˜ÂÍÌÛÚ˚È ¯ËÙÚ ˇ˜ÂÈÍË(-ÂÍ)" font_name="text-decoration" font_value="underline"><img src="/img/font_podcherk.png" style="height:33px;width:auto" title="œÓ‰˜ÂÍÌÛÚ˚È ¯ËÙÚ ˇ˜ÂÈÍË(-ÂÍ)"></a>                
+                    <a class="panel_action" id="font_bold" title="–ñ–∏—Ä–Ω—ã–π —à—Ä–∏—Ñ—Ç —è—á–µ–π–∫–∏(-–µ–∫)" font_name="font-weight" font_value="bold"><img src="/img/font_bold.png" style="height:33px;width:auto"title="–ñ–∏—Ä–Ω—ã–π —à—Ä–∏—Ñ—Ç —è—á–µ–π–∫–∏(-–µ–∫)"></a><a class="panel_action" id="font_kursiv" title="–®—Ä–∏—Ñ—Ç –∫—É—Ä—Å–∏–≤–æ–º —è—á–µ–π–∫–∏(-–µ–∫)" font_name="font-style" font_value="italic"><img src="/img/font_kursiv.png" style="height:33px;width:auto" title="–®—Ä–∏—Ñ—Ç –∫—É—Ä—Å–∏–≤–æ–º —è—á–µ–π–∫–∏(-–µ–∫)"></a><a class="panel_action" id="font_zacherk" title="–ó–∞—á–µ—Ä–∫–Ω—É—Ç—ã–π —à—Ä–∏—Ñ—Ç —è—á–µ–π–∫–∏(-–µ–∫)" font_name="text-decoration" font_value="line-through"><img src="/img/font_zacherk.png" style="height:33px;width:auto" title="–ó–∞—á–µ—Ä–∫–Ω—É—Ç—ã–π —à—Ä–∏—Ñ—Ç —è—á–µ–π–∫–∏(-–µ–∫)"></a><a class="panel_action" id="font_podcherk" title="–ü–æ–¥—á–µ—Ä–∫–Ω—É—Ç—ã–π —à—Ä–∏—Ñ—Ç —è—á–µ–π–∫–∏(-–µ–∫)" font_name="text-decoration" font_value="underline"><img src="/img/font_podcherk.png" style="height:33px;width:auto" title="–ü–æ–¥—á–µ—Ä–∫–Ω—É—Ç—ã–π —à—Ä–∏—Ñ—Ç —è—á–µ–π–∫–∏(-–µ–∫)"></a>                
                 </div>
                 <div class="div_action_one">
-                    <input id="font_color" value="#000000" title="»ÁÏÂÌËÚ¸ ˆ‚ÂÚ ¯ËÙÚ‡ ˇ˜ÂÈÍË(-ÂÍ)"><div id="font_color_ex" class="shestgran" title="Œ·‡ÁÂˆ ˆ‚ÂÚ ¯ËÙÚ‡ ˇ˜ÂÈÍË(-ÂÍ)"></div><button id="font_color_change" title="¬˚·‡Ú¸ ˆ‚ÂÚ ¯ËÙÚ‡ ˇ˜ÂÈÍË(-ÂÍ)">...</button>
+                    <input id="font_color" value="#000000" title="–ò–∑–º–µ–Ω–∏—Ç—å —Ü–≤–µ—Ç —à—Ä–∏—Ñ—Ç–∞ —è—á–µ–π–∫–∏(-–µ–∫)"><div id="font_color_ex" class="shestgran" title="–û–±—Ä–∞–∑–µ—Ü —Ü–≤–µ—Ç —à—Ä–∏—Ñ—Ç–∞ —è—á–µ–π–∫–∏(-–µ–∫)"></div><button id="font_color_change" title="–í—ã–±—Ä–∞—Ç—å —Ü–≤–µ—Ç —à—Ä–∏—Ñ—Ç–∞ —è—á–µ–π–∫–∏(-–µ–∫)">...</button>
                     <div id="Inline"></div>
                 </div>
                 <div class="div_action_one">
-                    <input id="td_color" value="#ffffff" title="»ÁÏÂÌËÚ¸ ˆ‚ÂÚ ˇ˜ÂÈÍË(-ÂÍ)"><div id="td_color_ex" class="shestgran_td" title="Œ·‡ÁÂˆ ˆ‚ÂÚ‡ ˇ˜ÂÈÍË(-ÂÍ)"></div><button id="td_color_change" title="¬˚·‡Ú¸ ˆ‚ÂÚ ˇ˜ÂÈÍË(-ÂÍ)">...</button>
+                    <input id="td_color" value="#ffffff" title="–ò–∑–º–µ–Ω–∏—Ç—å —Ü–≤–µ—Ç —è—á–µ–π–∫–∏(-–µ–∫)"><div id="td_color_ex" class="shestgran_td" title="–û–±—Ä–∞–∑–µ—Ü —Ü–≤–µ—Ç–∞ —è—á–µ–π–∫–∏(-–µ–∫)"></div><button id="td_color_change" title="–í—ã–±—Ä–∞—Ç—å —Ü–≤–µ—Ç —è—á–µ–π–∫–∏(-–µ–∫)">...</button>
                     <div id="Inline_td"></div>
                 </div>
                 <div class="div_action_one">
-                    w:<input id="td_width" value="150" type="number" title="»ÁÏÂÌËÚ¸ ¯ËËÌÛ ÒÚÓÎ·ˆ‡">h:<input id="td_height" value="28" type="number" title="»ÁÏÂÌËÚ¸ ‚˚ÒÓÚÛ ÒÚÓÍË">
+                    w:<input id="td_width" value="150" type="number" title="–ò–∑–º–µ–Ω–∏—Ç—å —à–∏—Ä–∏–Ω—É —Å—Ç–æ–ª–±—Ü–∞">h:<input id="td_height" value="28" type="number" title="–ò–∑–º–µ–Ω–∏—Ç—å –≤—ã—Å–æ—Ç—É —Å—Ç—Ä–æ–∫–∏">
                 </div> 
                 <div class="div_action_one">
-                    <a class="panel_action" id="sql_add" title="ƒÓ·‡‚ËÚ¸ SQL-Á‡ÔÓÒ ‚ ˇ˜ÂÈÍÛ"><img src="/img/sql-add.png" style="height:33px;width:auto" title="ƒÓ·‡‚ËÚ¸ SQL-Á‡ÔÓÒ ‚ ˇ˜ÂÈÍÛ"></a><a class="panel_action" id="olap_add" title="ƒÓ·‡‚ËÚ¸ olap-ÍÛ·"><img src="/img/olap_add.png" style="height:38px;width:auto" title="ƒÓ·‡‚ËÚ¸ olap-ÍÛ·"></a><a class="panel_action" id="but_xlsx_add" title="ƒÓ·‡‚ËÚ¸ ÍÌÓÔÍÛ ‚˚„ÛÁÍË ‚ XLSX"><img src="/img/UPLOAD-Excel.png" style="height:33px;width:auto" title="ƒÓ·‡‚ËÚ¸ ÍÌÓÔÍÛ ‚˚„ÛÁÍË ‚ XLSX"></a>                       
+                    <a class="panel_action" id="sql_add" title="–î–æ–±–∞–≤–∏—Ç—å SQL-–∑–∞–ø—Ä–æ—Å –≤ —è—á–µ–π–∫—É"><img src="/img/sql-add.png" style="height:33px;width:auto" title="–î–æ–±–∞–≤–∏—Ç—å SQL-–∑–∞–ø—Ä–æ—Å –≤ —è—á–µ–π–∫—É"></a><a class="panel_action" id="olap_add" title="–î–æ–±–∞–≤–∏—Ç—å olap-–∫—É–±"><img src="/img/olap_add.png" style="height:38px;width:auto" title="–î–æ–±–∞–≤–∏—Ç—å olap-–∫—É–±"></a><a class="panel_action" id="but_xlsx_add" title="–î–æ–±–∞–≤–∏—Ç—å –∫–Ω–æ–ø–∫—É –≤—ã–≥—Ä—É–∑–∫–∏ –≤ XLSX"><img src="/img/UPLOAD-Excel.png" style="height:33px;width:auto" title="–î–æ–±–∞–≤–∏—Ç—å –∫–Ω–æ–ø–∫—É –≤—ã–≥—Ä—É–∑–∫–∏ –≤ XLSX"></a>                       
                 </div>  
                 <div class="div_action_one">
-                    <a class="panel_action" id="img_add" title="ƒÓ·‡‚ËÚ¸ Í‡ÚËÌÍÛ ‚ ˇ˜ÂÈÍÛ"><img src="/img/insert_picture.png" style="height:27px;width:auto" title="ƒÓ·‡‚ËÚ¸ Í‡ÚËÌÍÛ ‚ ˇ˜ÂÈÍÛ"></a><a class="panel_action" id="input_add" title="ƒÓ·‡‚ËÚ¸ ÔÓÎÂ ‚‚Ó‰‡ ‚ ˇ˜ÂÈÍÛ" style="margin-left: 3px;"><img src="/img/input.png" style="height:27px;width:auto" title="ƒÓ·‡‚ËÚ¸ ÔÓÎÂ ‚‚Ó‰‡ ‚ ˇ˜ÂÈÍÛ"></a><a class="panel_action" id="select_add" title="ƒÓ·‡‚ËÚ¸ ‚˚Ô‡‰‡˛˘ËÈ ÒÔËÒÓÍ ‚ ˇ˜ÂÈÍÛ" style="margin-left: 3px;"><img src="/img/select_add.png" style="height:27px;width:auto" title="ƒÓ·‡‚ËÚ¸ ‚˚Ô‡‰‡˛˘ËÈ ÒÔËÒÓÍ ‚ ˇ˜ÂÈÍÛ"></a><a class="panel_action" id="in_modal_add" title="ƒÓ·‡‚ËÚ¸ ÔÓÎÂ Ò ‚˚ÁÓ‚ÓÏ ÏÓ‰‡Î¸ÌÓ„Ó ÓÍÌ‡ ‚ ˇ˜ÂÈÍÛ" style="margin-left: 3px;"><img src="/img/in_modal.png" style="height:27px;width:auto" title="ƒÓ·‡‚ËÚ¸ ÔÓÎÂ Ò ‚˚ÁÓ‚ÓÏ ÏÓ‰‡Î¸ÌÓ„Ó ÓÍÌ‡ ‚ ˇ˜ÂÈÍÛ"></a><a class="panel_action" id="panel_add" title="ƒÓ·‡‚ËÚ¸ Ô‡ÌÂÎ¸ ‚ÍÎ‡‰ÓÍ ‚ ˇ˜ÂÈÍË" style="margin-left: 3px;"><img src="/img/panel_tab.png" style="height:27px;width:auto" title="ƒÓ·‡‚ËÚ¸ Ô‡ÌÂÎ¸ ‚ÍÎ‡‰ÓÍ ‚ ˇ˜ÂÈÍË"></a>
+                    <a class="panel_action" id="img_add" title="–î–æ–±–∞–≤–∏—Ç—å –∫–∞—Ä—Ç–∏–Ω–∫—É –≤ —è—á–µ–π–∫—É"><img src="/img/insert_picture.png" style="height:27px;width:auto" title="–î–æ–±–∞–≤–∏—Ç—å –∫–∞—Ä—Ç–∏–Ω–∫—É –≤ —è—á–µ–π–∫—É"></a><a class="panel_action" id="input_add" title="–î–æ–±–∞–≤–∏—Ç—å –ø–æ–ª–µ –≤–≤–æ–¥–∞ –≤ —è—á–µ–π–∫—É" style="margin-left: 3px;"><img src="/img/input.png" style="height:27px;width:auto" title="–î–æ–±–∞–≤–∏—Ç—å –ø–æ–ª–µ –≤–≤–æ–¥–∞ –≤ —è—á–µ–π–∫—É"></a><a class="panel_action" id="select_add" title="–î–æ–±–∞–≤–∏—Ç—å –≤—ã–ø–∞–¥–∞—é—â–∏–π —Å–ø–∏—Å–æ–∫ –≤ —è—á–µ–π–∫—É" style="margin-left: 3px;"><img src="/img/select_add.png" style="height:27px;width:auto" title="–î–æ–±–∞–≤–∏—Ç—å –≤—ã–ø–∞–¥–∞—é—â–∏–π —Å–ø–∏—Å–æ–∫ –≤ —è—á–µ–π–∫—É"></a><a class="panel_action" id="in_modal_add" title="–î–æ–±–∞–≤–∏—Ç—å –ø–æ–ª–µ —Å –≤—ã–∑–æ–≤–æ–º –º–æ–¥–∞–ª—å–Ω–æ–≥–æ –æ–∫–Ω–∞ –≤ —è—á–µ–π–∫—É" style="margin-left: 3px;"><img src="/img/in_modal.png" style="height:27px;width:auto" title="–î–æ–±–∞–≤–∏—Ç—å –ø–æ–ª–µ —Å –≤—ã–∑–æ–≤–æ–º –º–æ–¥–∞–ª—å–Ω–æ–≥–æ –æ–∫–Ω–∞ –≤ —è—á–µ–π–∫—É"></a><a class="panel_action" id="panel_add" title="–î–æ–±–∞–≤–∏—Ç—å –ø–∞–Ω–µ–ª—å –≤–∫–ª–∞–¥–æ–∫ –≤ —è—á–µ–π–∫–∏" style="margin-left: 3px;"><img src="/img/panel_tab.png" style="height:27px;width:auto" title="–î–æ–±–∞–≤–∏—Ç—å –ø–∞–Ω–µ–ª—å –≤–∫–ª–∞–¥–æ–∫ –≤ —è—á–µ–π–∫–∏"></a>
                 </div>                
             </div>        
             <div class="no_panel">
                 <div id="div_name_rep">
-                    <input id="in_name_rep" type="text" placeholder="¬‚Â‰ËÚÂ Ì‡ËÏÂÌÓ‚‡ÌËÂ ÓÚ˜ÂÚ‡" style="width: 333px">
-                    <a class="settings" action_type="form_header" id="1"><img src="/img/settings.png" style="height:25px;width:auto"title="Õ‡ÒÚÓÈÍË"></a>                    
+                    <input id="in_name_rep" type="text" placeholder="–í–≤–µ–¥–∏—Ç–µ –Ω–∞–∏–º–µ–Ω–æ–≤–∞–Ω–∏–µ –æ—Ç—á–µ—Ç–∞" style="width: 333px">
+                    <a class="settings" action_type="form_header" id="1"><img src="/img/settings.png" style="height:25px;width:auto"title="–ù–∞—Å—Ç—Ä–æ–π–∫–∏"></a>                    
                     <div class="settings_group_panel_active" >                                                                                                
                    </div>
                     <?php 

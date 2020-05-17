@@ -1,4 +1,4 @@
-/*--Web-olap v1.0
+/*Web-olap v1.0
 Copyright 2020 Rassadnikov Evgeniy Alekseevich
 
 This file is part of Web-olap.
