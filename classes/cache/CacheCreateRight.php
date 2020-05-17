@@ -1,4 +1,5 @@
-<!--Web-olap v1.0
+<?php
+/*Web-olap v1.0
 Copyright 2020 Rassadnikov Evgeniy Alekseevich
 
 This file is part of Web-olap.
@@ -14,8 +15,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with Web-olap.  If not, see <https://www.gnu.org/licenses/>.-->
-<?php
+along with Web-olap.  If not, see <https://www.gnu.org/licenses/>.*/
 require_once(realpath('../get-data-func.php'));
 
 class CacheCreateRight
