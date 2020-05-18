@@ -97,7 +97,7 @@ along with Web-olap.  If not, see <https://www.gnu.org/licenses/>.-->
         <script src="/js/jquery.percentageloader-0.1.js"></script>
         <link rel="stylesheet" href="/css/jquery.percentageloader-0.1.css">
         
-        <title>РВК.Платформа</title>
+        <title>WEB-OLAP</title>
     </head>
     <body style="margin: 0;"> 
         <div id="toTop" > ^ Наверх </div>
