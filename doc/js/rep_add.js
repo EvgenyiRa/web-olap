@@ -2301,12 +2301,13 @@ $(document).ready(function(){
                     dataType:'json',
                     success: function(data){
                         //console.log(data);
-                        if (params['new']===1) {
-                            $(name_rep).after('<input type="hidden" id="in_rep_id" value="'+data.id_rep+'">');
-                        }
                         tab_obj.data=tab_obj_data_before;
                         $(in_action_value).trigger("after_save_form");
                         alert('Отчет успешно сохранен'); 
+                        if (params['new']===1) {
+                            //$(name_rep).after('<input type="hidden" id="in_rep_id" value="'+data.id_rep+'">');
+                            document.location.href = "/rep_add.php?id="+data.id_rep;
+                        }                        
                         
                     },
                     error: function(xhr, status, error) {
