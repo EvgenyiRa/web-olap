@@ -31,7 +31,7 @@ along with Web-olap.  If not, see <https://www.gnu.org/licenses/>.-->
         }             
     }    
 ?>
-?<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ru-RU">
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8; Cache-Control: no-cache"/>
