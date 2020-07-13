@@ -877,12 +877,16 @@ function calc_xlsx(tab_tr,pr_only_olap) {
             xml_list_one_row_merge=$(xml_list_one_row).sort(function(a, b) {
                 var a_r=$(a).attr('r'),b_r=$(b).attr('r')
                 var pr_sort=7;
-                if (a_r.length>b_r.length) {
+                if (a_r.length<b_r.length) {
                     pr_sort=-1;
+                }
+                else if  (a_r.length>b_r.length) {
+                    pr_sort=1;
                 }
                 else {
                     pr_sort=a_r.localeCompare(b_r);
                 }
+
                 return pr_sort;
             }); 
             xml_list_one_row='';

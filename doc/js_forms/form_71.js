@@ -23,7 +23,7 @@ $(document).ready(function(){
     
     $(".no_panel" ).on("after_build", "div.params_group[id=1]", function(e,params_group_clon) {
         $(this).find('input#BD').val('2018-07-01');
-        $(this).find('input#ED').val('2018-07-10');
+        $(this).find('input#ED').val('2018-07-03');
         var sel_er=$(this).find('select#ER'),
             sel_e=$(this).find('select#E');
         $(sel_er).find('option').attr('selected','selected');
