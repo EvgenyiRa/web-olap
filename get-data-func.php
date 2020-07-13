@@ -159,7 +159,7 @@ function getRowsDB_conn_beg($mass) {
     if (empty($tsql)) {
         $tsql=$mass['sql_true'];
     }
-    if ($mass['is_editor']) {
+    if (($mass['is_editor']) || ($mass['code_in']=='getJSONbySQL')) {
         $tsql=html_entity_decode($tsql,ENT_COMPAT|ENT_HTML401, 'UTF-8');
     }
     if ($mass['params_val']) {
@@ -2147,6 +2147,49 @@ function getPswrdSol($mass) {
     }    
     $h_password_e=one_sol_array($mass['password'],$sol);
     return json_encode(array('sol'=>$sol,'h_password'=>$h_password_e));
+}
+
+function getJSONbySQL($mass) {    
+    $beg=getRowsDB_conn_beg($mass);   
+    $dbt=db_type();
+    if ($dbt=='mssql') {
+        $getRows = sqlsrv_query($beg['$conn'], $beg['$tsql'],$beg['$params_val_true']); 								
+        if(sqlsrv_errors()!== false) {
+            if(sqlsrv_has_rows($getRows)) {  
+                while( $row = sqlsrv_fetch_array( $getRows, SQLSRV_FETCH_ASSOC)) {  
+                    $res[]=$row;
+                }  							
+            }
+        }
+        else {
+            $data.='Что-то пошло не так '.sqlsrv_errors();
+        }
+        sqlsrv_free_stmt($getRows);
+        sqlsrv_close($beg['$conn']);
+    }
+    elseif ($dbt=='ora') {
+        $stid = oci_parse($beg['$conn'], $beg['$tsql']);
+        if ($stid) {
+            ora_create_params($stid,$beg['$params_val_true']);
+            $r = oci_execute($stid);
+            if ($r) {
+                while ($row = oci_fetch_array($stid, OCI_ASSOC+OCI_RETURN_NULLS+OCI_RETURN_LOBS)) {
+                    $res[]=$row;
+                }
+            }
+            else {
+                $e = oci_error($stid);
+                $data.='Что-то пошло не так '.htmlentities($e['message'], ENT_QUOTES);
+            }
+            oci_free_statement($stid);
+        }
+        else {
+            $e = oci_error($beg['$conn']);
+            $data.='Что-то пошло не так '.htmlentities($e['message'], ENT_QUOTES);
+        }
+        oci_close($beg['$conn']);
+    }
+    return json_encode($res);
 }
 
 ?>

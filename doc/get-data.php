@@ -80,6 +80,13 @@ elseif (!empty($_SESSION['user_info'])) {
         CacheCreateRight::run();
         echo 'ok';
     }
+    elseif ($_POST['code_in']=='getJSONbySQL') {
+        echo getJSONbySQL($_POST);
+    } 
+    elseif ($_POST['code_in']=='getUserInfo') {
+        require_once(realpath('../classes/User.php'));
+        echo User::getUserInfo();
+    }
 }    
 
 
