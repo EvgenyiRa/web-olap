@@ -661,7 +661,9 @@ function one_str_design(id_t,rep_tab_tr,tr_str,olap_td_class1,olap_td_class2) {
     if ($(tr_str).find('[olap_td_class="'+olap_td_class1+'"]').length===1) {
         $(td_str_name_all).css('border-left','');
     }
-    if ($(tr_str).find('[olap_td_class="'+olap_td_class2+'"]').length>1) {
+    if ((($(tr_str).find('[olap_td_class="'+olap_td_class2+'"]').length>1)  & ($(td_str_name_all).length>0)
+        ) || (($(tr_str).find('[olap_td_class="'+olap_td_class2+'"]').length>2)  & ($(td_str_name_all).length===0))
+       ) {        
         $(tr_str).find('td[olap_tab_id='+id_t+']:last').remove();
         td_val_name_all=$(tr_str).find('td[olap_tab_id='+id_t+']:last');
     }
@@ -1738,7 +1740,9 @@ $(document).ready(function() {
             params['code_in']='save_md_str';
             params['sql_true']=sql_editor;
             params['sql']=params['sql_true'];
-            $(sql_value_v).html(sql_editor_encode);            
+            //$(sql_value_v).html(sql_editor_encode);  
+            //почему-то иногда обрезает код эдитора если через html, надо в остальных местах поправить, пока тестируем
+            $(sql_value_v).text(sql_editor_encode); 
             params['tab_id']=id_t;        
             //формируем таблицу с параметрами
             var params_r=param_create(params['sql_true']);
@@ -1756,7 +1760,7 @@ $(document).ready(function() {
                 success: function(html){
     //                console.log(html); 
                     function upd_str_par(html) {
-                        var tek_param=$(html).filter('.params');
+                        var tek_param=$(html).find('div.params.d-table');
                         if ($(md_so).length>0) {
                             var pr_destroy_par=false,
                                 md_pram=$(md).find('.params.d-table');
@@ -2710,7 +2714,9 @@ $(document).ready(function() {
             parend_td=$(gp).closest('td'),
             parend_tr=$(parend_td).closest('tr'),
             parend_td_mass_index=$(parend_td).attr('id').split('-'),
-            begin_tab_td=$(parend_td).closest('tr').next().find('#'+parend_td_mass_index[0]+'-'+(Number(parend_td_mass_index[1])+1));
+            //удаляем старые метки
+            begin_tab_td=$(table_tag_v).find('td[begin_tab_td='+id_t+']').removeAttr('begin_tab_td');
+        begin_tab_td=$(parend_td).closest('tr').next().find('#'+parend_td_mass_index[0]+'-'+(Number(parend_td_mass_index[1])+1));
         $(begin_tab_td).attr('begin_tab_td',id_t);
         params['code_in']='create_tab';
         //console.log('ura');
@@ -2767,8 +2773,8 @@ $(document).ready(function() {
         var params_r=param_create(params['sql_true'],md,params_group),
             params_val=new Object();
         
-        if ($(params_group).find('.in_param_val').length>0) {            
-            var params_r_da=params_r['params_olap'];
+        if ($(params_group).find('.in_param_val').length>0) { 
+            var params_r_da=params_r['params_olap']
             for (var key in params_r_da) {
                 var param_one=$(params_group).find('.in_param_val[id="'+params_r_da[key]+'"]');
                 if (db_type=='mssql') {            
@@ -2800,7 +2806,7 @@ $(document).ready(function() {
                             params_val[key]=par_un_olap_one_v;
                         }
                         else if (db_type=='ora'){
-                            params_val[':'+params_r_da[key]]=par_un_olap_one_v;
+                            params_val[':'+params_r['params_unolap'][key]]=par_un_olap_one_v;
                         } 
                     }
                 }
@@ -3939,8 +3945,15 @@ $(document).ready(function() {
                                     $('#my').jexcel('updateSelection', begin_tab_td, begin_tab_td, 1); 
                                 } 
                                 else {  
-                                    tab_before_olap_tr_true=$(table_tag_v).find('tr[olap_tr_class_'+id_t+']')
-                                    $('#my').jexcel ('deleteRow',($(begin_tab_td).closest('tr').index()) ,$(tab_before_olap_tr_true).length,{not_log:true});
+                                    tab_before_olap_tr_true=$(table_tag_v).find('tr[olap_tr_class_'+id_t+']');
+                                    var count_del;
+                                    if ((pr_insert) || (pr_del)) {
+                                        count_del=$(data_tab_html_tr).length;
+                                    }
+                                    else {
+                                        count_del=$(tab_before_olap_tr_true).length;
+                                    }
+                                    $('#my').jexcel ('deleteRow',($(begin_tab_td).closest('tr').index()) ,count_del,{not_log:true});
                                     pr_tab_before=false;
                                 }                                
 
