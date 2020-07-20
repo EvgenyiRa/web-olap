@@ -56,7 +56,7 @@ var methods = {
             // ID of the table
             tableId:null,
             // Filename
-            csvFileName:'web-olap',
+            csvFileName:'WEB-OLAP',
             // Disable corner selection
             selectionCopy:true,
             // Allow Overflow
@@ -64,7 +64,7 @@ var methods = {
             // Allow Overflow
             tableHeight:'300px',
             // About message
-            about:'web olap\\nVersion 1.0\\nAuthor: Evgeniy Alekseevich Rassadnikov <tryampampam@mail.ru>\\nWebsite: https://web-olap.ru',
+            about:'web olap\\nVersion 1.0\\nAuthor: Evgeniy Alekseevich Rassadnikov <tryampampam@mail.ru>\\nWebsite: https://WEB-OLAP.ru',
             
             //текущие выделенные ячейки
             active_cells: []
