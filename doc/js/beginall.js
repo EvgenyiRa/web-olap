@@ -1760,7 +1760,11 @@ $(document).ready(function() {
                 success: function(html){
     //                console.log(html); 
                     function upd_str_par(html) {
-                        var tek_param=$(html).find('div.params.d-table');
+                        var tek_param=$(html).filter('div.params.d-table');
+                        if ($(tek_param).length===0) {
+                            //может приходить и так и так, проверяем оба случая
+                            tek_param=$(html).find('div.params.d-table');
+                        }
                         if ($(md_so).length>0) {
                             var pr_destroy_par=false,
                                 md_pram=$(md).find('.params.d-table');

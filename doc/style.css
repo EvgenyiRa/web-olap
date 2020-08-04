@@ -926,7 +926,7 @@ button.olap_taa_but_in_modal {
 }
 
 input.input_add {
-    width: 99% !important;
+    width: calc(100% - 8px) !important;
     padding: 0 1% !important;
 }
 
