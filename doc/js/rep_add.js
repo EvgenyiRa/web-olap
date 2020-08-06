@@ -314,6 +314,8 @@ function calc_xlsx(tab_tr,pr_only_olap) {
     var mass_index_cols=[],mass_index_rows=[]/*,mass_left_cols=[]*/;
     var table_all=$(table_all_tag);
     var xml_list_top_cols='';
+    var //символ перехода на новую строку, надо заменить
+        s_dn=String.fromCharCode(10);
     $(table_all).find('thead:first tr:last td:gt(0)').each(function(i,elem) {
         var tek_index=$(elem).index();
         mass_index_cols[tek_index]=/*$(elem).text()*/getColumnName(tek_index);                
@@ -504,9 +506,7 @@ function calc_xlsx(tab_tr,pr_only_olap) {
         var elem,
             tek_index_row_oo,
             td_elem,
-            tek_height,
-            //символ перехода на новую строку, надо заменить
-            s_dn=String.fromCharCode(10);            
+            tek_height;            
         if (pr_only_olap) {
             tek_index_row_oo=i;
             td_style[tek_index_row_oo]={};
