@@ -504,7 +504,9 @@ function calc_xlsx(tab_tr,pr_only_olap) {
         var elem,
             tek_index_row_oo,
             td_elem,
-            tek_height;            
+            tek_height,
+            //символ перехода на новую строку, надо заменить
+            s_dn=String.fromCharCode(10);            
         if (pr_only_olap) {
             tek_index_row_oo=i;
             td_style[tek_index_row_oo]={};
@@ -813,7 +815,7 @@ function calc_xlsx(tab_tr,pr_only_olap) {
                 if (tek_text!='') {
                     num_v+=1;
                     xml_list_one_row+='<c r="'+mass_index_cols[tek_index_col]+String(tek_index_row+1)+'" t="s" s="'+tek_style+'"><v>'+num_v+'</v></c>';                
-                    xml_list3+='<si><t>'+HtmlEncode(tek_text)+'</t></si>';
+                    xml_list3+='<si><t>'+HtmlEncode(tek_text.split(s_dn).join(""))+'</t></si>';
                 }
                 else {
                     xml_list_one_row+='<c r="'+mass_index_cols[tek_index_col]+String(tek_index_row+1)+'" s="'+tek_style+'"></c>';
