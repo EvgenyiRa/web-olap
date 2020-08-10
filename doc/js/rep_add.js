@@ -4653,8 +4653,13 @@ $(document).ready(function(){
                                             }
                                         }
                                         else {
-                                            tek_val=$(tek_in).val();  
-                                        }    
+                                            if ($(tek_in).attr('type_v')=='number') {
+                                                tek_val=$(tek_in).val();                                             
+                                            }
+                                            else {
+                                                tek_val="'"+$(tek_in).val()+"'";
+                                            }
+                                        }   
                                         check_null(params,tek_in,tek_val,name_v);
                                         if (params['pr_ok']) {
                                             params['sql']=params['sql'].split(':'+params_r_da[key]).join(tek_val);
