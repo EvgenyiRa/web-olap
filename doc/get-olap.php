@@ -111,9 +111,12 @@ $mass=$_POST;
                 elseif ($dbt=='ora') {
                     $params_val_true=$params_val;
                 }
-                $data['$params_val']= json_encode($params_val);
-                $data['$params_val_true']= json_encode($params_val_true);
+                $data['$params_val']= json_encode($params_val);                
             } 
+            else {
+                $params_val_true= array();
+            }
+            $data['$params_val_true']= json_encode($params_val_true);
             $conn=conndb();
             if ($dbt=='mssql') {
                 $type_decode=meta_var();
@@ -130,7 +133,7 @@ $mass=$_POST;
                 $tableDefPage=get_tableDefPage();
                 $data['tableDefPage']=$tableDefPage;
                 if ($dbt=='mssql') {
-                    $getRows = sqlsrv_query($conn, $tsql); 								
+                    $getRows = sqlsrv_query($conn, $tsql,$params_val_true); 								
                     if(sqlsrv_has_rows($getRows)) {  
                         $rowCount = sqlsrv_num_rows($getRows);  
                         while( $row = sqlsrv_fetch_array( $getRows, SQLSRV_FETCH_ASSOC)) {  

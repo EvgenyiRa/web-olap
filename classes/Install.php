@@ -39,9 +39,13 @@
                                                 $result.="Данные успешно инициализированы. ";
                                                 oci_free_statement($stid);
                                                 //Обновление кэша
-                                                CacheCreateCommon::remove();
+                                                /*CacheCreateCommon::remove();
                                                 CacheCreateCommon::run();
-                                                $result.="Кэш создан.";
+                                                 Не ведем в БД, сразу файл*/
+                                                require_once(__DIR__.'/cache/CacheCreateRight.php');
+                                                CacheCreateRight::remove();
+                                                CacheCreateRight::run();
+                                                $result.="Кэш создан.";                                                
                                             }
                                             else {
                                                 $e = oci_error($stid);
@@ -80,7 +84,38 @@
                     oci_close($conn);
                 }
                 elseif ($dbt=='mssql') {
-
+                    $tsql="SET NOCOUNT ON;SET DATEFORMAT YMD; "
+                        . "SELECT ISNULL(object_id('REP_DATA'),-777) OBJ_ID;";
+                    $getRows = sqlsrv_query($conn, $tsql); 								
+                    if(sqlsrv_has_rows($getRows)) {  
+                        $row = sqlsrv_fetch_array($getRows, SQLSRV_FETCH_ASSOC);
+                        sqlsrv_free_stmt($getRows);                    
+                        if ($row['OBJ_ID']==-777) {
+                            $tsql=file_get_contents('../doc/sql/mssql/createtable.sql');
+                            $stmt=sqlsrv_prepare($conn, $tsql);					 
+                            if (sqlsrv_execute($stmt)) {  
+                                $result="Таблицы успешно созданы. ";
+                                $result.="Данные успешно инициализированы. "; 
+                                require_once(__DIR__.'/cache/CacheCreateRight.php');
+                                CacheCreateRight::remove();
+                                CacheCreateRight::run();
+                                $result.="Кэш создан.";                                                
+                            }  
+                            else {  
+								$m_err=sqlsrv_errors();
+                                $result="Error in executing statement.\n";
+							    print_r($m_err);
+                            }  
+                            sqlsrv_free_stmt($stmt); 
+                        }
+                        else {
+                            $result='Акстись, все уже установлено ';
+                        }
+                    }  
+                    else {
+                        $result='Что-то пошло не так '.sqlsrv_errors();
+                    }
+                    sqlsrv_close($conn);
                 }
             }
             else {
@@ -193,4 +228,3 @@ class FormValue".$row['ID']."
             return $result;
         }
     }
-
