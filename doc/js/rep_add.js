@@ -309,7 +309,355 @@ function calc_xlsx(tab_tr,pr_only_olap) {
         style_default_xml='<xf numFmtId="0" fontId="1" fillId="0" borderId="0" xfId="0" applyFont="1" applyAlignment="1">'+
                                     '<alignment horizontal="center" vertical="center" wrapText="1"/>'+
                                  '</xf>',                      
-        font_default_num=1,style_default=1,fill_default_num=1,fill_default_num_true=0,border_default_num=0,border_merge_row=[];
+        font_default_num=1,style_default=1,fill_default_num=1,fill_default_num_true=0,border_default_num=0,border_merge_row=[],
+        calc_mass_border_mass=[];
+
+    //если присутствует пагинатор (2D-режим), то работаем над клоном, в который подгружаем все недостающие страницы
+    var table_tag_v=$(table_tag),
+        mass_paginator=$(tab_tr).find('td div[id="group_tab"] div.page_panel');
+    $(tab_tr).each(function(i,elem_tr) {
+        $(elem_tr).attr('xlsx_height',parseFloat($(elem_tr).height())/1.27);
+        
+        var elem,
+            tek_index_row_oo,
+            td_elem,
+            tek_height;            
+        if (pr_only_olap) {
+            tek_index_row_oo=i;
+            td_style[tek_index_row_oo]={};
+            elem=$(table_tag_v).find('tr[id="'+$(elem_tr).attr('id')+'"]');
+            td_height[tek_index_row_oo]=tek_height;
+            td_elem=$(elem).find('td[olap_tab_id]');
+        }
+        else {
+            elem=elem_tr;
+            td_elem=$(elem).find('td:gt(0)');
+        }
+        calc_mass_border_mass[i]=[];
+        $(td_elem).each(function(i2,elem2) {
+            //рассчитываем стиль и сохраняем в атрибут номер стиля: при выгрузке с наличием пагинатора
+            //смотрим фонты
+            var tek_font=$(elem2).css('font-family')+$(elem2).css('font-size')+$(elem2).css('color')+$(elem2).css('font-weight')+$(elem2).css('font-style')+$(elem2).css('text-decoration');
+            var tek_font_num=font_default_num;
+            var pr_new_style=false;
+            var pr_ex_font=false;
+            //console.log(tek_font);
+            if (font_default!=tek_font) {
+                //font_default
+                if (mass_font.length>0) {
+                    pr_ex_font=false;
+                    mass_font.forEach(function(element, index) {
+                        if (element==tek_font) {
+                            tek_font_num=index+font_default_num+1;
+                            pr_ex_font=true;
+                            return false;
+                        }    
+                    });
+                    if (!pr_ex_font) {
+                        pr_new_style=true;
+                        mass_font.push(tek_font);
+                        tek_font_num=mass_font.length+font_default_num;
+                    }
+                }
+                else {
+                    pr_new_style=true;
+                    mass_font.push(tek_font);
+                    tek_font_num=mass_font.length+font_default_num;
+                }
+            }
+            else {
+                pr_ex_font=true;
+            }
+            if (!pr_ex_font) {
+                count_font+=1;
+                var font_color=$(elem2).css('color');
+                if (!!!font_color) {
+                    font_color='000000';
+                }
+                if (font_color.indexOf('rgb')>-1) {
+                    font_color=getHexRGBColor(font_color);
+                }
+                var font_family=$(elem2).css('font-family').replace(/\"/g, '')
+                calc_font+='<font>';
+                if ($(elem2).hasClass('font_bold')) {
+                    calc_font+= '<b />';
+                }
+                if ($(elem2).css('font-style')=='italic') {
+                    calc_font+= '<i />';
+                }
+                if ($(elem2).hasClass('font_podcherk')) {
+                    calc_font+= '<u />';
+                }
+                else if ($(elem2).hasClass('font_zacherk')) {
+                    calc_font+= '<u />';
+                }
+                calc_font+=     '<sz val="'+parseInt($(elem2).css('font-size'))+'" />'+
+                                '<color rgb="'+font_color+'" />'+
+                                '<name val="'+font_family+'" />'+
+                                '<family val="1" />'+
+                                '<charset val="204" />'+
+                            '</font>';
+            }
+
+            //заливка
+            var pr_ex_fill=false,
+                tek_fill=$(elem2).css('background'),
+                tek_fill_num=fill_default_num_true;
+            //console.log(tek_fill);
+            if (fill_default!=tek_fill) {
+                //font_default
+                if (mass_fill.length>0) {
+                    pr_ex_fill=false;
+                    mass_fill.forEach(function(element, index) {
+                        if (element==tek_fill) {
+                            tek_fill_num=index+fill_default_num+1;
+                            pr_ex_fill=true;
+                            return false;
+                        }    
+                    });
+                    if (!pr_ex_fill) {
+                        pr_new_style=true;
+                        mass_fill.push(tek_fill);
+                        tek_fill_num=mass_fill.length+fill_default_num;
+                    }
+                }
+                else {
+                    pr_new_style=true;
+                    mass_fill.push(tek_fill);
+                    tek_fill_num=mass_fill.length+fill_default_num;
+                }
+            }
+            else {
+                pr_ex_fill=true;
+            }
+            if (!pr_ex_fill) {
+                count_fill+=1;
+                var td_color;
+                td_color=tek_fill;
+                if (!!!td_color) {
+                    td_color='ffffff';
+                }
+                if (td_color.indexOf('none repeat')>-1) {
+                    td_color=td_color.substring(0,td_color.indexOf(')')+1);
+                }  
+                //console.log(td_color);
+                if (td_color.indexOf('rgb')>-1) {
+                    td_color=getHexRGBColor(td_color);
+                }
+
+                calc_fill+='<fill>'+
+                                '<patternFill patternType="solid">'+
+                                    '<fgColor rgb="'+td_color+'" />'+
+                                    '<bgColor rgb="'+td_color+'" />'+
+                                '</patternFill>'+
+                            '</fill>';      
+            }
+
+            //рамки
+            var calc_mass_border=get_calc_border(elem2,pr_new_style,border_default_num); 
+            pr_new_style=calc_mass_border['pr_new_style_f'];
+            var tek_border_num=calc_mass_border['tek_border_num'];
+            if (!calc_mass_border['pr_ex_border']) {
+                count_border+=1;                                                                                               
+                calc_border+=calc_mass_border['tek_border'];                                                   
+            }                    
+
+
+            var tek_style=style_default;
+            var ex_el;
+            var text_align=$(elem2).css('text-align');
+            var vertical_align=$(elem2).css('vertical-align');
+            if ((vertical_align=='middle') || (vertical_align=='')) {
+                vertical_align='center';
+            } 
+            if ((text_align=='-webkit-center') || (text_align=='')) {
+                text_align='center';
+            }    
+            if (pr_new_style) {
+                count_style+=1;
+                tek_style=count_style-1;
+                calc_style+='<xf numFmtId="0" fontId="'+tek_font_num+'" fillId="'+tek_fill_num+'" borderId="'+tek_border_num+'" xfId="0" applyFont="1" applyBorder="1" applyAlignment="1">'+
+                                '<alignment horizontal="'+text_align+'" vertical="'+vertical_align+'" wrapText="1"/>'+
+                             '</xf>';
+            }
+            else {
+                //проверяем наличие комбинации из фонта, заливки и рамок
+                ex_el=$(style_default_xml).filter('[fontId="'+tek_font_num+'"][fillId="'+tek_fill_num+'"][borderId="'+tek_border_num+'"]').find('alignment[horizontal="'+text_align+'"][vertical="'+vertical_align+'"]').first();
+                if ($(ex_el).length==0) {
+                    ex_el=$(calc_style).filter('[fontId="'+tek_font_num+'"][fillId="'+tek_fill_num+'"][borderId="'+tek_border_num+'"]').find('alignment[horizontal="'+text_align+'"][vertical="'+vertical_align+'"]').first();
+                    if ($(ex_el).length!=0) {
+                        tek_style=$(ex_el).closest('xf').index()+style_default+1;
+                    }    
+                    else {
+                        calc_style+='<xf numFmtId="0" fontId="'+tek_font_num+'" fillId="'+tek_fill_num+'" borderId="'+tek_border_num+'" xfId="0" applyFont="1" applyBorder="1" applyAlignment="1">'+
+                                        '<alignment horizontal="'+text_align+'" vertical="'+vertical_align+'" wrapText="1"/>'+
+                                     '</xf>';
+                        count_style+=1;
+                        tek_style=count_style-1;
+                    }
+                }                        
+            }
+            calc_mass_border_mass[i,i2]=calc_mass_border;
+            $(elem2).attr('xlsx_style_num',tek_style)
+                    .attr('xlsx_border',String(i)+'-'+String(i2));
+        });    
+    });
+    
+    //var tab_tr=$(table_tag).find('tr');
+    
+    if (($(mass_paginator).length>0) && (!pr_only_olap)) {
+        tab_tr=$(tab_tr).clone();
+        $(mass_paginator).each(function(i,elem) {
+            //запоминаем последнюю,предпоследнюю,первую строки таблицы чтобы корректно построить стили и классы
+            var paginGp=$(elem).closest('div[id="group_tab"]'),
+                olap_design=$(paginGp).find('div.table_save_design_val[id='+$(elem).attr('id')+']').text().trim(),
+                paginLastTrFirst,
+                paginLastTrLast,
+                paginLastTrPreLast,
+                paginTrAll=$(tab_tr).filter('[olap_tr_class_'+$(elem).attr('id')+'="tr_tab"]'),
+                paginBegIndex=$(paginTrAll).first().find('td[olap_tab_id="'+$(elem).attr('id')+'"]:first').attr('id').split('-');
+            if (olap_design=='') {
+                olap_design=paginTrAll;
+                paginLastTrFirst=$(olap_design).first().clone();
+                paginLastTrLast=$(olap_design).last().clone();
+                paginLastTrPreLast=$(olap_design).last().prev().clone();
+            
+            }
+            else {
+                olap_design=$(LZString.decompressFromUTF16(olap_design)).filter('[olap_tr_class_'+$(elem).attr('id')+'="tr_tab"]');
+                //проставляем атрибуты xlsx заданные выше
+                paginLastTrFirst=$(olap_design).first().attr('xlsx_height',$(paginTrAll).first().attr('xlsx_height'));
+                paginLastTrLast=$(olap_design).last().attr('xlsx_height',$(paginTrAll).last().attr('xlsx_height'));
+                paginLastTrPreLast=$(olap_design).last().prev().attr('xlsx_height',$(paginTrAll).last().prev().attr('xlsx_height'));
+                var paginTekTd=$(paginTrAll).first().find('td:gt(0)').first();            
+                $(paginLastTrFirst).find('td:gt(0)').each(function(i2,elem2) {
+                    $(elem2).attr('xlsx_style_num',$(paginTekTd).attr('xlsx_style_num'))
+                            .attr('xlsx_border',$(paginTekTd).attr('xlsx_border'));
+                    paginTekTd=$(paginTekTd).next();
+                });
+                var paginTekTd=$(paginTrAll).last().find('td:gt(0)').first();            
+                $(paginLastTrLast).find('td:gt(0)').each(function(i2,elem2) {
+                    $(elem2).attr('xlsx_style_num',$(paginTekTd).attr('xlsx_style_num'))
+                            .attr('xlsx_border',$(paginTekTd).attr('xlsx_border'));
+                    paginTekTd=$(paginTekTd).next();
+                });
+                var paginTekTd=$(paginTrAll).last().prev().find('td:gt(0)').first();            
+                $(paginLastTrPreLast).find('td:gt(0)').each(function(i2,elem2) {
+                    $(elem2).attr('xlsx_style_num',$(paginTekTd).attr('xlsx_style_num'))
+                            .attr('xlsx_border',$(paginTekTd).attr('xlsx_border'));
+                    paginTekTd=$(paginTekTd).next();
+                });
+                
+            }            
+            //удаляем классы разметки и айди у заготовок
+            $(paginLastTrFirst).find('td[olap_tab_id="'+$(elem).attr('id')+'"]').each(function(i2,elem2) {
+                var mass_index=$(elem2).attr('id').split('-');
+                $(elem2).attr('id',mass_index[0]).removeClass('c'+mass_index[0]+' r'+mass_index[1]);
+            }); 
+            $(paginLastTrLast).find('td[olap_tab_id="'+$(elem).attr('id')+'"]').each(function(i2,elem2) {
+                var mass_index=$(elem2).attr('id').split('-');
+                $(elem2).attr('id',mass_index[0]).removeClass('c'+mass_index[0]+' r'+mass_index[1]);
+            });
+            $(paginLastTrPreLast).find('td[olap_tab_id="'+$(elem).attr('id')+'"]').each(function(i2,elem2) {
+                var mass_index=$(elem2).attr('id').split('-');
+                $(elem2).attr('id',mass_index[0]).removeClass('c'+mass_index[0]+' r'+mass_index[1]);
+            });
+            //запрашиваем все страницы (включая текущую), чтобы корректно построить общую таблицу
+            var paginTrNew=$(document.createDocumentFragment()),
+                paginPageControl=$(elem).find('a.page_control[id!="prev"][id!="next"]'),
+                in_rep_id=$('input#in_rep_id').val(),
+                paginTekNumStr=+paginBegIndex[1];                
+            $(paginPageControl).each(function(i2,elem2) {
+                var params={};
+                params['get_page']=$(elem2).attr('id');
+                params['pr_2D']=7;
+                params['in_rep_id']=in_rep_id;
+                params['tab_id']=$(elem).attr('id');
+                if ($(elem).find('img').length>0) {
+                    //передаем максимальную страницу, если ещё не подгрузилось            
+                    params['max_page']=$(paginPageControl).last().text();
+                }
+                $.ajax({
+                    type: "POST",
+                    url: "/get-olap.php",
+                    data: params,
+                    dataType:'json',
+                    async: false,                            
+                    success: function(data){
+                        $(data.tab_html).find('tr.tr_tab').each(function(i3,elem3) {                            
+                            var trNew=$(paginLastTrPreLast).clone().attr('id','row-'+String(paginTekNumStr)),
+                                //paginTekTd=$(trNew).find('td[olap_tab_id="'+$(elem).attr('id')+'"]').first(),
+                                paginTekNumCol=+paginBegIndex[0];                                   
+                            $(elem3).find('td').each(function(i4,elem4) {
+                                $(trNew).find('td[olap_td_index="'+i4+'"]')
+                                    .html($(elem4).html())
+                                    .attr('id',String(paginTekNumCol)+'-'+String(paginTekNumStr))
+                                    //.addClass('r'+String(paginTekNumStr)+' c'+String(paginTekNumCol));
+                                //paginTekTd=$(paginTekTd).next(); 
+                                ++paginTekNumCol;
+                            });
+                            $(paginTrNew).append(trNew);
+                            ++paginTekNumStr;
+                        });
+                    },
+                    error: function(xhr, status, error) {
+                        alert('Запуск оказался неудачным.');
+                        console.log(xhr.responseText + '|\n' + status + '|\n' +error);
+                    }
+                });    
+            });
+            //console.log('paginTrNew',paginTrNew);
+            var index_del;
+            //в клоне+фрагмент не так просто удалять и добавлять новые элементы, но работает быстрее засчет того, что элементы в браузере не перерисовываются
+            $(tab_tr).each(function(i2,elem2) {
+                if ($(elem2).attr('id')===$(paginTrAll).first().attr('id')) {
+                    index_del=i2;
+                    return false;
+                }
+            });
+            tab_tr.splice(index_del, $(paginTrAll).length);
+            var last_i2;
+            $(paginTrNew[0].children).each(function(i2,elem2) {
+                tab_tr.splice((index_del+i2), 0, elem2); 
+                last_i2=i2;
+            });
+            
+            //для первой и последней строки обновляем стили
+            var paginTekTd=$(paginLastTrFirst).find('td[olap_tab_id="'+$(elem).attr('id')+'"]').first();            
+            $(tab_tr[index_del]).find('td[olap_tab_id="'+$(elem).attr('id')+'"]').each(function(i2,elem2) {
+                $(elem2)
+                    .attr('style',$(paginTekTd).attr('style'))
+                    .addClass($(paginTekTd).attr('class'));
+                paginTekTd=$(paginTekTd).next();
+            })
+            paginTekTd=$(paginLastTrLast).find('td[olap_tab_id="'+$(elem).attr('id')+'"]').first();            
+            $(tab_tr[index_del+last_i2]).find('td[olap_tab_id="'+$(elem).attr('id')+'"]').each(function(i2,elem2) {
+                $(elem2)
+                    .attr('style',$(paginTekTd).attr('style'))
+                    .addClass($(paginTekTd).attr('class'));
+                paginTekTd=$(paginTekTd).next();
+            })
+            
+            //обновяем индексы для строк ниже таблицы
+            for (var i = (index_del+last_i2+1); i < $(tab_tr).length; i++) {
+                var tr_last=tab_tr[i],
+                    tr_index,
+                    tr_last_prev=tab_tr[i-1];
+                if ($(tr_last_prev).length>0) {
+                    tr_index=Number($(tr_last_prev).attr('id').split('-')[1])+1;
+                }
+                else {
+                    tr_index=0;
+                }
+                $(tr_last).attr('id','row-'+tr_index);
+                $(tr_last).find('td:not(.jexcel_label)').each(function(i,elem) {
+                    var coord = $(elem).prop('id').split('-');
+                    $(elem).removeClass('r'+coord[1]).addClass('r'+tr_index).attr('id',coord[0]+'-'+tr_index);                
+                });
+            }  
+
+        });
+    }    
         
     var mass_index_cols=[],mass_index_rows=[]/*,mass_left_cols=[]*/;
     var table_all=$(table_all_tag);
@@ -322,8 +670,7 @@ function calc_xlsx(tab_tr,pr_only_olap) {
         //mass_left_cols[$(elem).offset().left]=tek_index;
         xml_list_top_cols+='<col min="'+tek_index+'" max="'+tek_index+'" width="'+(parseFloat($(elem).width())/5)+'" customWidth="1"/>';                
     });
-    var table_tag_v=$(table_tag),
-        table_all_thead_td=$(table_all).find('thead tr:last td');    
+    var table_all_thead_td=$(table_all).find('thead tr:last td');    
     if (pr_only_olap) {
         xml_list_top_cols='';
         $(tab_tr).first().find('td[olap_tab_id]').each(function(i,elem) {
@@ -535,7 +882,7 @@ function calc_xlsx(tab_tr,pr_only_olap) {
         }
         else {
             elem=elem_tr;
-            tek_height=parseFloat($(elem).height())/1.27;            
+            tek_height=$(elem).attr('xlsx_height');            
             td_elem=$(elem).find('td:gt(0)');
         }
         var tek_index_row=Number($(elem).attr('id').split('-')[1]);            
@@ -583,175 +930,14 @@ function calc_xlsx(tab_tr,pr_only_olap) {
                     }
                 }
             }                
-
-            //рассчитываем стиль
-            //смотрим фонты
-            var tek_font=$(elem2).css('font-family')+$(elem2).css('font-size')+$(elem2).css('color')+$(elem2).css('font-weight')+$(elem2).css('font-style')+$(elem2).css('text-decoration');
-            var tek_font_num=font_default_num;
-            var pr_new_style=false;
-            var pr_ex_font=false;
-            //console.log(tek_font);
-            if (font_default!=tek_font) {
-                //font_default
-                if (mass_font.length>0) {
-                    pr_ex_font=false;
-                    mass_font.forEach(function(element, index) {
-                        if (element==tek_font) {
-                            tek_font_num=index+font_default_num+1;
-                            pr_ex_font=true;
-                            return false;
-                        }    
-                    });
-                    if (!pr_ex_font) {
-                        pr_new_style=true;
-                        mass_font.push(tek_font);
-                        tek_font_num=mass_font.length+font_default_num;
-                    }
-                }
-                else {
-                    pr_new_style=true;
-                    mass_font.push(tek_font);
-                    tek_font_num=mass_font.length+font_default_num;
-                }
-            }
-            else {
-                pr_ex_font=true;
-            }
-            if (!pr_ex_font) {
-                count_font+=1;
-                var font_color=$(elem2).css('color');
-                if (!!!font_color) {
-                    font_color='000000';
-                }
-                if (font_color.indexOf('rgb')>-1) {
-                    font_color=getHexRGBColor(font_color);
-                }
-                var font_family=$(elem2).css('font-family').replace(/\"/g, '')
-                calc_font+='<font>';
-                if ($(elem2).hasClass('font_bold')) {
-                    calc_font+= '<b />';
-                }
-                if ($(elem2).css('font-style')=='italic') {
-                    calc_font+= '<i />';
-                }
-                if ($(elem2).hasClass('font_podcherk')) {
-                    calc_font+= '<u />';
-                }
-                else if ($(elem2).hasClass('font_zacherk')) {
-                    calc_font+= '<u />';
-                }
-                calc_font+=     '<sz val="'+parseInt($(elem2).css('font-size'))+'" />'+
-                                '<color rgb="'+font_color+'" />'+
-                                '<name val="'+font_family+'" />'+
-                                '<family val="1" />'+
-                                '<charset val="204" />'+
-                            '</font>';
-            }
-
-            //заливка
-            var pr_ex_fill=false,
-                tek_fill=$(elem2).css('background'),
-                tek_fill_num=fill_default_num_true;
-            //console.log(tek_fill);
-            if (fill_default!=tek_fill) {
-                //font_default
-                if (mass_fill.length>0) {
-                    pr_ex_fill=false;
-                    mass_fill.forEach(function(element, index) {
-                        if (element==tek_fill) {
-                            tek_fill_num=index+fill_default_num+1;
-                            pr_ex_fill=true;
-                            return false;
-                        }    
-                    });
-                    if (!pr_ex_fill) {
-                        pr_new_style=true;
-                        mass_fill.push(tek_fill);
-                        tek_fill_num=mass_fill.length+fill_default_num;
-                    }
-                }
-                else {
-                    pr_new_style=true;
-                    mass_fill.push(tek_fill);
-                    tek_fill_num=mass_fill.length+fill_default_num;
-                }
-            }
-            else {
-                pr_ex_fill=true;
-            }
-            if (!pr_ex_fill) {
-                count_fill+=1;
-                var td_color;
-                td_color=tek_fill;
-                if (!!!td_color) {
-                    td_color='ffffff';
-                }
-                if (td_color.indexOf('none repeat')>-1) {
-                    td_color=td_color.substring(0,td_color.indexOf(')')+1);
-                }  
-                //console.log(td_color);
-                if (td_color.indexOf('rgb')>-1) {
-                    td_color=getHexRGBColor(td_color);
-                }
-
-                calc_fill+='<fill>'+
-                                '<patternFill patternType="solid">'+
-                                    '<fgColor rgb="'+td_color+'" />'+
-                                    '<bgColor rgb="'+td_color+'" />'+
-                                '</patternFill>'+
-                            '</fill>';      
-            }
-
-            //рамки
-            var calc_mass_border=get_calc_border(elem2,pr_new_style,border_default_num); 
-            pr_new_style=calc_mass_border['pr_new_style_f'];
-            var tek_border_num=calc_mass_border['tek_border_num'];
-            if (!calc_mass_border['pr_ex_border']) {
-                count_border+=1;                                                                                               
-                calc_border+=calc_mass_border['tek_border'];                                                   
-            }                    
-
-
-            var tek_style=style_default;
-            var ex_el;
-            var text_align=$(elem2).css('text-align');
-            var vertical_align=$(elem2).css('vertical-align');
-            if ((vertical_align=='middle') || (vertical_align=='')) {
-                vertical_align='center';
-            } 
-            if ((text_align=='-webkit-center') || (text_align=='')) {
-                text_align='center';
-            }    
-            if (pr_new_style) {
-                count_style+=1;
-                tek_style=count_style-1;
-                calc_style+='<xf numFmtId="0" fontId="'+tek_font_num+'" fillId="'+tek_fill_num+'" borderId="'+tek_border_num+'" xfId="0" applyFont="1" applyBorder="1" applyAlignment="1">'+
-                                '<alignment horizontal="'+text_align+'" vertical="'+vertical_align+'" wrapText="1"/>'+
-                             '</xf>';
-            }
-            else {
-                //проверяем наличие комбинации из фонта, заливки и рамок
-                ex_el=$(style_default_xml).filter('[fontId="'+tek_font_num+'"][fillId="'+tek_fill_num+'"][borderId="'+tek_border_num+'"]').find('alignment[horizontal="'+text_align+'"][vertical="'+vertical_align+'"]').first();
-                if ($(ex_el).length==0) {
-                    ex_el=$(calc_style).filter('[fontId="'+tek_font_num+'"][fillId="'+tek_fill_num+'"][borderId="'+tek_border_num+'"]').find('alignment[horizontal="'+text_align+'"][vertical="'+vertical_align+'"]').first();
-                    if ($(ex_el).length!=0) {
-                        tek_style=$(ex_el).closest('xf').index()+style_default+1;
-                    }    
-                    else {
-                        calc_style+='<xf numFmtId="0" fontId="'+tek_font_num+'" fillId="'+tek_fill_num+'" borderId="'+tek_border_num+'" xfId="0" applyFont="1" applyBorder="1" applyAlignment="1">'+
-                                        '<alignment horizontal="'+text_align+'" vertical="'+vertical_align+'" wrapText="1"/>'+
-                                     '</xf>';
-                        count_style+=1;
-                        tek_style=count_style-1;
-                    }
-                }                        
-            }
-
+            
 
             if (!!!mass_min_max_row[0]) {
                 mass_min_max_row[0]=tek_index_col;
             }
             mass_min_max_row[1]=tek_index_col;
+            
+            var tek_style=$(elem2).attr('xlsx_style_num');
             if (tek_text!=='') {
                 /*if ($(elem2).find('#group_tab').length>0) {
                     return true;
@@ -849,6 +1035,11 @@ function calc_xlsx(tab_tr,pr_only_olap) {
             }            
 
             //для корректной отрисовки рамок смерженных ячеек
+            if (!!!$(elem2).attr('xlsx_border')) {
+                console.log('no_xlsx_border',elem2);
+            }
+            var calc_mass_border_index=$(elem2).attr('xlsx_border').split('-'),
+                calc_mass_border=calc_mass_border_mass[calc_mass_border_index[0],calc_mass_border_index[1]];
             if ((tek_colspan>1) & (!((calc_mass_border['border_top_style_xlsx']=='thin') & ((calc_mass_border['border_top_color_hex']=='0000') || (calc_mass_border['border_top_color_hex']=='cccccc')))
                                     || !((calc_mass_border['border_bottom_style_xlsx']=='thin') & ((calc_mass_border['border_bottom_color_hex']=='0000') || (calc_mass_border['border_bottom_color_hex']=='cccccc')))
                                     || !((calc_mass_border['border_right_style_xlsx']=='thin') & ((calc_mass_border['border_right_color_hex']=='0000') || (calc_mass_border['border_right_color_hex']=='cccccc'))))) {
