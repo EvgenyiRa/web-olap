@@ -1,8 +1,26 @@
-<?php require_once(realpath('../get-data-func.php'));
+<?php 
+/*WEB-OLAP v1.0
+Copyright 2020 Rassadnikov Evgeniy Alekseevich
+
+This file is part of WEB-OLAP.
+
+WEB-OLAP is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+WEB-OLAP is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with WEB-OLAP.  If not, see <https://www.gnu.org/licenses/>.*/
+require_once(realpath('../get-data-func.php'));
 session_start();
 if (!$_SESSION['user_info']) {
     exit();
-} 
+}   
 /*ini_set('error_reporting', E_ALL);
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);*/
@@ -313,7 +331,6 @@ $mass=$_POST;
                 $tsql=substr($tsql, 0, -1);
                 $tsql.=")"; 
                 $tsql.=" INSERT INTO ".$tab_temp." ".$sql_true; 
-                //$data['tsql']=str_replace('↵','',html_entity_decode($tsql, ENT_COMPAT | ENT_HTML401, 'UTF-8'));            
                 $data['tsql']=$tsql;
 
                 $stmt=sqlsrv_prepare($conn, $tsql,$params_val_true);					 
@@ -333,7 +350,7 @@ $mass=$_POST;
                     $r = oci_execute($stid, OCI_DESCRIBE_ONLY);
                     if ($r) {
                         $ncols = oci_num_fields($stid);
-                        $mass_ns=array('TIMESTAMP','DATE','CLOB','LONG','BLOB','LONG RAW','RAW','XMLTYPE','UROWID');
+                        $mass_ns=array('TIMESTAMP','DATE','CLOB','LONG','BLOB','LONG RAW','RAW','XMLTYPE','UROWID','NUMBER');
                         for ($i = 1; $i <= $ncols; $i++) {
                             $fieldMetadata['Name']=oci_field_name($stid, $i);
                             $fieldMetadata['Type']=oci_field_type($stid, $i);
@@ -358,7 +375,7 @@ $mass=$_POST;
                             else {
                                 $tsql.=','."\r\n";
                             }
-                        } 
+                        }
                     }
                     else {
                         $e = oci_error($stid);

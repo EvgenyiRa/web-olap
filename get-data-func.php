@@ -1222,22 +1222,6 @@ function create_table_one_str($mass,$tab_str,$rows_unic_val,$tab_pok,$rows_unic_
     }
     foreach ($tab_val as $m) {
         $number = $rows_unic_val[$i][$m['sysname']]; 
-        if ($number=='.00') {
-            $number=0;
-        }
-        else {
-            $pos = strrpos($rows_unic_val[$i][$m['sysname']], '.'); // при необходимости заменить на просто strpos
-            if (($pos) || ($pos===0)) {
-                $number = substr($rows_unic_val[$i][$m['sysname']], 0, $pos + 1 + $precision);
-                $number[$pos]=',';
-                if ((!$number[$pos - 1]) & ($number[$pos - 1]!=='0')) {
-                    $number='0'.$number;
-                }
-                if ($number[$pos - 1]=='-') {
-                    $number='-0'.substr($number,$pos);
-                }
-            }
-        }    
         $data['tab_html'].='<td class="'.(($pr_itg) ? 'td_val_itog':'td_val_val').'" id="'.$m['sysname'].'">'.$number.'</td>';
     }
     return $data;
