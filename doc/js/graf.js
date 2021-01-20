@@ -332,8 +332,25 @@ $(document).ready(function() {
                             
                             //вычисляем максимумы/минимумы значений показателей                            
                             $(rep_tab).closest('tr').filter('tr[olap_tr_class_'+id_t+'="tr_tab"]').each(function(i,elem2) {
-                                var tek_txt=$(elem2).find('td:eq('+$(elem).index()+')').text().trim(),
-                                    tek_elem=parseFloat(tek_txt.replace(',','.'));                                                                  
+                                var tek_txt,
+                                    elInput=$(elem2).find('td:eq('+$(elem).index()+') input:not([type="hidden"])');
+                                if ($(elInput).length>0) {
+                                    if ($(elInput).attr('type')==='checkbox') {
+                                      if ($(elInput).prop('checked')) {
+                                          tek_txt='1';
+                                      }
+                                      else {
+                                          tek_txt='0';
+                                      }
+                                    }
+                                    else {
+                                        tek_txt=$(elInput).val();
+                                    }
+                                }
+                                else {
+                                  tek_txt=$(elem2).find('td:eq('+$(elem).index()+')').text().trim();
+                                }
+                                var tek_elem=parseFloat(tek_txt.replace(',','.'));
                                 //console.log(tek_elem);
                                 if ((!!!mass_max_zn_pok[$(elem).attr('olap_td_id')]) & (!isNaN(tek_elem))) {
                                     //console.log(tek_elem);
@@ -350,7 +367,7 @@ $(document).ready(function() {
                                     mass_min_zn_pok[$(elem).attr('olap_td_id')]=tek_elem;
                                 }  
                                 if ((tek_txt.length>0) & (isNaN(tek_elem))) {
-                                    mass_zn_tek.push(tek_txt);  
+                                    mass_zn_tek.push(tek_txt);
                                 }
                             });
                             //console.log(mass_zn_tek);
@@ -1626,8 +1643,25 @@ $(document).ready(function() {
                             //console.log(elem);
                             cube[i]=[];
                             $(elem).find('td[olap_td_class="td_val_val"]').each(function(i2,elem2) {
-                                var tek_txt=$(elem2).text().trim(),
-                                    tek_zn=parseFloat(tek_txt.replace(',','.')),
+                                var tek_txt,
+                                    elInput=$(elem2).find('input:not([type="hidden"])');
+                                if ($(elInput).length>0) {
+                                    if ($(elInput).attr('type')==='checkbox') {
+                                      if ($(elInput).prop('checked')) {
+                                          tek_txt='1';
+                                      }
+                                      else {
+                                          tek_txt='0';
+                                      }
+                                    }
+                                    else {
+                                        tek_txt=$(elInput).val();
+                                    }
+                                }
+                                else {
+                                  tek_txt=$(elem2).text().trim();
+                                }
+                                var tek_zn=parseFloat(tek_txt.replace(',','.')),
                                     height_max;
                                 if (!!mass_max_zn_pok[$(elem2).attr('olap_td_id')]) {   
                                     if (Math.abs(mass_max_zn_pok[$(elem2).attr('olap_td_id')])>Math.abs(mass_min_zn_pok[$(elem2).attr('olap_td_id')])) {
@@ -1638,25 +1672,22 @@ $(document).ready(function() {
                                     }
                                     if (height_max===0) {
                                         height_max=1;
-                                    } 
+                                    }
                                 }
                                 else {
                                     if ((mass_zn_tek.length>0) & (tek_txt.length>0)) {
                                         height_max=mass_zn_tek.length;
                                         tek_zn=mass_zn_tek.indexOf(tek_txt)+1;
-                                    }    
+                                    }
                                 }
-                                
+
                                 if (!isNaN(tek_zn)) {
-                                    //var height_cub=(tek_zn*(t_max_y-t_0_y-5))/(mass_max_zn_pok[$(elem2).attr('olap_td_id')]-mass_min_zn_pok[$(elem2).attr('olap_td_id')]);                                                                        
-                                    var height_cub=(tek_zn/height_max)*(t_max_y-t_0_y-5); 
-                                    /*console.log('height_max='+height_max+',tek_zn='+tek_zn+',tek_txt='+tek_txt);
-                                    console.log(mass_zn_tek);*/
+                                    var height_cub=(tek_zn/height_max)*(t_max_y-t_0_y-5);
                                     cube[i][i2]=new Object();
                                     cube[i][i2].value=tek_txt;
                                     cube[i][i2].height_cub=height_cub;
                                     cube[i][i2].pok_val=mass_pok[i2];
-                                    cube[i][i2].str_val=mass_str[i];                                                                        
+                                    cube[i][i2].str_val=mass_str[i];
                                 }
                             });
                         }); 
