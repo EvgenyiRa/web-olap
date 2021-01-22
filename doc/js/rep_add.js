@@ -315,6 +315,8 @@ function calc_xlsx(tab_tr,pr_only_olap) {
     //если присутствует пагинатор (2D-режим), то работаем над клоном, в который подгружаем все недостающие страницы
     var table_tag_v=$(table_tag),
         mass_paginator=$(tab_tr).find('td div[id="group_tab"] div.page_panel');
+    //для 2Д-режима при выгрузке только таблицы заполняем массив соответствия ячеек и стилей (достаточно 3 строки)
+    var td_style=[],td_height=[];    
     $(tab_tr).each(function(i,elem_tr) {
         $(elem_tr).attr('xlsx_height',parseFloat($(elem_tr).height())/1.27);
         
@@ -517,18 +519,27 @@ function calc_xlsx(tab_tr,pr_only_olap) {
                 paginTrAll=$(tab_tr).filter('[olap_tr_class_'+$(elem).attr('id')+'="tr_tab"]'),
                 paginBegIndex=$(paginTrAll).first().find('td[olap_tab_id="'+$(elem).attr('id')+'"]:first').attr('id').split('-');
             if (olap_design=='') {
-                olap_design=paginTrAll;
+                olap_design=$(paginTrAll).clone();
                 paginLastTrFirst=$(olap_design).first().clone();
                 paginLastTrLast=$(olap_design).last().clone();
-                paginLastTrPreLast=$(olap_design).last().prev().clone();
-            
+                if ($(paginTrAll).length>1) {
+                    paginLastTrPreLast=$(olap_design[olap_design.length-2]).clone();//не возможно обратиться к предыдщему элементу перед последним через $, хз почему, работаем напрямую с массивом          
+                }
+                else {
+                    paginLastTrPreLast=$(paginLastTrLast).clone();
+                }
             }
             else {
                 olap_design=$(LZString.decompressFromUTF16(olap_design)).filter('[olap_tr_class_'+$(elem).attr('id')+'="tr_tab"]');
                 //проставляем атрибуты xlsx заданные выше
                 paginLastTrFirst=$(olap_design).first().attr('xlsx_height',$(paginTrAll).first().attr('xlsx_height'));
                 paginLastTrLast=$(olap_design).last().attr('xlsx_height',$(paginTrAll).last().attr('xlsx_height'));
-                paginLastTrPreLast=$(olap_design).last().prev().attr('xlsx_height',$(paginTrAll).last().prev().attr('xlsx_height'));
+                if ($(olap_design).length>1) {
+                    paginLastTrPreLast=$(olap_design).last().prev().attr('xlsx_height',$(paginTrAll).last().prev().attr('xlsx_height'));
+                }
+                else {
+                    paginLastTrPreLast=$(paginLastTrLast).clone();
+                }
                 var paginTekTd=$(paginTrAll).first().find('td:gt(0)').first();            
                 $(paginLastTrFirst).find('td:gt(0)').each(function(i2,elem2) {
                     $(elem2).attr('xlsx_style_num',$(paginTekTd).attr('xlsx_style_num'))
@@ -682,8 +693,6 @@ function calc_xlsx(tab_tr,pr_only_olap) {
     var num_v=-1;
     var xml_list3='';
     var merge_count=0,merge_str='';
-    //для 2Д-режима при выгрузке только таблицы заполняем массив соответствия ячеек и стилей (достаточно 3 строки)
-    var td_style=[],td_height=[];
 
     function to_hex_xlsx(tek_border) {
         var td_color=tek_border;
@@ -976,10 +985,42 @@ function calc_xlsx(tab_tr,pr_only_olap) {
                                     else {
                                         var input_all_v=$(elem2).find('input');
                                         if ($(input_all_v).length===0) {
-                                            tek_text=tek_text.replace(/<[^>]+>/g," ");
+                                            var div_hidden_v=$(elem2).find('div.div_hidden');
+                                            if ($(div_hidden_v).length===0) {
+                                                tek_text=$(elem2).text().trim().replace(/<[^>]+>/g," ");
+                                            }
+                                            else {
+                                                var elem2_clone=$(elem2).clone();
+                                                $(elem2_clone).find('div.div_hidden').remove();
+                                                tek_text=$(elem2_clone).text().trim().replace(/<[^>]+>/g," ");
+                                            }
                                         }
                                         else {
-                                            tek_text=$(input_all_v).val().trim();
+                                            var elem2_clone=$(elem2).clone(),
+                                                in_hidden=$(elem2_clone).find('input[type="hidden"]');
+                                            if ($(in_hidden).length>0) {
+                                                $(in_hidden).remove();                                                
+                                            }
+                                            input_all_v=$(elem2_clone).find('input');
+                                            if ($(input_all_v).length>0) {
+                                                tek_text='';
+                                                $(input_all_v).each(function(i4,elem4) {
+                                                    if ($(elem4).is('[type=checkbox]')) {
+                                                        if ($(elem4).prop('checked')) {
+                                                            tek_text+='1';
+                                                        }
+                                                        else {
+                                                            tek_text+='0';
+                                                        }
+                                                    }
+                                                    else {
+                                                        tek_text+=String($(elem4).val()).trim().replace(/<[^>]+>/g," ");
+                                                    }    
+                                                });
+                                            }
+                                            else {
+                                                tek_text=$(elem2_clone).text().trim().replace(/<[^>]+>/g," ");
+                                            }
                                         }
                                     }
                                 }
@@ -2093,7 +2134,8 @@ $(document).ready(function(){
                         set_olap_params(elem);
                     }
                 });*/ 
-                $(table_all_tag_v).find('div[id="group_tab"][olap_id]').each(function(i,elem) {
+                var group_tab_v=$(table_all_tag_v).find('div[id="group_tab"][olap_id]');
+                $(group_tab_v).each(function(i,elem) {
                     //подгружаем класс MD если используется
                     var md=$(elem).find('.masterdata'),
                         mdr_class_v=$(md).attr('mdr_class'),
@@ -2113,7 +2155,7 @@ $(document).ready(function(){
                     $('#my').jexcel('updateSelection', $(table_real_selected).first(), $(table_real_selected).last(),1);
                 }
                 var olap_str='';
-                $('div[id="group_tab"][olap_id]').each(function(i,elem) {
+                $(group_tab_v).each(function(i,elem) {
                     olap_str+='-'+$(elem).attr('olap_id');
                 });
                 if (olap_str.length>0) {
@@ -4850,7 +4892,7 @@ $(document).ready(function(){
                                             else {
                                                 tek_val="'"+$(tek_in).val()+"'";
                                             }
-                                        }   
+                                        }    
                                         check_null(params,tek_in,tek_val,name_v);
                                         if (params['pr_ok']) {
                                             params['sql']=params['sql'].split(':'+params_r_da[key]).join(tek_val);
