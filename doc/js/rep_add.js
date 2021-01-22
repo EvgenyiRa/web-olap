@@ -552,7 +552,13 @@ function calc_xlsx(tab_tr,pr_only_olap) {
                             .attr('xlsx_border',$(paginTekTd).attr('xlsx_border'));
                     paginTekTd=$(paginTekTd).next();
                 });
-                var paginTekTd=$(paginTrAll).last().prev().find('td:gt(0)').first();            
+                var paginTekTd;
+                if ($(paginTrAll).length>1) {
+                    paginTekTd=$(paginTrAll[paginTrAll.length-2]).find('td:gt(0)').first();//не возможно обратиться к предыдщему элементу перед последним через $, хз почему, работаем напрямую с массивом 
+                }  
+                else {
+                    paginTekTd=$(paginTrAll).last().find('td:gt(0)').first();  
+                }
                 $(paginLastTrPreLast).find('td:gt(0)').each(function(i2,elem2) {
                     $(elem2).attr('xlsx_style_num',$(paginTekTd).attr('xlsx_style_num'))
                             .attr('xlsx_border',$(paginTekTd).attr('xlsx_border'));
@@ -561,15 +567,15 @@ function calc_xlsx(tab_tr,pr_only_olap) {
                 
             }            
             //удаляем классы разметки и айди у заготовок
-            $(paginLastTrFirst).find('td[olap_tab_id="'+$(elem).attr('id')+'"]').each(function(i2,elem2) {
+            $(paginLastTrFirst).find('td:gt(0)').each(function(i2,elem2) {
                 var mass_index=$(elem2).attr('id').split('-');
                 $(elem2).attr('id',mass_index[0]).removeClass('c'+mass_index[0]+' r'+mass_index[1]);
             }); 
-            $(paginLastTrLast).find('td[olap_tab_id="'+$(elem).attr('id')+'"]').each(function(i2,elem2) {
+            $(paginLastTrLast).find('td:gt(0)').each(function(i2,elem2) {
                 var mass_index=$(elem2).attr('id').split('-');
                 $(elem2).attr('id',mass_index[0]).removeClass('c'+mass_index[0]+' r'+mass_index[1]);
             });
-            $(paginLastTrPreLast).find('td[olap_tab_id="'+$(elem).attr('id')+'"]').each(function(i2,elem2) {
+            $(paginLastTrPreLast).find('td:gt(0)').each(function(i2,elem2) {
                 var mass_index=$(elem2).attr('id').split('-');
                 $(elem2).attr('id',mass_index[0]).removeClass('c'+mass_index[0]+' r'+mass_index[1]);
             });
