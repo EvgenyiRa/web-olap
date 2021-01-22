@@ -638,14 +638,18 @@ function calc_xlsx(tab_tr,pr_only_olap) {
             $(tab_tr[index_del]).find('td[olap_tab_id="'+$(elem).attr('id')+'"]').each(function(i2,elem2) {
                 $(elem2)
                     .attr('style',$(paginTekTd).attr('style'))
-                    .addClass($(paginTekTd).attr('class'));
+                    .addClass($(paginTekTd).attr('class'))
+                    .attr('xlsx_style_num',$(paginTekTd).attr('xlsx_style_num'))
+                    .attr('xlsx_border',$(paginTekTd).attr('xlsx_border'));
                 paginTekTd=$(paginTekTd).next();
             })
             paginTekTd=$(paginLastTrLast).find('td[olap_tab_id="'+$(elem).attr('id')+'"]').first();            
             $(tab_tr[index_del+last_i2]).find('td[olap_tab_id="'+$(elem).attr('id')+'"]').each(function(i2,elem2) {
                 $(elem2)
                     .attr('style',$(paginTekTd).attr('style'))
-                    .addClass($(paginTekTd).attr('class'));
+                    .addClass($(paginTekTd).attr('class'))
+                    .attr('xlsx_style_num',$(paginTekTd).attr('xlsx_style_num'))
+                    .attr('xlsx_border',$(paginTekTd).attr('xlsx_border'));
                 paginTekTd=$(paginTekTd).next();
             })
             
