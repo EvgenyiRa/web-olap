@@ -230,7 +230,7 @@ function get_md_param_sql($mass) {
     elseif ($dbt=='ora') {
         $stid = oci_parse($conn, $sql_true);
         if ($stid) {
-            ora_create_params($stid,$params_val_true,true);
+            ora_create_params($stid,$params_val_true);
             $r = oci_execute($stid);
             if ($r) {
                 while ($row = oci_fetch_array($stid, OCI_ASSOC+OCI_RETURN_NULLS+OCI_RETURN_LOBS)) {

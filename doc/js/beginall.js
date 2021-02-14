@@ -115,14 +115,11 @@ function olap_param_upd_child(id_t,tek_param) {
             params['code_in']='get_md_param_sql';
             params['sql_true']=$(params_sql).html().replace(/<[^>]+>/g," ").trim();
             //формируем таблицу с параметрами
-            var params_r=param_create(params['sql_true'],md,params_group);
-            params['sql_true']=params_r['sql_true'];        
-            if ($(params_group).find('.in_param_val').length>0) {            
-                var params_val=new Object();
-                for (var key in params_r['params_all']) {
-                    var param_one=$(params_group).find('.in_param_val[id="'+params_r['params_all'][key]+'"]');
-                    params_val[key]=$(param_one).val();
-                }
+            var params_r=param_create(params['sql_true'],md,params_group),
+                params_val=new Object();
+            params['sql_true']=params_r['sql_true']; 
+            set_param_val_olap(params_group,params_r,params_val);
+            if (!$.isEmptyObject(params_val)) {
                 params['params_val']=JSON.stringify(params_val);
             }
             //console.log(params);                        
@@ -794,6 +791,45 @@ function one_str_design(id_t,rep_tab_tr,tr_str,olap_td_class1,olap_td_class2) {
     if (td_str_last_border!='') {
         $(rep_tab_tr_tek).last().css('border-right',td_str_last_border);
     } 
+}
+
+function set_param_val_olap(params_group,params_r,params_val) {
+    let params_group_el=$(params_group).find('.in_param_val,.olap_param_sql');
+    if ($(params_group_el).length>0) { 
+        var params_r_da=params_r['params_olap']
+        for (var key in params_r_da) {
+            var param_one=$(params_group_el).filter('[id="'+params_r_da[key]+'"]');
+            if ($(param_one).is('.in_param_val')) {
+                if (db_type=='mssql') {            
+                    params_val[key]=$(param_one).val();
+                }
+                else if (db_type=='ora'){
+                    params_val[':'+params_r_da[key]]=$(param_one).val();
+                }  
+            }
+            else {
+                let val=$(param_one).val();
+                if (Array.isArray(val)) {
+                    val.forEach(function(item, index){
+                        if (db_type=='mssql') {            
+                            params_val[params_r_da[key]+'_'+index]=item;
+                        }
+                        else if (db_type=='ora'){
+                            params_val[':'+params_r_da[key]+'_'+index]=item;
+                        }
+                    });
+                }
+                else {
+                    if (db_type=='mssql') {            
+                        params_val[params_r_da[key]+'_0']=val;
+                    }
+                    else if (db_type=='ora'){
+                        params_val[':'+params_r_da[key]+'_0']=val;
+                    }
+                }
+            }
+        }
+    }
 }
 
 $(document).ready(function() {
@@ -2807,7 +2843,7 @@ $(document).ready(function() {
                 td_recover(elem,false,mass_left_cols);
             });                
         }
-    }
+    }        
     
     //перемнная опросника подгрузки страниц и переменная строк шапки для анализа возможной перерисовки по другому алгоритму (с дизайном/в чистом виде)
     var d2_load_page=[],
@@ -2880,66 +2916,85 @@ $(document).ready(function() {
         
         //console.log($('.olap_param_sql').val());
         var params_r=param_create(params['sql_true'],md,params_group),
-            params_val=new Object(),
-            params_group_el=$(params_group).find('.in_param_val,.olap_param_sql');
+            params_val=new Object();
         
-        if ($(params_group_el).length>0) { 
-            var params_r_da=params_r['params_olap']
-            for (var key in params_r_da) {
-                var param_one=$(params_group_el).filter('[id="'+params_r_da[key]+'"]');
-                if ($(param_one).is('.in_param_val')) {
-                    if (db_type=='mssql') {            
-                        params_val[key]=$(param_one).val();
-                    }
-                    else if (db_type=='ora'){
-                        params_val[':'+params_r_da[key]]=$(param_one).val();
-                    }  
-                }
-                else {
-                    let val=$(param_one).val();
-                    if (Array.isArray(val)) {
-                        val.forEach(function(item, index){
-                            if (db_type=='mssql') {            
-                                params_val[params_r_da[key]+'_'+index]=item;
-                            }
-                            else if (db_type=='ora'){
-                                params_val[':'+params_r_da[key]+'_'+index]=item;
-                            }
-                        });
-                    }
-                    else {
-                        if (db_type=='mssql') {            
-                            params_val[params_r_da[key]+'_0']=val;
-                        }
-                        else if (db_type=='ora'){
-                            params_val[':'+params_r_da[key]+'_0']=val;
-                        }
-                    }
-                }
-            }
-        }
+        set_param_val_olap(params_group,params_r,params_val);
+        
         //получаем массив параметров и их значений для не olap параметров-строк-чисел-дат
         if ($(params_r['params_unolap']).length>0) {
             for (var key in params_r['params_unolap']) {
-                var par_un_olap_one=$(table_tag_v).find('.input_add[action_type][id="'+params_r['params_unolap'][key]+'"]');
+                var par_un_olap_one=$(table_tag_v).find('.input_add[action_type][id="'+params_r['params_unolap'][key]+'"],.select_add[action_type][id="'+params_r['params_unolap'][key]+'"],.in_modal_add_val[action_type][id="'+params_r['params_unolap'][key]+'"]');
                 if ($(par_un_olap_one).length===0) {
                     alert('Не правильно указан параметр "'+params_r['params_unolap'][key]+'"');
                     pr_norm_param=false;
                 }
                 else {
-                    var par_un_olap_one_v=trim($(par_un_olap_one).val()),
+                    var par_un_olap_one_v=$(par_un_olap_one).val(),
                         par_un_olap_one_c=$(par_un_olap_one).closest('td').find('li.required_add[id="'+params_r['params_unolap'][key]+'"] input');
+                    if (!Array.isArray(par_un_olap_one_v)) {
+                        par_un_olap_one_v=String(par_un_olap_one_v).trim();
+                    }
                     if (($(par_un_olap_one_c).prop('checked')) & (par_un_olap_one_v.length===0)) {
                         alert('Не заполнен обязательный параметр "'+params_r['params_unolap'][key]+'"');
                         pr_norm_param=false;
                     }
                     else {
-                        if (db_type=='mssql') {            
-                            params_val[key]=par_un_olap_one_v;
+                        if ($(par_un_olap_one).is('.input_add')) {
+                            if (db_type=='mssql') {            
+                                params_val[key]=par_un_olap_one_v;
+                            }
+                            else if (db_type=='ora'){
+                                params_val[':'+params_r['params_unolap'][key]]=par_un_olap_one_v;
+                            } 
                         }
-                        else if (db_type=='ora'){
-                            params_val[':'+params_r['params_unolap'][key]]=par_un_olap_one_v;
-                        } 
+                        else if ($(par_un_olap_one).is('.select_add')) {
+                            if (Array.isArray(par_un_olap_one)) {
+                                par_un_olap_one.forEach(function(item, index){
+                                    if (db_type=='mssql') {            
+                                        params_val[params_r_da[key]+'_'+index]=item;
+                                    }
+                                    else if (db_type=='ora'){
+                                        params_val[':'+params_r_da[key]+'_'+index]=item;
+                                    }
+                                });
+                            }
+                            else {
+                                if (db_type=='mssql') {            
+                                    params_val[params_r_da[key]+'_0']=par_un_olap_one;
+                                }
+                                else if (db_type=='ora'){
+                                    params_val[':'+params_r_da[key]+'_0']=par_un_olap_one;
+                                }
+                            }
+                        }
+                        else if ($(par_un_olap_one).is('.in_modal_add_val')) {
+                            if (par_un_olap_one.length>0) {
+                                if (par_un_olap_one.indexOf("','")>-1) {
+                                    par_un_olap_one=par_un_olap_one.substr(1);
+                                    par_un_olap_one=par_un_olap_one.slice(0,-1);
+                                    par_un_olap_one=par_un_olap_one.split("','");                        
+                                }
+                                else {
+                                    par_un_olap_one=par_un_olap_one.split(',');
+                                }
+                                par_un_olap_one.forEach(function(item, index){
+                                    if (db_type=='mssql') {            
+                                        params_val[params_r_da[key]+'_'+index]=item;
+                                    }
+                                    else if (db_type=='ora'){
+                                        params_val[':'+params_r_da[key]+'_'+index]=item;
+                                    }
+                                });
+                            }
+                            else {
+                                if (db_type=='mssql') {            
+                                    params_val[params_r_da[key]+'_0']=par_un_olap_one;
+                                }
+                                else if (db_type=='ora'){
+                                    params_val[':'+params_r_da[key]+'_0']=par_un_olap_one;
+                                }
+                            }
+                        }
                     }
                 }
             }
