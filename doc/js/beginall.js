@@ -225,10 +225,50 @@ function set_olap_params_all(group_tab) {
 }
 
 function param_create(sql_true,md_v,params_group_v,unolap_id,is_olap_ma) {
-    var mass_par_sql=[];
-    var mass_par_sql=[];
+    var mass_par_sql=[],
+        mass_par_sql_add=[];
     if (!!!is_olap_ma) {
         is_olap_ma=false;
+    }
+    
+    function set_mass_par_sql_one(mass_par_sql,id_par,mass_val,prNumber,prMulti) {
+        mass_par_sql[id_par]={val:{},str:''};                        
+        if (prMulti) {
+            mass_val.forEach(function(item, index){
+                let value;
+                if (prNumber) {
+                    value=parseFloat(item);
+                }
+                else {
+                    value=String(item);
+                }
+                mass_par_sql[id_par]['val'][id_par+'_'+index]=value;                                  
+                if (db_type=='mssql') {
+                    mass_par_sql[id_par]['str']+='?,';
+                }
+                else {
+                    mass_par_sql[id_par]['str']+=':'+id_par+'_'+index+',';
+                }
+            });
+            if (mass_par_sql[id_par]['str'].length>0) {
+                mass_par_sql[id_par]['str']=mass_par_sql[id_par]['str'].slice(0,-1);
+            }
+        }
+        else {
+            if (prNumber) {
+                mass_val=parseFloat(mass_val);
+            }
+            else {
+                mass_val=String(mass_val);
+            }
+            mass_par_sql[id_par]['val'][id_par+'_0']=mass_val; 
+            if (db_type=='mssql') {
+                mass_par_sql[id_par]['str']+='?';
+            }
+            else {
+                mass_par_sql[id_par]['str']+=':'+id_par+'_0';
+            }
+        }
     }
     if (!is_olap_ma) {
         if ($(params_group_v).length>0) {
@@ -238,22 +278,11 @@ function param_create(sql_true,md_v,params_group_v,unolap_id,is_olap_ma) {
                     var mass_val=$(elem).val();
                     //console.log(mass_val);
                     var id_par=$(elem).closest('p').attr('id');
-                    if ($(md_v).find('.in_param_multi[id="'+id_par+'"]').prop('checked')) {
-                        if ($(md_v).find('.sel_param_type[id="'+id_par+'"]').val()=='number') {
-                            mass_par_sql[id_par]=mass_val.join(',');
-                        }
-                        else {
-                            mass_par_sql[id_par]="'"+mass_val.join("','")+"'";
-                        }
-                    }
-                    else {
-                        if ($(md_v).find('.sel_param_type[id="'+id_par+'"]').val()=='number') {
-                            mass_par_sql[id_par]=mass_val;
-                        }
-                        else {
-                            mass_par_sql[id_par]="'"+mass_val+"'";
-                        }
-                    }
+                    let prNumber=false;
+                    if ($(md_v).find('.sel_param_type[id="'+id_par+'"]').val()=='number') {
+                        prNumber=true;
+                    } 
+                    set_mass_par_sql_one(mass_par_sql,id_par,mass_val,prNumber,$(md_v).find('.in_param_multi[id="'+id_par+'"]').prop('checked'));
                 }); 
             }        
         }
@@ -268,29 +297,38 @@ function param_create(sql_true,md_v,params_group_v,unolap_id,is_olap_ma) {
         if ($(select_add).length>0) {
             $(select_add).each(function(i,elem) {
                 var mass_val=$(elem).val(),
-                    id_par=$(elem).attr('id');
+                    id_par=$(elem).attr('id'),
+                    settings_group_panel=$(elem).closest('td').find('.settings_group_panel');
                 //console.log(mass_val);
+                let prNumber=false;
+                if ($(settings_group_panel).find('li.type li#number[pr_change_style]').length>0) {
+                    prNumber=true;
+                }
                 if ($(elem).hasClass('select_add')) {
-                    var settings_group_panel=$(elem).closest('td').find('.settings_group_panel');
-                    if ($(settings_group_panel).find('.multi_add input').prop('checked')) {
-                        if ($(settings_group_panel).find('li.type li#number[pr_change_style]').length>0) {
-                            mass_par_sql[id_par]=mass_val.join(',');
-                        }
-                        else {
-                            mass_par_sql[id_par]="'"+mass_val.join("','")+"'";
-                        }
-                    }
-                    else {
-                        if ($(settings_group_panel).find('li.type li#number[pr_change_style]').length>0) {
-                            mass_par_sql[id_par]=mass_val;
-                        }
-                        else {
-                            mass_par_sql[id_par]="'"+mass_val+"'";
-                        }
-                    }
+                    set_mass_par_sql_one(mass_par_sql,id_par,mass_val,prNumber,$(settings_group_panel).find('.multi_add input').prop('checked'));
                 }
                 else {
-                    mass_par_sql[id_par]=mass_val;
+                    if (mass_val.length>0) {
+                        if (mass_val.indexOf("','")>-1) {
+                            mass_val=mass_val.substr(1);
+                            mass_val=mass_val.slice(0,-1);
+                            mass_val=mass_val.split("','");                        
+                        }
+                        else {
+                            mass_val=mass_val.split(',');
+                        }
+                        set_mass_par_sql_one(mass_par_sql,id_par,mass_val,prNumber,true);
+                    }
+                    else {
+                        mass_par_sql[id_par]={val:{},str:''}; 
+                        mass_par_sql[id_par]['val'][id_par+'_0']=null; 
+                        if (db_type=='mssql') {
+                            mass_par_sql[id_par]['str']+='?';
+                        }
+                        else {
+                            mass_par_sql[id_par]['str']+=':'+id_par+'_0';
+                        }
+                    }
                 }
             }); 
         }
@@ -317,7 +355,7 @@ function param_create(sql_true,md_v,params_group_v,unolap_id,is_olap_ma) {
             }
         }
         return  exist;           
-    }
+    }                
 
     var v_out={},
         params_p={},
@@ -344,9 +382,29 @@ function param_create(sql_true,md_v,params_group_v,unolap_id,is_olap_ma) {
         tek_param_num=parseInt(tek_param);
         
         if (tek_param in mass_par_sql) {
-            i_par=0;
-            i_par_dist=0;                
-            sql_true=sql_true.substring(0,pos)+((!!mass_par_sql[tek_param])? mass_par_sql[tek_param]:'null')+sql_true.substring(pos+tek_param.length+1);
+            mass_par_sql_add[tek_param]=mass_par_sql[tek_param];
+            sql_true=sql_true.substring(0,pos)+mass_par_sql[tek_param]['str']+sql_true.substring(pos+tek_param.length+1);
+            pos+=mass_par_sql[tek_param]['str'].length;
+            params_p[i_par]=tek_param;
+            params_dist[i_par_dist]=tek_param;
+            if (isNaN(tek_param_num)) {
+                params_olap[i_par]=tek_param;
+            }
+            else {
+                params_unolap[i_par]=tek_param;
+            }
+            /*i_par=0;
+            i_par_dist=0;
+            for (var key in mass_par_sql[tek_param]['val']) {
+                params_p[++i_par]=key;
+                params_dist[++i_par_dist]=key;
+                if (isNaN(tek_param_num)) {
+                    params_olap[i_par]=key;
+                }
+                else {
+                    params_unolap[i_par]=key;
+                }
+            }*/
         }
         else {
             params_p[i_par]=tek_param;
@@ -376,12 +434,59 @@ function param_create(sql_true,md_v,params_group_v,unolap_id,is_olap_ma) {
                 params_str+='--'+tek_param;
                 tek_param_num=parseInt(tek_param);
                 //console.log(pos_pr);
+                i_par++;
+                params_p[i_par]=tek_param;                    
                 if (tek_param in mass_par_sql) {
-                    sql_true=sql_true.substring(0,pos)+((!!mass_par_sql[tek_param])? mass_par_sql[tek_param]:'null')+sql_true.substring(pos+tek_param.length+1);
+                    sql_true=sql_true.substring(0,pos)+mass_par_sql[tek_param]['str']+sql_true.substring(pos+tek_param.length+1);
+                    pos+=mass_par_sql[tek_param]['str'].length;
+                    if (!(tek_param in mass_par_sql_add)) {
+                        ++i_par_dist;
+                        mass_par_sql_add[tek_param]=mass_par_sql[tek_param];
+                        params_dist[i_par_dist]=tek_param;
+                        if (isNaN(tek_param_num)) {
+                            params_olap[i_par]=tek_param;
+                        }
+                        else {
+                            params_unolap[i_par]=tek_param;
+                        }
+                        /*for (var key in mass_par_sql[tek_param]['val']) {
+                            params_p[++i_par]=key;
+                            params_dist[++i_par_dist]=key;
+                            if (isNaN(tek_param_num)) {
+                                params_olap[i_par]=key;
+                            }
+                            else {
+                                params_unolap[i_par]=key;
+                            }
+                        }*/
+                    } 
+                    else {
+                        if (isNaN(tek_param_num)) {
+                            if (db_type=='mssql') { 
+                                params_olap[i_par]=tek_param;
+                            }    
+                        }
+                        else {
+                            if (db_type=='mssql') {            
+                                params_unolap[i_par]=tek_param;                        
+                            }
+                        }
+                        /*for (var key in mass_par_sql[tek_param]['val']) {
+                            params_p[++i_par]=key;
+                            if (isNaN(tek_param_num)) {
+                                if (db_type=='mssql') { 
+                                    params_olap[i_par]=key;
+                                }    
+                            }
+                            else {
+                                if (db_type=='mssql') {            
+                                    params_unolap[i_par]=key;                        
+                                }
+                            }
+                        }*/
+                    }                                        
                 }
                 else { 
-                    i_par++;
-                    params_p[i_par]=tek_param;
                     if (!exist_param(params_dist,params_p[i_par])) {
                         i_par_dist++;
                         params_dist[i_par_dist]=params_p[i_par];                        
@@ -2775,20 +2880,43 @@ $(document).ready(function() {
         
         //console.log($('.olap_param_sql').val());
         var params_r=param_create(params['sql_true'],md,params_group),
-            params_val=new Object();
+            params_val=new Object(),
+            params_group_el=$(params_group).find('.in_param_val,.olap_param_sql');
         
-        if ($(params_group).find('.in_param_val').length>0) { 
+        if ($(params_group_el).length>0) { 
             var params_r_da=params_r['params_olap']
             for (var key in params_r_da) {
-                var param_one=$(params_group).find('.in_param_val[id="'+params_r_da[key]+'"]');
-                if (db_type=='mssql') {            
-                    params_val[key]=$(param_one).val();
+                var param_one=$(params_group_el).filter('[id="'+params_r_da[key]+'"]');
+                if ($(param_one).is('.in_param_val')) {
+                    if (db_type=='mssql') {            
+                        params_val[key]=$(param_one).val();
+                    }
+                    else if (db_type=='ora'){
+                        params_val[':'+params_r_da[key]]=$(param_one).val();
+                    }  
                 }
-                else if (db_type=='ora'){
-                    params_val[':'+params_r_da[key]]=$(param_one).val();
-                }                
+                else {
+                    let val=$(param_one).val();
+                    if (Array.isArray(val)) {
+                        val.forEach(function(item, index){
+                            if (db_type=='mssql') {            
+                                params_val[params_r_da[key]+'_'+index]=item;
+                            }
+                            else if (db_type=='ora'){
+                                params_val[':'+params_r_da[key]+'_'+index]=item;
+                            }
+                        });
+                    }
+                    else {
+                        if (db_type=='mssql') {            
+                            params_val[params_r_da[key]+'_0']=val;
+                        }
+                        else if (db_type=='ora'){
+                            params_val[':'+params_r_da[key]+'_0']=val;
+                        }
+                    }
+                }
             }
-            params['params_html']=$(params_group).html();
         }
         //получаем массив параметров и их значений для не olap параметров-строк-чисел-дат
         if ($(params_r['params_unolap']).length>0) {
