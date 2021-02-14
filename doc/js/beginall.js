@@ -832,6 +832,80 @@ function set_param_val_olap(params_group,params_r,params_val) {
     }
 }
 
+function set_param_val_unolap(unolap_el,params_r,params_val) {
+    if ($(params_r['params_unolap']).length>0) {
+        for (var key in params_r['params_unolap']) {
+            var par_un_olap_one=$(unolap_el).filter('[id="'+params_r['params_unolap'][key]+'"]');
+            if ($(par_un_olap_one).length===0) {
+                alert('Не правильно указан параметр "'+params_r['params_unolap'][key]+'"');
+            }
+            else {
+                var par_un_olap_one_v=$(par_un_olap_one).val();
+                if (!Array.isArray(par_un_olap_one_v)) {
+                    par_un_olap_one_v=String(par_un_olap_one_v).trim();
+                }
+
+                if ($(par_un_olap_one).is('.input_add')) {
+                    if (db_type=='mssql') {            
+                        params_val[key]=par_un_olap_one_v;
+                    }
+                    else if (db_type=='ora'){
+                        params_val[':'+params_r['params_unolap'][key]]=par_un_olap_one_v;
+                    } 
+                }
+                else if ($(par_un_olap_one).is('.select_add')) {
+                    if (Array.isArray(par_un_olap_one_v)) {
+                        par_un_olap_one_v.forEach(function(item, index){
+                            if (db_type=='mssql') {            
+                                params_val[params_r['params_unolap'][key]+'_'+index]=item;
+                            }
+                            else if (db_type=='ora'){
+                                params_val[':'+params_r['params_unolap'][key]+'_'+index]=item;
+                            }
+                        });
+                    }
+                    else {
+                        if (db_type=='mssql') {            
+                            params_val[params_r['params_unolap'][key]+'_0']=par_un_olap_one_v;
+                        }
+                        else if (db_type=='ora'){
+                            params_val[':'+params_r['params_unolap'][key]+'_0']=par_un_olap_one_v;
+                        }
+                    }
+                }
+                else if ($(par_un_olap_one).is('.in_modal_add_val')) {
+                    if (par_un_olap_one_v.length>0) {
+                        if (par_un_olap_one_v.indexOf("','")>-1) {
+                            par_un_olap_one_v=par_un_olap_one_v.substr(1);
+                            par_un_olap_one_v=par_un_olap_one_v.slice(0,-1);
+                            par_un_olap_one_v=par_un_olap_one_v.split("','");                        
+                        }
+                        else {
+                            par_un_olap_one_v=par_un_olap_one_v.split(',');
+                        }
+                        par_un_olap_one_v.forEach(function(item, index){
+                            if (db_type=='mssql') {            
+                                params_val[params_r['params_unolap'][key]+'_'+index]=item;
+                            }
+                            else if (db_type=='ora'){
+                                params_val[':'+params_r['params_unolap'][key]+'_'+index]=item;
+                            }
+                        });
+                    }
+                    else {
+                        if (db_type=='mssql') {            
+                            params_val[params_r['params_unolap'][key]+'_0']=par_un_olap_one_v;
+                        }
+                        else if (db_type=='ora'){
+                            params_val[':'+params_r['params_unolap'][key]+'_0']=par_un_olap_one_v;
+                        }
+                    }
+                }                                            
+            }
+        }
+    }
+}    
+
 $(document).ready(function() {
     $("div#my" ).on("click", ".table_play", function() {
         create_tab($(this).attr('id')); 
@@ -2921,9 +2995,10 @@ $(document).ready(function() {
         set_param_val_olap(params_group,params_r,params_val);
         
         //получаем массив параметров и их значений для не olap параметров-строк-чисел-дат
+        let unolap_el=$(table_tag_v).find('.input_add[action_type],.select_add[action_type],.in_modal_add_val[action_type]');
         if ($(params_r['params_unolap']).length>0) {
             for (var key in params_r['params_unolap']) {
-                var par_un_olap_one=$(table_tag_v).find('.input_add[action_type][id="'+params_r['params_unolap'][key]+'"],.select_add[action_type][id="'+params_r['params_unolap'][key]+'"],.in_modal_add_val[action_type][id="'+params_r['params_unolap'][key]+'"]');
+                var par_un_olap_one=$(unolap_el).filter('[id="'+params_r['params_unolap'][key]+'"]');
                 if ($(par_un_olap_one).length===0) {
                     alert('Не правильно указан параметр "'+params_r['params_unolap'][key]+'"');
                     pr_norm_param=false;
@@ -2938,68 +3013,13 @@ $(document).ready(function() {
                         alert('Не заполнен обязательный параметр "'+params_r['params_unolap'][key]+'"');
                         pr_norm_param=false;
                     }
-                    else {
-                        if ($(par_un_olap_one).is('.input_add')) {
-                            if (db_type=='mssql') {            
-                                params_val[key]=par_un_olap_one_v;
-                            }
-                            else if (db_type=='ora'){
-                                params_val[':'+params_r['params_unolap'][key]]=par_un_olap_one_v;
-                            } 
-                        }
-                        else if ($(par_un_olap_one).is('.select_add')) {
-                            if (Array.isArray(par_un_olap_one)) {
-                                par_un_olap_one.forEach(function(item, index){
-                                    if (db_type=='mssql') {            
-                                        params_val[params_r_da[key]+'_'+index]=item;
-                                    }
-                                    else if (db_type=='ora'){
-                                        params_val[':'+params_r_da[key]+'_'+index]=item;
-                                    }
-                                });
-                            }
-                            else {
-                                if (db_type=='mssql') {            
-                                    params_val[params_r_da[key]+'_0']=par_un_olap_one;
-                                }
-                                else if (db_type=='ora'){
-                                    params_val[':'+params_r_da[key]+'_0']=par_un_olap_one;
-                                }
-                            }
-                        }
-                        else if ($(par_un_olap_one).is('.in_modal_add_val')) {
-                            if (par_un_olap_one.length>0) {
-                                if (par_un_olap_one.indexOf("','")>-1) {
-                                    par_un_olap_one=par_un_olap_one.substr(1);
-                                    par_un_olap_one=par_un_olap_one.slice(0,-1);
-                                    par_un_olap_one=par_un_olap_one.split("','");                        
-                                }
-                                else {
-                                    par_un_olap_one=par_un_olap_one.split(',');
-                                }
-                                par_un_olap_one.forEach(function(item, index){
-                                    if (db_type=='mssql') {            
-                                        params_val[params_r_da[key]+'_'+index]=item;
-                                    }
-                                    else if (db_type=='ora'){
-                                        params_val[':'+params_r_da[key]+'_'+index]=item;
-                                    }
-                                });
-                            }
-                            else {
-                                if (db_type=='mssql') {            
-                                    params_val[params_r_da[key]+'_0']=par_un_olap_one;
-                                }
-                                else if (db_type=='ora'){
-                                    params_val[':'+params_r_da[key]+'_0']=par_un_olap_one;
-                                }
-                            }
-                        }
-                    }
                 }
             }
+        }    
+        if (pr_norm_param) {
+            set_param_val_unolap(unolap_el,params_r,params_val);               
         }
-        if (!pr_norm_param) {
+        else {
             return; 
         }
         
