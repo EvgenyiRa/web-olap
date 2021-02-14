@@ -244,7 +244,12 @@ function param_create(sql_true,md_v,params_group_v,unolap_id,is_olap_ma) {
                     mass_par_sql[id_par]['str']+='?,';
                 }
                 else {
-                    mass_par_sql[id_par]['str']+=':'+id_par+'_'+index+',';
+                    if (isNaN(parseInt(id_par))) {
+                        mass_par_sql[id_par]['str']+=':'+id_par+'_'+index+',';
+                    }
+                    else {
+                        mass_par_sql[id_par]['str']+=':p'+id_par+'_'+index+',';
+                    }
                 }
             });
             if (mass_par_sql[id_par]['str'].length>0) {
@@ -263,10 +268,11 @@ function param_create(sql_true,md_v,params_group_v,unolap_id,is_olap_ma) {
                 mass_par_sql[id_par]['str']+='?';
             }
             else {
-                mass_par_sql[id_par]['str']+=':'+id_par+'_0';
+                mass_par_sql[id_par]['str']+=':p'+id_par+'_0';
             }
         }
     }
+    
     if (!is_olap_ma) {
         if ($(params_group_v).length>0) {
             var olap_param_sql=$(params_group_v).find('.olap_param_sql');
@@ -850,7 +856,7 @@ function set_param_val_unolap(unolap_el,params_r,params_val) {
                         params_val[key]=par_un_olap_one_v;
                     }
                     else if (db_type=='ora'){
-                        params_val[':'+params_r['params_unolap'][key]]=par_un_olap_one_v;
+                        params_val[':p'+params_r['params_unolap'][key]]=par_un_olap_one_v;
                     } 
                 }
                 else if ($(par_un_olap_one).is('.select_add')) {
@@ -860,7 +866,7 @@ function set_param_val_unolap(unolap_el,params_r,params_val) {
                                 params_val[params_r['params_unolap'][key]+'_'+index]=item;
                             }
                             else if (db_type=='ora'){
-                                params_val[':'+params_r['params_unolap'][key]+'_'+index]=item;
+                                params_val[':p'+params_r['params_unolap'][key]+'_'+index]=item;
                             }
                         });
                     }
@@ -869,7 +875,7 @@ function set_param_val_unolap(unolap_el,params_r,params_val) {
                             params_val[params_r['params_unolap'][key]+'_0']=par_un_olap_one_v;
                         }
                         else if (db_type=='ora'){
-                            params_val[':'+params_r['params_unolap'][key]+'_0']=par_un_olap_one_v;
+                            params_val[':p'+params_r['params_unolap'][key]+'_0']=par_un_olap_one_v;
                         }
                     }
                 }
@@ -897,7 +903,7 @@ function set_param_val_unolap(unolap_el,params_r,params_val) {
                             params_val[params_r['params_unolap'][key]+'_0']=par_un_olap_one_v;
                         }
                         else if (db_type=='ora'){
-                            params_val[':'+params_r['params_unolap'][key]+'_0']=par_un_olap_one_v;
+                            params_val[':p'+params_r['params_unolap'][key]+'_0']=par_un_olap_one_v;
                         }
                     }
                 }                                            
@@ -1960,7 +1966,7 @@ $(document).ready(function() {
             $(sql_value_v).text(sql_editor_encode); 
             params['tab_id']=id_t;        
             //формируем таблицу с параметрами
-            var params_r=param_create(params['sql_true']);
+            var params_r=param_create(params['sql_true'],null,null,null,true);
             params['sql_true']=params_r['sql_true'];  
             params['sql_lz']=sql_editor_encode;
             params['params']=JSON.stringify(params_r['params']);
