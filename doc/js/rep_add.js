@@ -1771,15 +1771,15 @@ function select_add_init(select_add) {
 } 
 
 function upd_select_add(sql,tek_id,pr_modal) {
-    var params = new Object(),
-        params_r_da;
+    var params = new Object()/*,
+        params_r_da*/;
     params['code_in']='get_md_param_sql';        
     //формируем таблицу с параметрами
     var params_r=param_create(sql,null,null,tek_id),
         table_tag_v=$(table_tag),
         tek_el=$(table_tag_v).find('.select_add[id="'+tek_id+'"],.in_modal_add_val[id="'+tek_id+'"]');
     params['sql_true']=params_r['sql_true'];    
-    if (db_type=='mssql') {            
+    /*if (db_type=='mssql') {            
         params_r_da=params_r['params_all'];
     }
     else if (db_type=='ora'){
@@ -1808,7 +1808,15 @@ function upd_select_add(sql,tek_id,pr_modal) {
         else {
             pr_ok=false; 
         }
-    }
+    }*/
+    var params_val={},
+        pr_ok=set_param_val_unolap($(table_tag_v).find('.input_add[id!="'+tek_id+'"],.select_add[id!="'+tek_id+'"],.in_modal_add_val[id!="'+tek_id+'"]'),
+                                   params_r,
+                                   params_val
+                                  );
+    if (!$.isEmptyObject(params_val)) {
+        params['params_val']=JSON.stringify(params_val);
+    }                    
 
     if (pr_ok) {
         //удаляем все упоминания элемента в связях, делаем через вспомогательныe массивы (проще удалять)
@@ -1879,8 +1887,8 @@ function upd_select_add(sql,tek_id,pr_modal) {
                     }                
                     //$(tek_tab).find('tbody').html(html);
                     $(tek_tab).append(html);
-                    $(tek_td).find('.in_modal_add_txt').attr('value','');
-                    $(tek_td).find('.in_modal_add_val').attr('value','');
+                    $(tek_td).find('.in_modal_add_txt').attr('value','').val('');
+                    $(tek_td).find('.in_modal_add_val').attr('value','').val('');
                     //обновляем все зависимые
                     //$(loading_img).hide();
                 },
@@ -1978,7 +1986,7 @@ function get_in_mod_struct_by_sql(id_t,md) {
         params['sql_true']=editor.getValue().trim();
         params['tab_id']=id_t;        
         //формируем таблицу с параметрами
-        var params_r=param_create(params['sql_true']),
+        var params_r=param_create(params['sql_true'],null,null,null,true),
             params_r_da;
         if (db_type=='mssql') {
             params['sql_true']=params_r['sql_true'];

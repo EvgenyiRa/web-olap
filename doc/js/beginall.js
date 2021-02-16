@@ -839,11 +839,13 @@ function set_param_val_olap(params_group,params_r,params_val) {
 }
 
 function set_param_val_unolap(unolap_el,params_r,params_val) {
+    var prOk=true;
     if ($(params_r['params_unolap']).length>0) {
         for (var key in params_r['params_unolap']) {
             var par_un_olap_one=$(unolap_el).filter('[id="'+params_r['params_unolap'][key]+'"]');
             if ($(par_un_olap_one).length===0) {
                 alert('Не правильно указан параметр "'+params_r['params_unolap'][key]+'"');
+                prOk=false;
             }
             else {
                 var par_un_olap_one_v=$(par_un_olap_one).val();
@@ -910,6 +912,7 @@ function set_param_val_unolap(unolap_el,params_r,params_val) {
             }
         }
     }
+    return prOk;
 }    
 
 $(document).ready(function() {
