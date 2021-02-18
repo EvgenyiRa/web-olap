@@ -329,7 +329,7 @@ function param_create(sql_true,md_v,params_group_v,unolap_id,is_olap_ma) {
                             mass_par_sql[id_par]['str']+='?';
                         }
                         else {
-                            mass_par_sql[id_par]['str']+=':'+id_par+'_0';
+                            mass_par_sql[id_par]['str']+=':p'+id_par+'_0';
                         }
                     }
                 }
@@ -896,7 +896,7 @@ function set_param_val_unolap(unolap_el,params_r,params_val) {
                                 params_val[params_r['params_unolap'][key]+'_'+index]=item;
                             }
                             else if (db_type=='ora'){
-                                params_val[':'+params_r['params_unolap'][key]+'_'+index]=item;
+                                params_val[':p'+params_r['params_unolap'][key]+'_'+index]=item;
                             }
                         });
                     }
