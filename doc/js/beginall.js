@@ -308,7 +308,19 @@ function param_create(sql_true,md_v,params_group_v,unolap_id,is_olap_ma) {
                     prNumber=true;
                 }
                 if ($(elem).hasClass('select_add')) {
-                    set_mass_par_sql_one(mass_par_sql,id_par,mass_val,prNumber,$(settings_group_panel).find('.multi_add input').prop('checked'));
+                    if (mass_val.length>0) {
+                        set_mass_par_sql_one(mass_par_sql,id_par,mass_val,prNumber,$(settings_group_panel).find('.multi_add input').prop('checked'));
+                    }
+                    else {
+                        mass_par_sql[id_par]={val:{},str:''}; 
+                        mass_par_sql[id_par]['val'][id_par+'_0']=null; 
+                        if (db_type=='mssql') {
+                            mass_par_sql[id_par]['str']+='?';
+                        }
+                        else {
+                            mass_par_sql[id_par]['str']+=':p'+id_par+'_0';
+                        }
+                    }
                 }
                 else {
                     if (mass_val.length>0) {
@@ -863,14 +875,24 @@ function set_param_val_unolap(unolap_el,params_r,params_val) {
                 }
                 else if ($(par_un_olap_one).is('.select_add')) {
                     if (Array.isArray(par_un_olap_one_v)) {
-                        par_un_olap_one_v.forEach(function(item, index){
+                        if (par_un_olap_one_v.length>0) {
+                            par_un_olap_one_v.forEach(function(item, index){
+                                if (db_type=='mssql') {            
+                                    params_val[params_r['params_unolap'][key]+'_'+index]=item;
+                                }
+                                else if (db_type=='ora'){
+                                    params_val[':p'+params_r['params_unolap'][key]+'_'+index]=item;
+                                }
+                            });
+                        }
+                        else {
                             if (db_type=='mssql') {            
-                                params_val[params_r['params_unolap'][key]+'_'+index]=item;
+                                params_val[params_r['params_unolap'][key]+'_0']=null;
                             }
                             else if (db_type=='ora'){
-                                params_val[':p'+params_r['params_unolap'][key]+'_'+index]=item;
+                                params_val[':p'+params_r['params_unolap'][key]+'_0']=null;
                             }
-                        });
+                        }
                     }
                     else {
                         if (db_type=='mssql') {            
