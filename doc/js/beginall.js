@@ -431,6 +431,10 @@ function param_create(sql_true,md_v,params_group_v,unolap_id,is_olap_ma) {
                 params_olap[i_par]=tek_param;
             }
             else {
+                if (db_type!='mssql') {
+                    //для ORACLE нельзя передавать параметры в виде чисел
+                    sql_true=sql_true.substring(0,pos)+':p'+tek_param+sql_true.substring(pos+params_p[i_par].length+1);
+                }
                 params_unolap[i_par]=tek_param;
             }
         }
@@ -523,10 +527,12 @@ function param_create(sql_true,md_v,params_group_v,unolap_id,is_olap_ma) {
                         if (db_type=='mssql') {            
                             params_unolap[i_par]=tek_param;                        
                         }
-                        else if (db_type=='ora'){
+                        else  {
+                            //для ORACLE нельзя передавать параметры в виде чисел
+                            sql_true=sql_true.substring(0,pos)+':p'+tek_param+sql_true.substring(pos+params_p[i_par].length+1);
                             if (!exist_param(params_unolap,tek_param)) {
                                 params_unolap[i_par]=tek_param;                                               
-                            }                            
+                            } 
                         } 
                     }
                 }

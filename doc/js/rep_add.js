@@ -2329,15 +2329,16 @@ $(document).ready(function(){
             $(in_action_value).trigger("before_save_form");
             var name_rep=$('#div_name_rep #in_name_rep'),
                 sname_rep=$(name_rep).attr('sname'),
-                pr_save_ok=true,
+                pr_save_ok=true;
                 //обязательные поля
-                el_required=$(table_tag).find('li.required_add[action_type] input:checked');
+                //el_required=$(table_tag).find('li.required_add[action_type] input:checked');
             //проверки
             if ($(name_rep).val().length===0) {
                 pr_save_ok=false;
                 alert('Форма отчета не сохранена, введите его наименование');            
             }
-            $(el_required).each(function(i,elem) {
+            /* Такие проверки необходимы для пользовтелей, а не для разработчиков
+             $(el_required).each(function(i,elem) {
                 var action_type_v=$(elem).attr('action_type');
                 if (action_type_v=='input_add') {
                     var el_check=$(elem).closest('td').find('input.input_add[id="'+$(elem).attr('id')+'"]');
@@ -2366,7 +2367,7 @@ $(document).ready(function(){
                         alert('Не заполнен обязательный элемент "Поле c вызовом модального окна" (выделено фиолетовым цветом)'); 
                     }
                 }
-            });
+            });*/
             //console.log(name_rep);
             if (pr_save_ok) {
                 save_tab_data();
