@@ -825,7 +825,7 @@ function set_param_val_olap(params_group,params_r,params_val) {
             var param_one=$(params_group_el).filter('[id="'+params_r_da[key]+'"]');
             if ($(param_one).is('.in_param_val')) {
                 if (db_type=='mssql') {            
-                    params_val[key]=$(param_one).val();
+                    params_val[key+'_'+params_r_da[key]]=$(param_one).val();
                 }
                 else if (db_type=='ora'){
                     params_val[':'+params_r_da[key]]=$(param_one).val();
@@ -836,7 +836,7 @@ function set_param_val_olap(params_group,params_r,params_val) {
                 if (Array.isArray(val)) {
                     val.forEach(function(item, index){
                         if (db_type=='mssql') {            
-                            params_val[params_r_da[key]+'_'+index]=item;
+                            params_val[key+'_'+params_r_da[key]+'_'+index]=item;
                         }
                         else if (db_type=='ora'){
                             params_val[':'+params_r_da[key]+'_'+index]=item;
@@ -845,7 +845,7 @@ function set_param_val_olap(params_group,params_r,params_val) {
                 }
                 else {
                     if (db_type=='mssql') {            
-                        params_val[params_r_da[key]+'_0']=val;
+                        params_val[key+'_'+params_r_da[key]+'_0']=val;
                     }
                     else if (db_type=='ora'){
                         params_val[':'+params_r_da[key]+'_0']=val;
@@ -872,8 +872,11 @@ function set_param_val_unolap(unolap_el,params_r,params_val) {
                 }
 
                 if ($(par_un_olap_one).is('.input_add')) {
-                    if (db_type=='mssql') {            
-                        params_val[key]=par_un_olap_one_v;
+                    if (db_type=='mssql') { 
+                        //т.к. для MSSQL парметры задаются вопросом, то повторяющиеся параметры не учитываются, 
+                        //поэтому на этом этапе необходимо каждому параметру добавлять ключ в виде номера параметра,
+                        //чтобы при дубляже параметров получилось нужное кол-во значений для подстановок
+                        params_val[key+'_'+params_r['params_unolap'][key]]=par_un_olap_one_v;
                     }
                     else if (db_type=='ora'){
                         params_val[':p'+params_r['params_unolap'][key]]=par_un_olap_one_v;
@@ -884,7 +887,7 @@ function set_param_val_unolap(unolap_el,params_r,params_val) {
                         if (par_un_olap_one_v.length>0) {
                             par_un_olap_one_v.forEach(function(item, index){
                                 if (db_type=='mssql') {            
-                                    params_val[params_r['params_unolap'][key]+'_'+index]=item;
+                                    params_val[key+'_'+params_r['params_unolap'][key]+'_'+index]=item;
                                 }
                                 else if (db_type=='ora'){
                                     params_val[':p'+params_r['params_unolap'][key]+'_'+index]=item;
@@ -893,7 +896,7 @@ function set_param_val_unolap(unolap_el,params_r,params_val) {
                         }
                         else {
                             if (db_type=='mssql') {            
-                                params_val[params_r['params_unolap'][key]+'_0']=null;
+                                params_val[key+'_'+params_r['params_unolap'][key]+'_0']=null;
                             }
                             else if (db_type=='ora'){
                                 params_val[':p'+params_r['params_unolap'][key]+'_0']=null;
@@ -902,7 +905,7 @@ function set_param_val_unolap(unolap_el,params_r,params_val) {
                     }
                     else {
                         if (db_type=='mssql') {            
-                            params_val[params_r['params_unolap'][key]+'_0']=par_un_olap_one_v;
+                            params_val[key+'_'+params_r['params_unolap'][key]+'_0']=par_un_olap_one_v;
                         }
                         else if (db_type=='ora'){
                             params_val[':p'+params_r['params_unolap'][key]+'_0']=par_un_olap_one_v;
@@ -921,7 +924,7 @@ function set_param_val_unolap(unolap_el,params_r,params_val) {
                         }
                         par_un_olap_one_v.forEach(function(item, index){
                             if (db_type=='mssql') {            
-                                params_val[params_r['params_unolap'][key]+'_'+index]=item;
+                                params_val[key+'_'+params_r['params_unolap'][key]+'_'+index]=item;
                             }
                             else if (db_type=='ora'){
                                 params_val[':p'+params_r['params_unolap'][key]+'_'+index]=item;
@@ -930,7 +933,7 @@ function set_param_val_unolap(unolap_el,params_r,params_val) {
                     }
                     else {
                         if (db_type=='mssql') {            
-                            params_val[params_r['params_unolap'][key]+'_0']=par_un_olap_one_v;
+                            params_val[key+'_'+params_r['params_unolap'][key]+'_0']=par_un_olap_one_v;
                         }
                         else if (db_type=='ora'){
                             params_val[':p'+params_r['params_unolap'][key]+'_0']=par_un_olap_one_v;
@@ -3341,13 +3344,13 @@ $(document).ready(function() {
                                 var tek_tr=$(begin_tab_td).closest('tr');
                                 var tek_td=begin_tab_td;
                                 var count_tab_col=0;
-                                $(data.tab_html).find('tr').each(function(i,elem) {
+                                $(data_tab_html_tr).each(function(i,elem) {
                                     var elem_td=$(elem).find('td');
                                     if ($(elem_td).length>count_tab_col) {
                                         count_tab_col=$(elem_td).length;
                                     }
                                 }); 
-                                var count_tab_row=$(data.tab_html).find('tr').length;
+                                var count_tab_row=$(data_tab_html_tr).length;
                                 var thead=$(table_all_tag).find('thead:first tr:last td');
                                 var thead_last_index=$(thead).last().index();
                                 var count_dop_col=count_tab_col-thead_last_index+Number($(begin_tab_td).attr('id').split('-')[0]);
