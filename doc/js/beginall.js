@@ -350,7 +350,7 @@ function param_create(sql_true,md_v,params_group_v,unolap_id,is_olap_ma) {
     }    
     
     function pos_sl_simv(sql_true_v,pos_v) {
-        var mass_simv=[' ',',',')','(',';','&','%','\'','=','|','\n','\r'];
+        var mass_simv=['+',' ',',',')','(',';','&','%','\'','=','|','\n','\r'];
         var pos_simv=77777;
         mass_simv.forEach(function(element) {
             var pos_pr_v=sql_true_v.indexOf(element,(pos_v+1));
@@ -3037,23 +3037,35 @@ $(document).ready(function() {
         //получаем массив параметров и их значений для не olap параметров-строк-чисел-дат
         let unolap_el=$(table_tag_v).find('.input_add[action_type],.select_add[action_type],.in_modal_add_val[action_type]');
         if ($(params_r['params_unolap']).length>0) {
-            for (var key in params_r['params_unolap']) {
-                var par_un_olap_one=$(unolap_el).filter('[id="'+params_r['params_unolap'][key]+'"]');
-                if ($(par_un_olap_one).length===0) {
-                    alert('Не правильно указан параметр "'+params_r['params_unolap'][key]+'"');
-                    pr_norm_param=false;
-                }
-                else {
-                    var par_un_olap_one_v=$(par_un_olap_one).val(),
-                        par_un_olap_one_c=$(par_un_olap_one).closest('td').find('li.required_add[id="'+params_r['params_unolap'][key]+'"] input');
-                    if (!Array.isArray(par_un_olap_one_v)) {
-                        par_un_olap_one_v=String(par_un_olap_one_v).trim();
+            for (var key in params_r['params']) {
+                let prIn=false;
+                for (var keyU in params_r['params_unolap']) {
+                    if (params_r['params_unolap'][keyU]==params_r['params'][key]) {
+                        prIn=true;
+                        break;
                     }
-                    if (($(par_un_olap_one_c).prop('checked')) & (par_un_olap_one_v.length===0)) {
-                        alert('Не заполнен обязательный параметр "'+params_r['params_unolap'][key]+'"');
+                }
+                if (prIn) {
+                    //делаем по "params" а не "params_unolap" чтобы вывести на экран 
+                    //только один раз сообщение об ошибку с параметрами т.к. в случае mssql 
+                    //в "params_unolap" может повторяться несколько раз параметр один и тот же
+                    var par_un_olap_one=$(unolap_el).filter('[id="'+params_r['params_unolap'][key]+'"]');
+                    if ($(par_un_olap_one).length===0) {
+                        alert('Не правильно указан параметр "'+params_r['params_unolap'][key]+'"');
                         pr_norm_param=false;
                     }
-                }
+                    else {
+                        var par_un_olap_one_v=$(par_un_olap_one).val(),
+                            par_un_olap_one_c=$(par_un_olap_one).closest('td').find('li.required_add[id="'+params_r['params_unolap'][key]+'"] input');
+                        if (!Array.isArray(par_un_olap_one_v)) {
+                            par_un_olap_one_v=String(par_un_olap_one_v).trim();
+                        }
+                        if (($(par_un_olap_one_c).prop('checked')) & (par_un_olap_one_v.length===0)) {
+                            alert('Не заполнен обязательный параметр "'+params_r['params_unolap'][key]+'"');
+                            pr_norm_param=false;
+                        }
+                    }
+                }    
             }
         }    
         if (pr_norm_param) {
@@ -3062,8 +3074,31 @@ $(document).ready(function() {
         else {
             return; 
         }
+                
         
         if ($(params_val).length>0) {
+            if (($(params_r['params_unolap']).length>0) & ($(params_r['params_olap']).length>0) & (db_type=='mssql')) {
+                //дополнительная сортировка параметров для MSSQL
+                //должны передать строго в последовательности как в запросе, 
+                //а выше делим на два блока которые могут поломать последовательность                
+                let params_all_l=params_r['params_all'],
+                    params_val_sort={};    
+                for (var key in params_all_l) {
+                    let prBegin=false,
+                        tekKey=String(key);
+                    for (var key_v in params_val) {
+                        if (key_v.indexOf(tekKey+'_')===0) {
+                            params_val_sort[key_v]=params_val[key_v];
+                            prBegin=true;
+                        }
+                        else if (prBegin) {
+                            break;
+                        }
+                    }
+                }
+                params_val=params_val_sort;
+                
+            }    
             params['params_val']=JSON.stringify(params_val);  
         }    
         
