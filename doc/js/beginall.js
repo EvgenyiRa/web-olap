@@ -3047,7 +3047,7 @@ $(document).ready(function() {
                 }
                 if (prIn) {
                     //делаем по "params" а не "params_unolap" чтобы вывести на экран 
-                    //только один раз сообщение об ошибку с параметрами т.к. в случае mssql 
+                    //только один раз сообщение об ошибке с параметрами т.к. в случае mssql 
                     //в "params_unolap" может повторяться несколько раз параметр один и тот же
                     var par_un_olap_one=$(unolap_el).filter('[id="'+params_r['params_unolap'][key]+'"]');
                     if ($(par_un_olap_one).length===0) {
@@ -3248,330 +3248,910 @@ $(document).ready(function() {
                 pr_tab_before=true;
                 //save_tab_data(); делаем теперь всегда вконце для корректной работы плагина                            
             }
-            $(begin_tab_td).html('<img src="/img/loading.gif" id="loading_'+id_t+'" width=250 height="auto">');            
             console.log(params);
             var time00 = performance.now();
-            $(in_action_value).trigger('before_load_data'+id_t);
-            //если страница есть, то есть блок страничный
-            let page_panel=$(gp).find('div.page_panel');
-            if (!!get_page) {
-                params['get_page']=get_page;
-                get_page=undefined;
-                if ($(page_panel).find('img').length>0) {
-                    //передаем максимальную страницу, если ещё не подгрузилось            
-                    params['max_page']=$(page_panel).find('a.page_control[id!="next"]:last').text();
+            params['pr_ok']=true;
+            $(in_action_value).trigger('before_load_data'+id_t,params);
+            if (params['pr_ok']) {
+                $(begin_tab_td).html('<img src="/img/loading.gif" id="loading_'+id_t+'" width=250 height="auto">');                        
+                //если страница есть, то есть блок страничный
+                let page_panel=$(gp).find('div.page_panel');
+                if (!!get_page) {
+                    params['get_page']=get_page;
+                    get_page=undefined;
+                    if ($(page_panel).find('img').length>0) {
+                        //передаем максимальную страницу, если ещё не подгрузилось            
+                        params['max_page']=$(page_panel).find('a.page_control[id!="next"]:last').text();
+                    }
+                }  
+                else {
+                    $(page_panel).remove();
+                    page_panel=undefined;
+                    d2_load_page[id_t]=undefined;
                 }
-            }  
-            else {
-                $(page_panel).remove();
-                page_panel=undefined;
-                d2_load_page[id_t]=undefined;
-            }
-            $.ajax({
-                type: "POST",
-                url: "/get-olap.php",
-                data: params,
-                dataType:'json',
-                success: function(data){                                                        
-                    console.log(data); 
-                    //console.log(JSON.parse(data)); 
-                    $(begin_tab_td).empty();
-                    //$(gp).find('div.page_panel').remove();
-                    if (!!!data.pr_null) {
-                        if (!!data.mass_page) {
-                            let tableDefPage_v=parseInt(data.tableDefPage);
-                            //функция опроса загрузки страниц
-                            function getStateLoadPages() {
-                                d2_load_page[id_t]=true;
-                                var pr_ajax_return=true;
-                                var MyInt2= setInterval(function(){
-                                    if (!!!d2_load_page[id_t]) {
-                                        $(page_panel).find('img').remove();
-                                        clearInterval (MyInt2);
-                                    }
-                                    else {
-                                        if (pr_ajax_return) {
-                                            var params2={};
-                                            params2['in_rep_id']=params['in_rep_id'];
-                                            params2['code_in']='getOLAP2DPages';
-                                            page_panel=$(gp).find('div.page_panel');
-                                            params2['max_page']=$(page_panel).find('a.page_control[id!="next"]:last').text();
-                                            params2['tab_id']=id_t;
-                                            pr_ajax_return=false;
-                                            $.ajax({
-                                                type: "POST",
-                                                url: "/get-data.php",
-                                                data: params2,
-                                                dataType:'json',  
-                                                success: function(html) {                    
-                                                    console.log(html);
-                                                    //если получили признак окончания, то обнуляем признак
-                                                    if (!!!html['str_block']) {
+                $.ajax({
+                    type: "POST",
+                    url: "/get-olap.php",
+                    data: params,
+                    dataType:'json',
+                    success: function(data){                                                        
+                        console.log(data); 
+                        //console.log(JSON.parse(data)); 
+                        $(begin_tab_td).empty();
+                        //$(gp).find('div.page_panel').remove();
+                        if (!!!data.pr_null) {
+                            if (!!data.mass_page) {
+                                let tableDefPage_v=parseInt(data.tableDefPage);
+                                //функция опроса загрузки страниц
+                                function getStateLoadPages() {
+                                    d2_load_page[id_t]=true;
+                                    var pr_ajax_return=true;
+                                    var MyInt2= setInterval(function(){
+                                        if (!!!d2_load_page[id_t]) {
+                                            $(page_panel).find('img').remove();
+                                            clearInterval (MyInt2);
+                                        }
+                                        else {
+                                            if (pr_ajax_return) {
+                                                var params2={};
+                                                params2['in_rep_id']=params['in_rep_id'];
+                                                params2['code_in']='getOLAP2DPages';
+                                                page_panel=$(gp).find('div.page_panel');
+                                                params2['max_page']=$(page_panel).find('a.page_control[id!="next"]:last').text();
+                                                params2['tab_id']=id_t;
+                                                pr_ajax_return=false;
+                                                $.ajax({
+                                                    type: "POST",
+                                                    url: "/get-data.php",
+                                                    data: params2,
+                                                    dataType:'json',  
+                                                    success: function(html) {                    
+                                                        console.log(html);
+                                                        //если получили признак окончания, то обнуляем признак
+                                                        if (!!!html['str_block']) {
+                                                            d2_load_page[id_t]=undefined;
+                                                        } 
+                                                        var mass_page2=JSON.parse(html.mass_page);
+                                                        var pc_last=$(page_panel).find('.page_control:last');
+                                                        for (var key in mass_page2) {
+                                                            $(pc_last).before('<a class="page_control" title="'+(tableDefPage_v*(parseInt(mass_page2[key])-1))+'-'+(tableDefPage_v*parseInt(mass_page2[key]))+'" id="'+mass_page2[key]+'">'+mass_page2[key]+'</a>');
+                                                        }
+                                                        pr_ajax_return=true;
+                                                    },
+                                                    error: function(xhr, status, error) {
                                                         d2_load_page[id_t]=undefined;
-                                                    } 
-                                                    var mass_page2=JSON.parse(html.mass_page);
-                                                    var pc_last=$(page_panel).find('.page_control:last');
-                                                    for (var key in mass_page2) {
-                                                        $(pc_last).before('<a class="page_control" title="'+(tableDefPage_v*(parseInt(mass_page2[key])-1))+'-'+(tableDefPage_v*parseInt(mass_page2[key]))+'" id="'+mass_page2[key]+'">'+mass_page2[key]+'</a>');
+                                                        console.log(xhr.responseText + '|\n' + status + '|\n' +error);
                                                     }
-                                                    pr_ajax_return=true;
-                                                },
-                                                error: function(xhr, status, error) {
-                                                    d2_load_page[id_t]=undefined;
-                                                    console.log(xhr.responseText + '|\n' + status + '|\n' +error);
-                                                }
-                                            });
+                                                });
+                                            }
                                         }
+                                    },1500);
+                                }    
+
+                                var mass_page=JSON.parse(data.mass_page);
+                                if ($(page_panel).length===0) {
+                                    $(gp).append('<div class="page_panel" id="'+id_t+'"><a class="page_control" id="prev"><<</a>\n\
+                                                    <a class="page_control" title="1-'+data.tableDefPage+'" id="1" pr_change="true">1</a>\n\
+                                                    <a class="page_control" id="next">>></a>\n\
+                                                    <img src="/img/loading.gif" id="p_loading_'+id_t+'" style="width:auto;height:30px">\n\
+                                                 </div>');
+                                    getStateLoadPages();
+                                }
+                                else {
+                                    //добавляем в конец возможные новые страницы
+                                    if (!!params['max_page']) {
+                                        //если уже запущен в другом запросе то отправим признак остановки и подождем пока не остановится, признаком этого считаем наличие картинки загрузки
+                                        var pc_last=$(page_panel).find('.page_control:last');
+                                        if (!!d2_load_page[id_t]) {
+                                            d2_load_page[id_t]=undefined;                                    
+                                            var MyInt1= setInterval(function(){
+                                                if ($(page_panel).find('img').length===0) {
+                                                    clearInterval (MyInt1);                                                
+                                                    for (var key in mass_page) {
+                                                        $(pc_last).before('<a class="page_control" title="'+(tableDefPage_v*(parseInt(mass_page[key])-1))+'-'+(tableDefPage_v*parseInt(mass_page[key]))+'" id="'+mass_page[key]+'">id="'+mass_page[key]+'"</a>');
+                                                    }
+                                                    getStateLoadPages();
+                                                }
+                                            },500); 
+                                        }                                        
                                     }
-                                },1500);
-                            }    
-                            
-                            var mass_page=JSON.parse(data.mass_page);
-                            if ($(page_panel).length===0) {
-                                $(gp).append('<div class="page_panel" id="'+id_t+'"><a class="page_control" id="prev"><<</a>\n\
-                                                <a class="page_control" title="1-'+data.tableDefPage+'" id="1" pr_change="true">1</a>\n\
-                                                <a class="page_control" id="next">>></a>\n\
-                                                <img src="/img/loading.gif" id="p_loading_'+id_t+'" style="width:auto;height:30px">\n\
-                                             </div>');
-                                getStateLoadPages();
+                                }                            
                             }
-                            else {
-                                //добавляем в конец возможные новые страницы
-                                if (!!params['max_page']) {
-                                    //если уже запущен в другом запросе то отправим признак остановки и подождем пока не остановится, признаком этого считаем наличие картинки загрузки
-                                    var pc_last=$(page_panel).find('.page_control:last');
-                                    if (!!d2_load_page[id_t]) {
-                                        d2_load_page[id_t]=undefined;                                    
-                                        var MyInt1= setInterval(function(){
-                                            if ($(page_panel).find('img').length===0) {
-                                                clearInterval (MyInt1);                                                
-                                                for (var key in mass_page) {
-                                                    $(pc_last).before('<a class="page_control" title="'+(tableDefPage_v*(parseInt(mass_page[key])-1))+'-'+(tableDefPage_v*parseInt(mass_page[key]))+'" id="'+mass_page[key]+'">id="'+mass_page[key]+'"</a>');
-                                                }
-                                                getStateLoadPages();
-                                            }
-                                        },500); 
-                                    }                                        
-                                }
-                            }                            
-                        }
-                        if (!pr_olap_design) {
-                            $(tab_before).filter('td[olap_td_class="td_str_val"],td[olap_td_class="td_val_val"]').empty();
-                        }    
-                        var data_tab_html_tr=$(data.tab_html).find('tr');
-                        console.log('Обрабатывается '+$(data_tab_html_tr).length+' строк...');
-                        var KByteLength_data_rep=Math.round(byteLength(data.tab_html)/1024);                        
-                        console.log('Объём задействованной памяти, KБ: '+KByteLength_data_rep);                                                       
-                        //если превышает лимит ты обрезаем строки пока не поместится, решено на уровне пагинации
-                        var const_KB=6000;
-                        if (KByteLength_data_rep>const_KB) {
-                            alert('Возможны проблемы с работой браузера. Объем выводимой информации, KB: '+KByteLength_data_rep);
-                        }
-                        var pr_encore=true;
-                        var pr_encore_this=false;  
-                        var tab_before_olap,tab_before_olap_tr,tr_pok_null,tr_pok_name_first,tr_pok_name_all,tr_pok,tr_name_col,tr_tab_all,td_val_val_last,
-                            td_val_val_last_border,tr_tab_last,td_pok_last_border,td_pok_name_all,td_pok_name_first,td_pok_first_border,tab_before_olap_tr_pok,
-                            tr_tab_val_last,time0,tr_pok_td_last,td_val_name_first_border_left,tr_tab_str_val_last;
-                        while (pr_encore) {
-                            if ((!pr_tab_before) || (pr_encore_this)) {
-                                var time = performance.now();
-                                begin_tab_td=$(parend_td).closest('tr').next().find('#'+parend_td_mass_index[0]+'-'+(Number(parend_td_mass_index[1])+1));
-                                var tek_tr=$(begin_tab_td).closest('tr');
-                                var tek_td=begin_tab_td;
-                                var count_tab_col=0;
-                                $(data_tab_html_tr).each(function(i,elem) {
-                                    var elem_td=$(elem).find('td');
-                                    if ($(elem_td).length>count_tab_col) {
-                                        count_tab_col=$(elem_td).length;
-                                    }
-                                }); 
-                                var count_tab_row=$(data_tab_html_tr).length;
-                                var thead=$(table_all_tag).find('thead:first tr:last td');
-                                var thead_last_index=$(thead).last().index();
-                                var count_dop_col=count_tab_col-thead_last_index+Number($(begin_tab_td).attr('id').split('-')[0]);
-                                var ColWidth_mass=[];
-                                for (var i = 1; i <= count_dop_col; i++) {
-                                    ColWidth_mass.push(tab_obj.defaultColWidth[0]);
-                                }
-                                if (count_dop_col>0) {
-                                    $ ('#my'). jexcel ('insertColumn', count_dop_col,{colWidths:ColWidth_mass,updSelection:false,in_end:true,not_log:true},(thead_last_index-1));                                  
-                                }
-                                $ ('#my'). jexcel ('insertRow', count_tab_row,($(tek_tr).index()),{updSelection:false,not_log:true});
-                                tek_tr=$(parend_tr).next();
-                                begin_tab_td=$(tek_tr).find('#'+parend_td_mass_index[0]+'-'+(Number(parend_td_mass_index[1])+1));                                
-                                var begin_tab_tr=tek_tr;
-                                tek_td=begin_tab_td;  
-                               
-                                if (pr_encore_this) {
-                                    tr_pok_name_first=$(tab_before_olap_tr_pok).first();
-                                    if ($(tr_pok_name_first).length>0) {
-                                        $(tr_pok_name_first).find('td[olap_tab_id='+id_t+']').each(function(i,elem) {
-                                            var mass_index=$(elem).attr('id').split('-');
-                                            $(elem).attr('id',mass_index[0]).removeClass('c'+mass_index[0]+' r'+mass_index[1]);
-                                        });
-                                        td_pok_name_first=$(tr_pok_name_first).find('td[olap_tab_id='+id_t+']');
-                                        var tab_before_olap_tr_pok_3=$(tab_before_olap_tr_pok).filter('tr[olap_tr_index_'+id_t+'="3"]');
-                                        if ($(tab_before_olap_tr_pok_3).find('[olap_td_class="td_pok_name"]').length>0) {
-                                            tr_pok_name_all=tab_before_olap_tr_pok_3;
+                            if (!pr_olap_design) {
+                                $(tab_before).filter('td[olap_td_class="td_str_val"],td[olap_td_class="td_val_val"]').empty();
+                            }    
+                            var data_tab_html_tr=$(data.tab_html).find('tr');
+                            console.log('Обрабатывается '+$(data_tab_html_tr).length+' строк...');
+                            var KByteLength_data_rep=Math.round(byteLength(data.tab_html)/1024);                        
+                            console.log('Объём задействованной памяти, KБ: '+KByteLength_data_rep);                                                       
+                            //если превышает лимит ты обрезаем строки пока не поместится, решено на уровне пагинации
+                            var const_KB=6000;
+                            if (KByteLength_data_rep>const_KB) {
+                                alert('Возможны проблемы с работой браузера. Объем выводимой информации, KB: '+KByteLength_data_rep);
+                            }
+                            var pr_encore=true;
+                            var pr_encore_this=false;  
+                            var tab_before_olap,tab_before_olap_tr,tr_pok_null,tr_pok_name_first,tr_pok_name_all,tr_pok,tr_name_col,tr_tab_all,td_val_val_last,
+                                td_val_val_last_border,tr_tab_last,td_pok_last_border,td_pok_name_all,td_pok_name_first,td_pok_first_border,tab_before_olap_tr_pok,
+                                tr_tab_val_last,time0,tr_pok_td_last,td_val_name_first_border_left,tr_tab_str_val_last;
+                            while (pr_encore) {
+                                if ((!pr_tab_before) || (pr_encore_this)) {
+                                    var time = performance.now();
+                                    begin_tab_td=$(parend_td).closest('tr').next().find('#'+parend_td_mass_index[0]+'-'+(Number(parend_td_mass_index[1])+1));
+                                    var tek_tr=$(begin_tab_td).closest('tr');
+                                    var tek_td=begin_tab_td;
+                                    var count_tab_col=0;
+                                    $(data_tab_html_tr).each(function(i,elem) {
+                                        var elem_td=$(elem).find('td');
+                                        if ($(elem_td).length>count_tab_col) {
+                                            count_tab_col=$(elem_td).length;
                                         }
-                                        else {
-                                            tr_pok_name_all=tr_pok_name_first;
+                                    }); 
+                                    var count_tab_row=$(data_tab_html_tr).length;
+                                    var thead=$(table_all_tag).find('thead:first tr:last td');
+                                    var thead_last_index=$(thead).last().index();
+                                    var count_dop_col=count_tab_col-thead_last_index+Number($(begin_tab_td).attr('id').split('-')[0]);
+                                    var ColWidth_mass=[];
+                                    for (var i = 1; i <= count_dop_col; i++) {
+                                        ColWidth_mass.push(tab_obj.defaultColWidth[0]);
+                                    }
+                                    if (count_dop_col>0) {
+                                        $ ('#my'). jexcel ('insertColumn', count_dop_col,{colWidths:ColWidth_mass,updSelection:false,in_end:true,not_log:true},(thead_last_index-1));                                  
+                                    }
+                                    $ ('#my'). jexcel ('insertRow', count_tab_row,($(tek_tr).index()),{updSelection:false,not_log:true});
+                                    tek_tr=$(parend_tr).next();
+                                    begin_tab_td=$(tek_tr).find('#'+parend_td_mass_index[0]+'-'+(Number(parend_td_mass_index[1])+1));                                
+                                    var begin_tab_tr=tek_tr;
+                                    tek_td=begin_tab_td;  
+
+                                    if (pr_encore_this) {
+                                        tr_pok_name_first=$(tab_before_olap_tr_pok).first();
+                                        if ($(tr_pok_name_first).length>0) {
+                                            $(tr_pok_name_first).find('td[olap_tab_id='+id_t+']').each(function(i,elem) {
+                                                var mass_index=$(elem).attr('id').split('-');
+                                                $(elem).attr('id',mass_index[0]).removeClass('c'+mass_index[0]+' r'+mass_index[1]);
+                                            });
+                                            td_pok_name_first=$(tr_pok_name_first).find('td[olap_tab_id='+id_t+']');
+                                            var tab_before_olap_tr_pok_3=$(tab_before_olap_tr_pok).filter('tr[olap_tr_index_'+id_t+'="3"]');
+                                            if ($(tab_before_olap_tr_pok_3).find('[olap_td_class="td_pok_name"]').length>0) {
+                                                tr_pok_name_all=tab_before_olap_tr_pok_3;
+                                            }
+                                            else {
+                                                tr_pok_name_all=tr_pok_name_first;
+                                            } 
+                                            $(tr_pok_name_all).find('td[olap_tab_id='+id_t+']').each(function(i,elem) {
+                                                var mass_index=$(elem).attr('id').split('-');
+                                                $(elem).attr('id',mass_index[0]).removeClass('c'+mass_index[0]+' r'+mass_index[1]);
+                                            });
+                                            td_pok_name_all=$(tr_pok_name_all).find('td[olap_tab_id='+id_t+']');
+
+                                            tr_pok=$(tab_before_olap_tr_pok).last();
+                                            $(tr_pok).find('td[olap_tab_id='+id_t+']').each(function(i,elem) {
+                                                var mass_index=$(elem).attr('id').split('-');
+                                                $(elem).attr('id',mass_index[0]).removeClass('c'+mass_index[0]+' r'+mass_index[1]);
+                                            });
+                                            td_pok_last_border=$(tr_pok).find('td[olap_tab_id='+id_t+']:last').css('border-right');
+                                            if ($(tr_pok).find('td[olap_tab_id='+id_t+']').length>2) {                                                                                                                                    
+                                                $(tr_pok).find('td[olap_tab_id='+id_t+']').last().remove(); 
+                                            }    
+                                            else {
+                                                if ($(tr_pok).find('td[olap_tab_id='+id_t+']').length==2) {
+                                                    var td_pok_first_border_right=$(tr_pok).find('td[olap_tab_id='+id_t+']:first').css('border-right');
+                                                    if (td_pok_first_border_right!='') {
+                                                        $(tr_pok).find('td[olap_tab_id='+id_t+']:last').css('border-right',td_pok_first_border_right);
+                                                    }
+                                                }                                            
+                                            }
+                                            td_pok_first_border=$(tr_pok).find('td[olap_tab_id='+id_t+']:first').css('border-left');
+                                            tr_pok_td_last=$(tr_pok).find('td[olap_tab_id='+id_t+']').last();
+                                            //console.log($(tr_pok_td_last).css('border'));                                        
                                         } 
-                                        $(tr_pok_name_all).find('td[olap_tab_id='+id_t+']').each(function(i,elem) {
+
+                                        var td_val_name=$(tr_name_col).find('td[olap_tab_id='+id_t+']');
+                                        $(td_val_name).each(function(i,elem) {
                                             var mass_index=$(elem).attr('id').split('-');
                                             $(elem).attr('id',mass_index[0]).removeClass('c'+mass_index[0]+' r'+mass_index[1]);
                                         });
-                                        td_pok_name_all=$(tr_pok_name_all).find('td[olap_tab_id='+id_t+']');
-                                        
-                                        tr_pok=$(tab_before_olap_tr_pok).last();
-                                        $(tr_pok).find('td[olap_tab_id='+id_t+']').each(function(i,elem) {
-                                            var mass_index=$(elem).attr('id').split('-');
-                                            $(elem).attr('id',mass_index[0]).removeClass('c'+mass_index[0]+' r'+mass_index[1]);
-                                        });
-                                        td_pok_last_border=$(tr_pok).find('td[olap_tab_id='+id_t+']:last').css('border-right');
-                                        if ($(tr_pok).find('td[olap_tab_id='+id_t+']').length>2) {                                                                                                                                    
-                                            $(tr_pok).find('td[olap_tab_id='+id_t+']').last().remove(); 
+                                        td_val_name_first_border_left=$(td_val_name).first().css('border-left');                                    
+
+                                        tr_tab_val_last=$(tr_tab_all).find('td[olap_tab_id='+id_t+'][olap_td_class="td_val_val"]:first').css('border-left','');
+                                        tr_tab_str_val_last=$(tr_tab_all).find('td[olap_tab_id='+id_t+'][olap_td_class="td_str_val"]:first').css('border-left','');
+                                        td_val_val_last_border=$(tr_tab_all).find('td[olap_tab_id='+id_t+']:last').css('border-right');                                                                                                                                               
+                                    } 
+
+                                    var time2 = performance.now();
+                                    console.log('время подготовки данных: '+secondstotime((time2-time)/1000));
+                                    $(data_tab_html_tr).each(function(i,elem) { 
+                                        var count_tab_col_dop=count_tab_col;
+                                        var i2_wsp=-1
+                                        var last_olap_class='';
+                                        $(tek_tr).attr('olap_tr_class_'+id_t,elem.className)
+                                            .attr('olap_tr_id_'+id_t,elem.id)
+                                            .attr('olap_tr_index_'+id_t,i);
+                                        if (pr_2D) {
+                                            //для 2d режима возможно использование невидимых полей в атрибутах строки, для 3D пользуемся только "input type=hidden"
+                                            var olap_unvis_v=$(elem).attr('olap_unvis_'+id_t);
+                                            if (!!olap_unvis_v) {
+                                                $(tek_tr).attr('olap_unvis_'+id_t,olap_unvis_v);
+                                            }  
                                         }    
-                                        else {
-                                            if ($(tr_pok).find('td[olap_tab_id='+id_t+']').length==2) {
-                                                var td_pok_first_border_right=$(tr_pok).find('td[olap_tab_id='+id_t+']:first').css('border-right');
-                                                if (td_pok_first_border_right!='') {
-                                                    $(tr_pok).find('td[olap_tab_id='+id_t+']:last').css('border-right',td_pok_first_border_right);
-                                                }
-                                            }                                            
-                                        }
-                                        td_pok_first_border=$(tr_pok).find('td[olap_tab_id='+id_t+']:first').css('border-left');
-                                        tr_pok_td_last=$(tr_pok).find('td[olap_tab_id='+id_t+']').last();
-                                        //console.log($(tr_pok_td_last).css('border'));                                        
-                                    } 
-                                                                        
-                                    var td_val_name=$(tr_name_col).find('td[olap_tab_id='+id_t+']');
-                                    $(td_val_name).each(function(i,elem) {
-                                        var mass_index=$(elem).attr('id').split('-');
-                                        $(elem).attr('id',mass_index[0]).removeClass('c'+mass_index[0]+' r'+mass_index[1]);
-                                    });
-                                    td_val_name_first_border_left=$(td_val_name).first().css('border-left');                                    
-                                    
-                                    tr_tab_val_last=$(tr_tab_all).find('td[olap_tab_id='+id_t+'][olap_td_class="td_val_val"]:first').css('border-left','');
-                                    tr_tab_str_val_last=$(tr_tab_all).find('td[olap_tab_id='+id_t+'][olap_td_class="td_str_val"]:first').css('border-left','');
-                                    td_val_val_last_border=$(tr_tab_all).find('td[olap_tab_id='+id_t+']:last').css('border-right');                                                                                                                                               
-                                } 
-                                
-                                var time2 = performance.now();
-                                console.log('время подготовки данных: '+secondstotime((time2-time)/1000));
-                                $(data_tab_html_tr).each(function(i,elem) { 
-                                    var count_tab_col_dop=count_tab_col;
-                                    var i2_wsp=-1
-                                    var last_olap_class='';
-                                    $(tek_tr).attr('olap_tr_class_'+id_t,elem.className)
-                                        .attr('olap_tr_id_'+id_t,elem.id)
-                                        .attr('olap_tr_index_'+id_t,i);
-                                    if (pr_2D) {
-                                        //для 2d режима возможно использование невидимых полей в атрибутах строки, для 3D пользуемся только "input type=hidden"
-                                        var olap_unvis_v=$(elem).attr('olap_unvis_'+id_t);
-                                        if (!!olap_unvis_v) {
-                                            $(tek_tr).attr('olap_unvis_'+id_t,olap_unvis_v);
-                                        }  
-                                    }    
-                                    $(elem).find('td').each(function(i2,elem2) {
-                                        $(tek_td).attr('olap_td_class',elem2.className).html($(elem2).html()).attr('olap_td_id',elem2.id).attr('olap_tab_id',id_t).attr('colspan',$(elem2).attr('colspan')).attr('rowspan',$(elem2).attr('rowspan')).attr('olap_td_index',i2).attr('olap_tr_index',i);
-                                        if (pr_encore_this) {                                    
-                                            var td_before;
-                                            var el_olap_class=elem2.className;
-                                            if (el_olap_class=='td_val_val') {
-                                                td_before=tr_tab_val_last;  
-                                                $(tek_td).addClass($(td_before).attr("class")).attr('style',$(td_before).attr('style'));
-                                            }                                               
-                                            else if (el_olap_class=='td_str_val') {
-                                                td_before=$(tr_tab_all).find('[olap_td_index="'+i2+'"][olap_tab_id='+id_t+']'); 
-                                                if ($(td_before).attr('olap_td_class')!=el_olap_class) {
-                                                    td_before=tr_tab_str_val_last; 
-                                                }
-                                                $(tek_td).addClass($(td_before).attr("class")).attr('style',$(td_before).attr('style'));
-                                            }                                                                 
-                                        }
-
-                                        tek_td=$(tek_td).next(); 
-                                        i2_wsp=i2;
-                                        last_olap_class=elem2.className;
-                                    });                                                                 
-
-                                    //добавим недостающие индексы (может быть только в ячейках значений) пропущенных по причине отсутствия значений при построении набора данных
-                                    //необходимо при повторном запуске                                
-                                    if ((count_tab_col_dop-1-i2_wsp>0) & ($(tek_tr).find('td[olap_td_class="td_val_val"]').length>0) ) {
-                                        if ((last_olap_class.indexOf('td_pok')>-1) || (last_olap_class.indexOf('td_pok_name')>-1)
-                                             || (tek_tr===begin_tab_tr)) {
-                                            count_tab_col_dop-=$(begin_tab_td).attr('colspan')+1; 
-                                        }
-                                        for (var id = (i2_wsp+1); id <= (count_tab_col_dop-1); id++) {
-                                            $(tek_td).attr('olap_td_class','td_val_val').attr('olap_tab_id',id_t).attr('colspan','1').attr('rowspan','1').attr('olap_td_index',id).attr('olap_tr_index',i);
+                                        $(elem).find('td').each(function(i2,elem2) {
+                                            $(tek_td).attr('olap_td_class',elem2.className).html($(elem2).html()).attr('olap_td_id',elem2.id).attr('olap_tab_id',id_t).attr('colspan',$(elem2).attr('colspan')).attr('rowspan',$(elem2).attr('rowspan')).attr('olap_td_index',i2).attr('olap_tr_index',i);
                                             if (pr_encore_this) {                                    
-                                                $(tek_td).addClass($(tr_tab_val_last).attr("class")).attr('style',$(tr_tab_val_last).attr('style'));                                                                                                                   
+                                                var td_before;
+                                                var el_olap_class=elem2.className;
+                                                if (el_olap_class=='td_val_val') {
+                                                    td_before=tr_tab_val_last;  
+                                                    $(tek_td).addClass($(td_before).attr("class")).attr('style',$(td_before).attr('style'));
+                                                }                                               
+                                                else if (el_olap_class=='td_str_val') {
+                                                    td_before=$(tr_tab_all).find('[olap_td_index="'+i2+'"][olap_tab_id='+id_t+']'); 
+                                                    if ($(td_before).attr('olap_td_class')!=el_olap_class) {
+                                                        td_before=tr_tab_str_val_last; 
+                                                    }
+                                                    $(tek_td).addClass($(td_before).attr("class")).attr('style',$(td_before).attr('style'));
+                                                }                                                                 
                                             }
-                                            tek_td=$(tek_td).next();
-                                        }
-                                    } 
-                                    
-                                    var tek_tds;
-                                    if ((pr_encore_this) & (!!td_val_val_last_border) & ($(tek_tr).attr('olap_tr_class_'+id_t)=='tr_tab')) {
-                                        tek_tds=$(tek_tr).find('td[olap_tab_id='+id_t+']');
-                                        $(tek_tds).last().css('border-right',td_val_val_last_border);
-                                    }   
-                                    if ((pr_encore_this) & ($(tek_tr).attr('olap_tr_class_'+id_t)=='tr_tab') & (!!td_val_name_first_border_left)) {
-                                        if (!!!tek_tds) {
-                                            tek_tds=$(tek_tr).find('td[olap_tab_id='+id_t+']');
-                                        }
-                                        $(tek_tds).first().css('border-left',td_val_name_first_border_left);
-                                    }
 
-                                    tek_tr=$(tek_tr).next();
-                                    tek_td=$(tek_tr).find('[id^="'+parend_td_mass_index[0]+'-"]');                                    
-                                }); 
-                                
-                                var time3 = performance.now();
-                                console.log('время заполнения данными: '+secondstotime((time3-time2)/1000));
-                                
-                                var rep_tab=$(table_tag_v).find('td[olap_tab_id='+id_t+']');
-                                var rep_tab_tr=$(rep_tab).closest('tr');
-                                //в любом случае запоминаем шапку, чтобы использовать в lite режиме для установки возможного признака перестроения
-                                rep_tab_tr_head=$(rep_tab_tr).filter('[olap_tr_class_'+id_t+'="tr_pok"],[olap_tr_class_'+id_t+'="tr_name_col"]');
-                                //шапка в чистом виде (без дизайна, только разметка)
-                                data_tab_tr_head=$(data_tab_html_tr).filter('tr.tr_pok,tr.tr_name_col');
-                                var pr_null_all=false;                                    
-                                if (!pr_2D) {
-                                    //убираем "дыры" (ввести параметр надобности)
-                                    var md_tab_val_length=$(md).find('.structure.d-table .d-table[id="tab_val"] .SYSNAME').length;
-                                    if ($(md).find('.structure.d-table .d-table[id="tab_pok"] .SYSNAME').length>0) {
-                                        $(rep_tab_tr).filter('[olap_tr_class_'+id_t+'="tr_pok"]:last').find('[olap_td_class="td_pok"]').each(function(i,elem) {
-                                                var pr_null=true;
-                                                var index_beg=$(begin_tab_td).index()+$(md).find('.structure.d-table .d-table[id="tab_str"] .SYSNAME').length+($(elem).index()-$(begin_tab_td).index())*$(md).find('.structure.d-table .d-table[id="tab_val"] .SYSNAME').length;
-                                                $(rep_tab_tr).filter('[olap_tr_class_'+id_t+'="tr_tab"]').each(function(i2,elem2) {
-                                                    for (var i = index_beg; i < (index_beg+$(md).find('.structure.d-table .d-table[id="tab_val"] .SYSNAME').length); i++) {
-                                                        var elem_dyr=$(elem2).find('td:eq('+i+')')
-                                                        if ($(elem_dyr).length>0) {
-                                                            var html_v_dyr=$(elem_dyr).html();                                                        
-                                                            if ((html_v_dyr).trim()!=='') {
+                                            tek_td=$(tek_td).next(); 
+                                            i2_wsp=i2;
+                                            last_olap_class=elem2.className;
+                                        });                                                                 
+
+                                        //добавим недостающие индексы (может быть только в ячейках значений) пропущенных по причине отсутствия значений при построении набора данных
+                                        //необходимо при повторном запуске                                
+                                        if ((count_tab_col_dop-1-i2_wsp>0) & ($(tek_tr).find('td[olap_td_class="td_val_val"]').length>0) ) {
+                                            if ((last_olap_class.indexOf('td_pok')>-1) || (last_olap_class.indexOf('td_pok_name')>-1)
+                                                 || (tek_tr===begin_tab_tr)) {
+                                                count_tab_col_dop-=$(begin_tab_td).attr('colspan')+1; 
+                                            }
+                                            for (var id = (i2_wsp+1); id <= (count_tab_col_dop-1); id++) {
+                                                $(tek_td).attr('olap_td_class','td_val_val').attr('olap_tab_id',id_t).attr('colspan','1').attr('rowspan','1').attr('olap_td_index',id).attr('olap_tr_index',i);
+                                                if (pr_encore_this) {                                    
+                                                    $(tek_td).addClass($(tr_tab_val_last).attr("class")).attr('style',$(tr_tab_val_last).attr('style'));                                                                                                                   
+                                                }
+                                                tek_td=$(tek_td).next();
+                                            }
+                                        } 
+
+                                        var tek_tds;
+                                        if ((pr_encore_this) & (!!td_val_val_last_border) & ($(tek_tr).attr('olap_tr_class_'+id_t)=='tr_tab')) {
+                                            tek_tds=$(tek_tr).find('td[olap_tab_id='+id_t+']');
+                                            $(tek_tds).last().css('border-right',td_val_val_last_border);
+                                        }   
+                                        if ((pr_encore_this) & ($(tek_tr).attr('olap_tr_class_'+id_t)=='tr_tab') & (!!td_val_name_first_border_left)) {
+                                            if (!!!tek_tds) {
+                                                tek_tds=$(tek_tr).find('td[olap_tab_id='+id_t+']');
+                                            }
+                                            $(tek_tds).first().css('border-left',td_val_name_first_border_left);
+                                        }
+
+                                        tek_tr=$(tek_tr).next();
+                                        tek_td=$(tek_tr).find('[id^="'+parend_td_mass_index[0]+'-"]');                                    
+                                    }); 
+
+                                    var time3 = performance.now();
+                                    console.log('время заполнения данными: '+secondstotime((time3-time2)/1000));
+
+                                    var rep_tab=$(table_tag_v).find('td[olap_tab_id='+id_t+']');
+                                    var rep_tab_tr=$(rep_tab).closest('tr');
+                                    //в любом случае запоминаем шапку, чтобы использовать в lite режиме для установки возможного признака перестроения
+                                    rep_tab_tr_head=$(rep_tab_tr).filter('[olap_tr_class_'+id_t+'="tr_pok"],[olap_tr_class_'+id_t+'="tr_name_col"]');
+                                    //шапка в чистом виде (без дизайна, только разметка)
+                                    data_tab_tr_head=$(data_tab_html_tr).filter('tr.tr_pok,tr.tr_name_col');
+                                    var pr_null_all=false;                                    
+                                    if (!pr_2D) {
+                                        //убираем "дыры" (ввести параметр надобности)
+                                        var md_tab_val_length=$(md).find('.structure.d-table .d-table[id="tab_val"] .SYSNAME').length;
+                                        if ($(md).find('.structure.d-table .d-table[id="tab_pok"] .SYSNAME').length>0) {
+                                            $(rep_tab_tr).filter('[olap_tr_class_'+id_t+'="tr_pok"]:last').find('[olap_td_class="td_pok"]').each(function(i,elem) {
+                                                    var pr_null=true;
+                                                    var index_beg=$(begin_tab_td).index()+$(md).find('.structure.d-table .d-table[id="tab_str"] .SYSNAME').length+($(elem).index()-$(begin_tab_td).index())*$(md).find('.structure.d-table .d-table[id="tab_val"] .SYSNAME').length;
+                                                    $(rep_tab_tr).filter('[olap_tr_class_'+id_t+'="tr_tab"]').each(function(i2,elem2) {
+                                                        for (var i = index_beg; i < (index_beg+$(md).find('.structure.d-table .d-table[id="tab_val"] .SYSNAME').length); i++) {
+                                                            var elem_dyr=$(elem2).find('td:eq('+i+')')
+                                                            if ($(elem_dyr).length>0) {
+                                                                var html_v_dyr=$(elem_dyr).html();                                                        
+                                                                if ((html_v_dyr).trim()!=='') {
+                                                                    pr_null=false;
+                                                                    pr_null_all=true;
+                                                                    return false;  
+                                                                }
+                                                            }
+                                                            else {
                                                                 pr_null=false;
                                                                 pr_null_all=true;
                                                                 return false;  
                                                             }
-                                                        }
-                                                        else {
-                                                            pr_null=false;
-                                                            pr_null_all=true;
-                                                            return false;  
-                                                        }
-                                                    }                              
+                                                        }                              
+                                                    });
+                                                    if (pr_null) {
+                                                        for (var i = index_beg; i < (index_beg+md_tab_val_length); i++) {
+                                                            $(rep_tab_tr).filter('[olap_tr_class_'+id_t+'="tr_name_col"]').find('td:eq('+index_beg+')').remove();                                                                                                                         
+                                                        } 
+                                                        $(rep_tab_tr).filter('tr[olap_tr_class_'+id_t+'="tr_pok"]:not(tr[olap_tr_class_'+id_t+'="null"])').each(function(i2,elem2) {
+                                                            if ($(elem2).find('[olap_td_class="td_pok_name"]').length>0) {
+                                                                $(elem2).find('[olap_td_class="td_pok_name"]').attr('colspan',(+$(elem2).find('[olap_td_class="td_pok_name"]').attr('colspan')-md_tab_val_length));
+                                                            }
+                                                            else { 
+                                                                if ($(elem).attr('olap_tr_id_'+id_t)!=$(elem2).attr('olap_tr_id_'+id_t)) {
+                                                                    var index_p=$(begin_tab_td).index();
+                                                                    var elem_save;
+                                                                    $(elem2).find('td[olap_td_class="td_pok"][olap_tab_id='+id_t+']').each(function(i21,elem211) {
+                                                                        index_p+=+$(elem211).attr('colspan')/md_tab_val_length;
+                                                                        if (index_p>=($(elem).index()+1)) {
+                                                                            elem_save=$(elem211);
+                                                                            return false;
+                                                                        }                                                                                                                                                                                                              
+                                                                    });
+                                                                    if ($(elem_save).length>0) {
+                                                                        $(elem_save).attr('colspan',(+$(elem_save).attr('colspan')-md_tab_val_length)); 
+                                                                    }
+                                                                }
+                                                            }
+                                                        });
+                                                        $(rep_tab_tr).filter('[olap_tr_class_'+id_t+'="tr_tab"]').each(function(i2,elem2) {
+                                                            for (var i = index_beg; i < (index_beg+md_tab_val_length); i++) {
+                                                                $(elem2).find('td:eq('+index_beg+')').remove();
+
+                                                            }                                                                                                             
+                                                        });
+                                                        $(elem).remove();                                          
+                                                    }
+                                            });
+
+                                        }
+                                    }    
+
+                                    var time4 = performance.now();
+                                    console.log('время проверки/удаления пустот: '+secondstotime((time4-time3)/1000));
+
+                                    if (!pr_encore_this) {
+                                        //выделяем итоги
+                                        $(rep_tab_tr).filter('[olap_tr_class_'+id_t+'="tr_itog"]').find('td[olap_tab_id='+id_t+']').addClass('font_bold').each(function(i,elem) {
+                                            var font_size=parseInt($(elem).css('font-size'))+1;
+                                            if (!!!font_size) {
+                                                font_size=13;
+                                            }
+                                            $(elem).css('font-size',(font_size+'px'));
+                                        }); 
+                                    }    
+
+                                    //восстанавливаем классы индексов
+                                    if ((pr_null_all) || (pr_2D) || ($(rep_tab_tr).filter('[olap_tr_class_'+id_t+'="tr_pok"]').length===0)) {
+                                        olap_index_recalc(id_t);
+                                    }
+                                    else {
+                                        olap_index_recalc(id_t,true);
+                                    }
+
+                                    var time5 = performance.now();
+                                    console.log('время пересчета индексов: '+secondstotime((time5-time4)/1000));
+
+                                    if (pr_encore_this) {
+                                        //наименования полей показателей 
+                                        if (($(td_pok_name_first).length>0) & ($(rep_tab_tr_head).first().find('td[olap_td_class="td_pok_name"][olap_tab_id='+id_t+']').length>0)) {
+                                            $(rep_tab_tr_head).first().find('td[olap_td_class="td_pok_name"][olap_tab_id='+id_t+']').addClass($(td_pok_name_first).attr("class")).attr('style',$(td_pok_name_first).attr('style')); 
+                                            $(rep_tab_tr_head).find('[olap_td_class="td_pok_name"]').closest('tr').filter(':not(:first)').each(function(i,elem) {
+                                                $(elem).find('[olap_td_class="td_pok_name"]').each(function(i2,elem2) {
+                                                    var tek_td_before=$(tab_before_olap_tr_pok).find('td[olap_td_class="td_pok_name"][olap_td_index="'+$(elem2).attr('olap_td_index')+'"][olap_tr_index="'+$(elem2).attr('olap_tr_index')+'"]');
+                                                    if ($(tek_td_before).length===0) {
+                                                        tek_td_before=td_pok_name_all;
+                                                    }                                                
+                                                    $(elem2).addClass($(tek_td_before).attr("class")).attr('style',$(tek_td_before).attr('style'));
                                                 });
+                                            });
+                                        }                                        
+
+                                        //наименования показателей
+                                        $(rep_tab_tr_head).find('[olap_td_class="td_pok"]').closest('tr').each(function(i,elem) {
+                                            var tek_td_before_last_index=$(tab_before_olap_tr_pok).find('td[olap_td_class="td_pok"][olap_tr_index="'+$(elem).attr('olap_tr_index_'+id_t)+'"]:last').attr('olap_td_index'),
+                                                elem_last_index=$(elem).find('td[olap_td_class="td_pok"]:last').attr('olap_td_index');
+                                            $(elem).find('[olap_td_class="td_pok"]').each(function(i2,elem2) {
+                                                var tek_td_before;
+                                                if ((tek_td_before_last_index<elem_last_index) & ($(elem2).attr('olap_td_index')==tek_td_before_last_index)) {
+                                                    tek_td_before=tr_pok_td_last;
+                                                }
+                                                else {
+                                                    tek_td_before=$(tab_before_olap_tr_pok).find('td[olap_td_class="td_pok"][olap_td_index="'+$(elem2).attr('olap_td_index')+'"][olap_tr_index="'+$(elem2).attr('olap_tr_index')+'"]');
+                                                    if ($(tek_td_before).length===0) {
+                                                        tek_td_before=tr_pok_td_last;
+                                                    }                                                
+                                                }
+                                                $(elem2).addClass($(tek_td_before).attr("class")).attr('style',$(tek_td_before).attr('style'));
+                                            });
+                                            if (td_pok_last_border) {
+                                                $(elem).find('td[olap_tab_id='+id_t+']:last').css('border-right',td_pok_last_border);
+                                            }    
+                                            if (td_pok_first_border) {
+                                                $(elem).find('td[olap_tab_id='+id_t+']:first').css('border-left',td_pok_first_border);
+                                            }                                            
+                                        });                                                                        
+
+                                        one_str_design(id_t,rep_tab_tr,tr_name_col,'td_str_name','td_val_name');                                                                                                          
+
+                                        tr_tab_last=$(tab_before_olap_tr).filter('[olap_tr_class_'+id_t+'="tr_tab"]').last();                                
+                                        if ($(tr_tab_last).length>0) {
+                                            one_str_design(id_t,rep_tab_tr,tr_tab_last,'td_str_val','td_val_val');                                                                     
+                                        }
+
+                                        var tr_itog=$(tab_before_olap_tr).filter('[olap_tr_class_'+id_t+'="tr_itog"]').last();                                                                        
+                                        if ($(tr_itog).length>0) {
+                                            one_str_design(id_t,rep_tab_tr,tr_itog,'td_str_itog','td_val_itog');                                                                       
+                                        }   
+
+                                    }
+
+
+                                    //если не 2D и благоприятный дизайн (из него удобно перестраивать)                               
+                                    var td_pok_length=$(rep_tab_tr_head).filter('[olap_tr_class_'+id_t+'="tr_pok"]').last().find('td[olap_td_class="td_pok"]').length,
+                                        td_str_name_v=$(rep_tab_tr_head).last().find('td[olap_tab_id='+id_t+']'),
+                                        td_str_name_length=$(td_str_name_v).length;
+                                    if ((!pr_2D) & (pr_olap_design) 
+                                         & ($(olap_design).filter('tr[olap_tr_class_'+id_t+'="tr_name_col"]').last().find('td[olap_tab_id='+id_t+']').length!=td_str_name_length)
+                                         & (td_pok_length>1)
+                                         & ($(td_str_name_v).filter('[olap_td_class="td_str_name"]').length>1)
+                                         & ($(data_tab_html_tr).filter('tr.tr_tab').length>1)
+                                        ) {                                
+                                        var tr_olap=$(table_tag_v).find('tr[olap_tr_class_'+id_t+']').clone(),
+                                            html_v_design='';
+                                        if ($(tr_olap).length>0) { 
+                                            $(tr_olap).filter('tr[olap_tr_class_'+id_t+'="tr_tab"]').find('td').empty();                
+                                            $(tr_olap).each(function(i,elem) {  
+                                                html_v_design+=elem.outerHTML;
+                                            });
+                                            $(table_tag_v).find('div.table_save_design_val[id="'+id_t+'"]').html(LZString.compressToUTF16(html_v_design));
+                                        }                                    
+                                    }
+
+                                    var time6 = performance.now();
+                                    console.log('время дорисовки стилей: '+secondstotime((time6-time5)/1000));                                
+                                    console.log('время общее 1: '+secondstotime((time6-time)/1000));
+                                    if (!!time0) {
+                                        console.log('время общее: '+secondstotime((time6-time0)/1000));
+                                    }
+                                    console.log('время общее с SQL: '+secondstotime((time6-time00)/1000));
+                                    save_tab_data();
+                                    var time_save = performance.now();
+                                    console.log('время общее c сохранением данных для jexcel: '+secondstotime((time_save-time00)/1000));
+                                    pr_encore=false;
+                                    $(in_action_value).trigger('after_load_data'+id_t);
+                                }
+                                else {
+                                    time0 = performance.now();
+                                    var rep_tab=tab_before;
+                                    //если 2D-режим и разное (кол-во полей или разные поля) и мастердата загружается из репозитория, то надо перестроить
+                                    var rep_tab_tr;
+                                    if (!pr_olap_design) {
+                                        rep_tab_tr=$(rep_tab).closest('tr');
+                                    }
+                                    else {
+                                        rep_tab_tr=olap_design;
+                                    }
+                                    if ($(rep_tab_tr_head).length===0) {
+                                        rep_tab_tr_head=$(rep_tab_tr).filter('[olap_tr_class_'+id_t+'="tr_pok"],[olap_tr_class_'+id_t+'="tr_name_col"]');
+                                    }
+                                    var data_tab_tr_head_tek=$(data_tab_html_tr).filter('tr.tr_pok,tr.tr_name_col');
+                                    if ((pr_2D) & (!!($(md).attr('mdr_class')))) {
+                                        var td_first_old=$(rep_tab_tr).first().find('td[olap_tab_id='+id_t+']'),
+                                            td_first_new=$(data_tab_html_tr).first().find('td');  
+                                        if ($(td_first_old).length===$(td_first_new).length) {
+                                            var td_first_new_tek=$(td_first_new).first();
+                                            $(td_first_old).each(function(i,elem) {
+                                                if ($(elem).attr('olap_td_id')!=$(td_first_new_tek).attr('id')) {
+                                                    pr_encore_this=true;
+                                                    return false;
+                                                }
+                                                td_first_new_tek=$(td_first_new_tek).next();
+                                            });
+                                        }
+                                        else {
+                                            pr_encore_this=true;
+                                        }    
+                                    }
+                                    else if ((!pr_2D) & 
+                                             ($(rep_tab_tr_head).last().find('td[olap_tab_id='+id_t+']').length!=
+                                             $(data_tab_tr_head_tek).filter('tr.tr_name_col').last().find('td').length)
+                                            ) {
+                                        //если не 2Д и кол-во наименований показателей разное, то анализируем шапки сначала, если есть
+                                        //кол-во анализируемое полей может расходиться по причине наличия алгоритма удаления "дыр"
+                                        if ($(data_tab_tr_head).length>0) {
+                                            if ($(data_tab_tr_head).length===$(data_tab_tr_head_tek).length) {
+                                                var tek_h_tr=$(data_tab_tr_head_tek).first();
+                                                $(data_tab_tr_head).each(function(i,elem) {
+                                                    var el_td=$(elem).find('td'),
+                                                        el_td_tek=$(tek_h_tr).find('td');
+                                                    if ($(el_td).length===$(el_td_tek).length) {
+                                                        var el_td_tek_one=$(el_td_tek).first();
+                                                        $(el_td).each(function(i2,elem2) {
+                                                            if (($(elem2).attr('class')!=$(el_td_tek_one).attr('class'))
+                                                                || ($(elem2).html()!=$(el_td_tek_one).html())){
+                                                                pr_encore_this=true;
+                                                                return false;
+                                                            }                                                        
+                                                            el_td_tek_one=$(el_td_tek_one).next();
+                                                        });
+                                                    }
+                                                    else {
+                                                        pr_encore_this=true;
+                                                        return false;
+                                                    }    
+
+                                                    tek_h_tr=$(tek_h_tr).next();
+                                                });
+                                            }
+                                            else {
+                                                pr_encore_this=true;
+                                            }
+                                        }
+                                        else {
+                                            pr_encore_this=true;
+                                        }    
+                                    }
+
+                                    var pr_end=false,tr_index_beg_del;
+                                    tab_before_olap=tab_before;                                
+                                    //кэшируем строки из которых возможно будем брать классы и стили оформления, необходимо только несколько вариантов в соответствии со структурой
+                                    tab_before_olap_tr=$(rep_tab_tr).clone();
+                                    tab_before_olap_tr_pok=$(tab_before_olap_tr).filter('[olap_tr_class_'+id_t+'="tr_pok"]');
+
+                                    tr_name_col=$(tab_before_olap_tr).filter('[olap_tr_class_'+id_t+'="tr_name_col"]');                                
+
+                                    var tr_tab_all_all=$(tab_before_olap_tr).filter('[olap_tr_class_'+id_t+'="tr_tab"]');
+                                    tr_tab_all=$(tr_tab_all_all).first();
+                                    td_val_val_last=$(tr_tab_all).find('td[olap_tab_id='+id_t+']:last');                                                              
+
+                                    $(tr_tab_all).find('td[olap_tab_id='+id_t+']').each(function(i,elem) {
+                                        var mass_index=$(elem).attr('id').split('-');
+                                        $(elem).attr('id',mass_index[0]).removeClass('c'+mass_index[0]+' r'+mass_index[1]);
+                                    });                                                               
+
+                                    //также используется просто в качестве последней строки
+                                    var tr_itog=$(tab_before_olap_tr).last().clone(),
+                                        pr_true_itog=false;
+                                    $(tr_itog).find('td[olap_tab_id='+id_t+']').each(function(i,elem) {
+                                        var mass_index=$(elem).attr('id').split('-');
+                                        $(elem).attr('id',mass_index[0]).removeClass('c'+mass_index[0]+' r'+mass_index[1]); 
+                                        if (($(elem).hasClass('td_str_itog')) || ($(elem).hasClass('td_val_itog'))) {
+                                            pr_true_itog=true;
+                                        }    
+                                    });                                                                
+                                    if (($(tr_tab_all_all).length==1) & (!pr_true_itog)) {
+                                        //если в образцовой таблице только одна строка и нету итогов то меняем нижнюю рамку на дефолтную, так как она может соответствовать рамке всей таблицы                                        
+                                        $(tr_tab_all).find('td[olap_tab_id='+id_t+']').each(function(i,elem) {
+                                            if ($(elem).css('border-bottom')!='') {
+                                                $(elem).css('border-bottom','1px solid '+$(elem).css('border-bottom-color'));
+                                            }                                    
+                                        }); 
+                                    }       
+
+                                    var tab_before_olap_tr_true=$(table_tag_v).find('tr[olap_tr_class_'+id_t+']'),
+                                        tr_olap_last_index=$(tab_before_olap_tr_true).last().find('td[olap_tab_id='+id_t+']:last').attr('olap_tr_index');
+
+                                    var tek_tr=$(begin_tab_td).closest('tr');
+                                    tek_td=begin_tab_td;
+                                    var pr_insert=false,
+                                        pr_del=false;
+                                    if (!pr_encore_this) {
+                                        //добавляем/удаляем строки если есть разница                                                                
+                                        if  ($(tab_before_olap_tr_true).length<$(data_tab_html_tr).length) {
+                                            pr_insert=true;
+                                            var index_insert;
+                                            if ($(tab_before_olap_tr_true).length>0) {
+                                                index_insert=$(tab_before_olap_tr_true).last().index()+1;
+                                            }
+                                            else {
+                                                index_insert=$(tek_tr).index()+1;
+                                            }
+                                            $('#my').jexcel('insertRow',($(data_tab_html_tr).length-$(tab_before_olap_tr_true).length),index_insert,{updSelection:false,not_log:true});
+                                            index_recalc_true($(table_tag_v).find('tr:eq('+(index_insert+$(data_tab_html_tr).length-$(tab_before_olap_tr_true).length)+')'));
+                                        }    
+                                        else if ($(tab_before_olap_tr_true).length>$(data_tab_html_tr).length) {
+                                            pr_del=true;
+                                            $('#my').jexcel('deleteRow',($(tab_before_olap_tr_true).last().index()+1-$(tab_before_olap_tr_true).length+$(data_tab_html_tr).length) ,($(tab_before_olap_tr_true).length-$(data_tab_html_tr).length),{not_log:true});
+                                        }    
+                                    }    
+                                    //var tr_tab_all_length=$(tr_name_col).find('td[olap_tab_id='+id_t+']').length;
+                                    var tr_tab_all_length=$(tab_before_olap_tr_true).filter('[olap_tr_class_'+id_t+'="tr_name_col"]').find('td[olap_tab_id='+id_t+']').length;
+
+                                    var time2 = performance.now();
+                                    console.log('время подготовки данных lite: '+secondstotime((time2-time0)/1000));
+                                    if (!pr_encore_this) {
+                                        $(data_tab_html_tr).each(function(i,elem) { 
+                                            if (pr_2D) {
+                                                //для 2d режима возможно использование невидимых полей в атрибутах строки, для 3D пользуемся только "input type=hidden"
+                                                var olap_unvis_v=$(elem).attr('olap_unvis_'+id_t);
+                                                if (!!olap_unvis_v) {
+                                                    $(tek_tr).attr('olap_unvis_'+id_t,olap_unvis_v);
+                                                }  
+                                            }                                        
+                                            var pr_insert_new=false;
+                                            $(elem).find('td').each(function(i2,elem2) {
+                                                //если удалили строки, нет итогов и текщая ячейка td_val_val или td_str_val, то надо просто заполнить ячейку
+                                                if ((($(elem2).hasClass('td_val_val')) || ($(elem2).hasClass('td_str_val')))
+                                                     & (pr_del) & (!pr_true_itog)
+                                                    ) {
+                                                    tek_td=$(tek_tr).find('td[olap_tab_id='+id_t+'][olap_td_index="'+i2+'"]');                                        
+                                                    $(tek_td).html($(elem2).html());
+                                                }
+                                                else { 
+                                                    tek_td=$(tek_tr).find('td[olap_tab_id='+id_t+'][olap_td_index="'+i2+'"][olap_tr_index="'+i+'"]');                                        
+                                                    if ($(tek_td).length>0) {
+                                                        //если шапка, то должны совпадать значения , иначе будем строить по-другому
+                                                        if (!pr_2D) {
+                                                            if ($(tek_td).attr('olap_td_class').indexOf('td_pok')>-1) {
+                                                                var tek_td_pok=$(rep_tab_tr_head).find('td[olap_td_index="'+i2+'"][olap_tr_index="'+i+'"]');
+                                                                if (String($(tek_td_pok).html())!==String($(elem2).html())) {
+                                                                    pr_encore_this=true;
+                                                                    return false;
+                                                                }                                                        
+                                                            }   
+                                                        }  
+
+                                                        $(tek_td).html($(elem2).html());   
+                                                        var mass_index=$(tek_td).attr('id').split('-'),
+                                                            tek_tr_index2=mass_index[1],
+                                                            tek_td_index2=mass_index[0];                                    
+                                                        //если новая таблица короче и в ней есть итоги
+                                                        if ((($(elem2).hasClass('td_str_itog')) || ($(elem2).hasClass('td_val_itog'))) 
+                                                             & ($(tek_td).attr('olap_td_class').indexOf('td_str_itog')==-1) & ($(tek_td).attr('olap_td_class').indexOf('td_val_itog')==-1)) {
+                                                            var tek_td_clon=$(tr_itog).find('#'+tek_td_index2).clone();
+                                                            $(tek_td).removeClass().addClass($(tek_td_clon).attr("class")).attr('style',$(tek_td_clon).attr('style'))
+                                                                    .attr('olap_td_class',elem2.className).addClass('c'+tek_td_index2+' r'+tek_tr_index2);
+                                                            pr_end=true; 
+                                                            tr_index_beg_del=tek_tr_index2;
+                                                        } 
+                                                        else if ((($(elem2).hasClass('td_val_val')) || ($(elem2).hasClass('td_str_val'))) 
+                                                             & (($(tek_td).attr('olap_td_class').indexOf('td_str_itog')>-1) || ($(tek_td).attr('olap_td_class').indexOf('td_val_itog')>-1))) {
+                                                            //если новая таблица длиннее, то надо удалить форматирование итогов когда они встретятся 
+                                                            var mass_index=$(tek_td).attr('id').split('-');
+                                                            var tek_tr_index2=mass_index[1];
+                                                            var tek_td_index2=mass_index[0];  
+                                                            var tek_td_clon=$(tr_tab_all).find('#'+tek_td_index2).clone();
+                                                            $(tek_td).removeClass().addClass($(tek_td_clon).attr("class")).removeAttr('style').attr('style',$(tek_td_clon).attr('style')).addClass('c'+tek_td_index2+' r'+tek_tr_index2)
+                                                                    .attr('olap_td_class',elem2.className).attr('olap_td_id',elem2.id).attr('olap_td_index',i2).attr('olap_tr_index',i);
+                                                            pr_insert_new=true;
+                                                        }
+                                                        else if ((pr_insert) & (!pr_true_itog) & (tr_olap_last_index==i)) {
+                                                            //если вставили строки и нет итогов, то когда встретится последняя строка, то надо взять стили и класы из первой строки
+                                                            var mass_index=$(tek_td).attr('id').split('-');
+                                                            var tek_tr_index2=mass_index[1];
+                                                            var tek_td_index2=mass_index[0];  
+                                                            var tek_td_clon=$(tr_tab_all).find('#'+tek_td_index2).clone();
+                                                            $(tek_td).removeClass().addClass($(tek_td_clon).attr("class")).removeAttr('style').attr('style',$(tek_td_clon).attr('style')).addClass('c'+tek_td_index2+' r'+tek_tr_index2)
+                                                                    .attr('olap_td_class',elem2.className).attr('olap_td_id',elem2.id).attr('olap_td_index',i2).attr('olap_tr_index',i);                                                    
+                                                        }                                                                                                              
+
+                                                    }
+                                                    //смотрим это отсутствующая строка или столбец, если столбец, то строим по-другому
+                                                    else if (($(elem2).hasClass('td_val_val')) || ($(elem2).hasClass('td_str_val'))
+                                                             || ($(elem2).hasClass('td_str_itog')) || ($(elem2).hasClass('td_val_itog'))) {
+                                                        var tek_td_before; 
+                                                        if (($(elem2).hasClass('td_val_val')) || ($(elem2).hasClass('td_str_val'))) {
+                                                            tek_td_before=$(tr_tab_all).find('[olap_td_index="'+i2+'"]');
+                                                        }   
+                                                        else {
+                                                            tek_td_before=$(tr_itog).find('[olap_td_index="'+i2+'"]'); 
+                                                        }
+                                                        //если существует такой слобец, то нам надо записывать в сл. строку с её предворительным добавлением
+                                                        if ($(tek_td_before).length>0) {
+                                                            tek_td=$(tek_tr).find('td[id^="'+$(tek_td_before).attr('id')+'-"]');
+                                                            if (!pr_insert_new) {
+                                                                $(tek_tr).attr('olap_tr_class_'+id_t,elem.className).attr('olap_tr_id_'+id_t,elem.id).attr('olap_tr_index_'+id_t,i);
+                                                                if ($(tek_tr).find('td[olap_tab_id='+id_t+'][olap_tr_index="'+i+'"]').length==0) {                                                        
+                                                                    pr_insert_new=true;
+                                                                }    
+                                                            }  
+                                                            $(tek_td).html($(elem2).html()).addClass($(tek_td_before).attr("class")).attr('style',$(tek_td_before).attr('style'))
+                                                                .attr('olap_td_class',elem2.className).attr('olap_td_id',elem2.id).attr('olap_tab_id',id_t).attr('colspan',$(elem2).attr('colspan')).attr('rowspan',$(elem2).attr('rowspan')).attr('olap_td_index',i2).attr('olap_tr_index',i);
+                                                        }
+                                                        else if ($(elem2).html().trim()!=''){   
+                                                            pr_encore_this=true;
+                                                            return false;
+                                                        }
+                                                    }
+                                                    else if ((($(elem2).hasClass('td_pok_name')) || ($(elem2).hasClass('td_pok'))
+                                                             || ($(elem2).hasClass('td_str_name')) || ($(elem2).hasClass('td_val_name'))
+                                                             || ($(elem2).hasClass('null')))
+                                                             & pr_olap_design & ($(data_tab_tr_head).length===0)){
+                                                        //если отсутствуют ячейки, то это возможно первый запуск после сохранения, надо посмотреть в структуре дизайна наличие строк и ячейки, если все совпадает то, ок
+                                                        //нет перестраиваем
+                                                        //но только в случае отсутствия переменной шапки, т.к. по ней мы точно проверяем и знаем что 100% все гуд                                                    
+                                                        var tek_td_before;
+                                                        if (($(elem2).hasClass('td_pok_name')) || ($(elem2).hasClass('td_pok'))) {
+                                                            tek_td_before=$(rep_tab_tr_head).find('td[olap_td_index="'+i2+'"][olap_tr_index="'+i+'"]');
+                                                        }
+                                                        else if ($(elem2).hasClass('null')) {
+                                                            tek_td_before=$(tab_before_olap_tr).first().find('td[olap_td_index="'+i2+'"][olap_tr_index="'+i+'"]');
+                                                        }                                                    
+                                                        else {
+                                                            tek_td_before=$(tr_name_col).find('td[olap_td_index="'+i2+'"][olap_tr_index="'+i+'"]');
+                                                        }
+                                                        if ($(tek_td_before).length>0) {
+                                                            $(tek_tr).attr('olap_tr_class_'+id_t,elem.className).attr('olap_tr_id_'+id_t,elem.id).attr('olap_tr_index_'+id_t,i);
+                                                            if ($(tek_td_before).attr('olap_td_class')==elem2.className) {
+                                                                tek_td=$(tek_tr).find('td[id="'+$(tek_td_before).attr('id')+'"]');
+                                                                if ($(tek_td).length>0) {
+                                                                    var colspan_v=parseInt($(tek_td_before).attr('colspan')),
+                                                                        rowspan_v=parseInt($(tek_td_before).attr('rowspan'));                                                                
+                                                                    if (colspan_v>1) {
+                                                                        for (var icsp = 1; icsp < (colspan_v); icsp++) {
+                                                                            $(tek_td).next().remove();
+                                                                        }
+                                                                    }
+                                                                    if (rowspan_v>1) {
+                                                                        var tek_tr_null=$(tek_tr);
+                                                                        for (var jcsp = 1; jcsp < (rowspan_v); jcsp++) {
+                                                                            tek_tr_null=$(tek_tr_null).next();
+                                                                            var tek_td_null=$(tek_tr_null).find('td[id^="'+$(tek_td).attr('id').split('-')[0]+'-"]').prev();
+                                                                            for (var icsp = 1; icsp <= (colspan_v); icsp++) {
+                                                                                $(tek_td_null).next().remove();
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                    $(tek_td).html($(elem2).html()).addClass($(tek_td_before).attr("class")).attr('style',$(tek_td_before).attr('style'))
+                                                                        .attr('olap_td_class',elem2.className).attr('olap_td_id',elem2.id).attr('olap_tab_id',id_t).attr('colspan',$(elem2).attr('colspan')).attr('rowspan',$(elem2).attr('rowspan')).attr('olap_td_index',i2).attr('olap_tr_index',i);
+                                                                }
+                                                                else {
+                                                                    pr_encore_this=true;
+                                                                    return false;
+                                                                }
+                                                            }
+                                                            else {
+                                                                pr_encore_this=true;
+                                                                return false;
+                                                            }
+                                                        }
+                                                        else {   
+                                                            pr_encore_this=true;
+                                                            return false;
+                                                        }
+                                                    }
+                                                }    
+
+                                                //tek_td=$(tek_td).next();
+                                            });
+                                            if ((pr_encore_this) || (pr_end)) {
+                                                return false;
+                                            }
+
+
+                                            //в новых вставленных строках вконце м.б. пустота, т.к. приходят такие данные
+                                            if (pr_insert_new) {
+                                                var tek_tr_td=$(tek_tr).find('td[olap_tab_id='+id_t+']');
+                                                var tek_tr_length;
+                                                if (($(tek_tr_td).filter('[olap_td_class="td_val_itog"]').length>0) & ($(tek_tr_td).filter('[olap_td_class="td_str_val"]').length>0)) {
+                                                    tek_tr_length=$(tek_tr_td).filter('[olap_td_class="td_val_val"]').length+$(tek_tr_td).filter('[olap_td_class="td_str_val"]').length;                                            
+                                                }
+                                                else {
+                                                    tek_tr_length=$(tek_tr_td).length;
+                                                }
+                                                if (tr_tab_all_length>tek_tr_length) {
+                                                    var tek_td_null=$(tek_td).next();
+                                                    var tek_td_before;
+                                                    for (var i = 1; i <= (tr_tab_all_length-tek_tr_length-1); i++) {
+                                                        if ($(tek_td_null).length==0) { 
+                                                            pr_encore_this=true;
+                                                            return false;
+                                                            break;                                                    
+                                                        }
+                                                        var mass_index=$(tek_td_null).attr('id').split('-');
+                                                        tek_td_before=$(tr_tab_all).find('#'+mass_index[0]); 
+                                                        $(tek_td_null).addClass($(tek_td_before).attr("class")).attr('style',$(tek_td_before).attr('style'))
+                                                            .attr('olap_td_class','td_val_val').attr('olap_td_id','null').attr('olap_tab_id',id_t).attr('colspan',1).attr('rowspan',1).attr('olap_td_index',$(tek_td_before).attr('olap_td_index')).attr('olap_tr_index',i);
+                                                        tek_td_null=$(tek_td_null).next();
+                                                    }
+                                                    tek_td_before=td_val_val_last; 
+                                                    $(tek_td_null).addClass($(tek_td_before).attr("class")).attr('style',$(tek_td_before).attr('style'))
+                                                        .attr('olap_td_class','td_val_val').attr('olap_td_id','null').attr('olap_tab_id',id_t).attr('colspan',1).attr('rowspan',1).attr('olap_td_index',$(tek_td_before).attr('olap_td_index')).attr('olap_tr_index',i);                                            
+
+                                                }
+                                            }
+
+                                            //т.к. стили ячеек могут браться из olap_design, а размеры могут не совпадать для 3D, то в таком случае для последней ячейки всегда проставляем стиль последней ячейки
+                                            if ((pr_olap_design) & (!pr_2D) & ($(tek_tr).is('[olap_tr_class_'+id_t+'="tr_tab"'))) {
+                                                $(tek_tr).find('td[olap_tab_id="'+id_t+'"]').last()
+                                                    .addClass($(td_val_val_last).attr("class")).attr('style',$(td_val_val_last).attr('style'));
+                                            }
+
+                                            tek_tr=$(tek_tr).next();
+                                        });
+
+                                        var olap_td_class1,olap_td_class2;
+                                        if ($(tr_itog).length>0) {
+                                            tek_tr=$(tek_tr).prev();
+                                            if ($(tek_tr).is('[olap_tr_class_'+id_t+'="tr_itog"]')) {
+                                                if ($(tr_itog).is('[olap_tr_class_'+id_t+'="tr_itog"]')) {                                        
+                                                    olap_td_class1='td_str_itog';
+                                                    olap_td_class2='td_val_itog';
+                                                    one_str_design(id_t,tek_tr,tr_itog,olap_td_class1,olap_td_class2);
+                                                } 
+                                                var tr_tab_last=$(tab_before_olap_tr).filter('[olap_tr_class_'+id_t+'="tr_tab"]').last();
+                                                if (($(tr_tab_last).length>0) & ($(tek_tr).prev().is('[olap_tr_class_'+id_t+'="tr_tab"]'))) {
+                                                    tek_tr=$(tek_tr).prev();                                            
+                                                    olap_td_class1='td_str_val';
+                                                    olap_td_class2='td_val_val';                                        
+                                                    one_str_design(id_t,tek_tr,tr_tab_last,olap_td_class1,olap_td_class2);
+                                                    tek_tr=$(tek_tr).next();
+                                                }                                        
+                                            }
+                                            else {
+                                                olap_td_class1='td_str_val';
+                                                olap_td_class2='td_val_val';
+                                                one_str_design(id_t,tek_tr,tr_itog,olap_td_class1,olap_td_class2);
+                                            }
+                                            tek_tr=$(tek_tr).next();
+                                        }
+
+                                        var time3 = performance.now();
+                                        console.log('время заполнения данными lite: '+secondstotime((time3-time2)/1000)); 
+                                    }
+                                        //pr_encore=false;
+                                    if (!pr_encore_this) { 
+                                        //удаляем пустоты, которые могут образоваться вконце (справа отсутсвуют данные, но до этого все показатели совпадают, таблицу в этом случае перестраивать не надо)
+                                        var pr_null_all=false;
+                                        if (!pr_2D) {
+                                            var pr_td_val_name=false;
+                                            var td_first_null;
+                                            var md_tab_val_length=$(md).find('.structure.d-table .d-table[id="tab_val"] .SYSNAME').length;
+                                            $(rep_tab_tr).filter('[olap_tr_class_'+id_t+'="tr_pok"]:last').find('[olap_td_class="td_pok"]').each(function(i,elem) {
+                                                var pr_null=false;
+                                                var index_beg=$(begin_tab_td).index()+$(md).find('.structure.d-table .d-table[id="tab_str"] .SYSNAME').length+($(elem).index()-$(begin_tab_td).index())*$(md).find('.structure.d-table .d-table[id="tab_val"] .SYSNAME').length;
+                                                if ($(elem).text().trim().length==0) {
+                                                    pr_null=true;
+                                                    pr_null_all=true;
+                                                }
                                                 if (pr_null) {
+                                                    //ищем последнюю заполненную ячейку наименования полей и присваиваем ей стиль конечной ячейки,только 1 раз
+                                                    if (!pr_td_val_name) {   
+                                                        var tr_name_col=$(rep_tab_tr).filter('[olap_tr_class_'+id_t+'="tr_name_col"]');
+                                                        var td_last_bord=$(tr_name_col).find('[olap_td_class="td_val_name"]').last().css('border-right');
+                                                        if (td_last_bord!='') {
+                                                            $(tr_name_col).find('[olap_td_class="td_val_name"]').each(function(i2,elem2) {
+                                                                if ($(elem2).text().trim().length==0) {
+                                                                    td_first_null=elem2;
+                                                                    return false;
+                                                                }
+                                                            });
+                                                            if ($(td_first_null).length>0) {
+                                                                $(td_first_null).prev().css('border-right',td_last_bord);
+                                                            } 
+                                                        }
+                                                        pr_td_val_name=true;
+                                                    }
                                                     for (var i = index_beg; i < (index_beg+md_tab_val_length); i++) {
-                                                        $(rep_tab_tr).filter('[olap_tr_class_'+id_t+'="tr_name_col"]').find('td:eq('+index_beg+')').remove();                                                                                                                         
+                                                        var tek_td=$(rep_tab_tr).filter('[olap_tr_class_'+id_t+'="tr_name_col"]').find('td:eq('+i+')');
+                                                        var mass_index=$(tek_td).attr('id').split('-');
+                                                        $(tek_td).removeClass().removeAttr('style').addClass('c'+mass_index[0]+' r'+mass_index[1]).removeAttr('olap_td_class').removeAttr('olap_tab_id').removeAttr('olap_td_index').removeAttr('olap_tr_index').removeAttr('olap_td_id');
                                                     } 
                                                     $(rep_tab_tr).filter('tr[olap_tr_class_'+id_t+'="tr_pok"]:not(tr[olap_tr_class_'+id_t+'="null"])').each(function(i2,elem2) {
                                                         if ($(elem2).find('[olap_td_class="td_pok_name"]').length>0) {
-                                                            $(elem2).find('[olap_td_class="td_pok_name"]').attr('colspan',(+$(elem2).find('[olap_td_class="td_pok_name"]').attr('colspan')-md_tab_val_length));
+                                                            $(elem2).find('[olap_td_class="td_pok_name"]').attr('colspan',(+$(elem2).find('[olap_td_class="td_pok_name"]').attr('colspan')-$(md).find('.structure.d-table .d-table[id="tab_val"] .SYSNAME').length));
+                                                            var mass_index_cols=[],mass_left_cols=[];
+                                                            $(table_all_tag).find('thead:first tr:last td:gt(0)').each(function(i,elem) {
+                                                                var tek_index=$(elem).index();
+                                                                mass_index_cols[tek_index]=$(elem).text();                
+                                                                mass_left_cols[$(elem).offset().left]=tek_index;
+                                                            });
+                                                            var td_clone=$(elem2).find('[olap_td_class="td_pok_name"]').clone();
+                                                            $(td_clone).removeClass().removeAttr('style').removeAttr('id').removeAttr('colspan').removeAttr('rowspan').html('').removeAttr('olap_td_class').removeAttr('olap_tab_id').removeAttr('olap_td_index').removeAttr('olap_tr_index').removeAttr('olap_td_id');                                                
+                                                            for (var i = 1; i <= md_tab_val_length; i++) {
+                                                                var tek_td=$(td_clone).clone();
+                                                                $(elem2).find('[olap_td_class="td_pok_name"]').after(tek_td);
+                                                            }                                                                                                
                                                         }
-                                                        else { 
+                                                        else {
+                                                            var td_first_null;
+                                                            $(elem2).find('[olap_td_class="td_pok"]').each(function(i3,elem3) {
+                                                                if ($(elem3).text().trim().length==0) {
+                                                                    td_first_null=elem3;
+                                                                    return false;
+                                                                }
+                                                            });
+                                                            if ($(td_first_null).length>0) {
+                                                                $(td_first_null).prev().attr('style',$(elem2).find('[olap_td_class="td_pok"]').last().attr('style'));
+                                                            }    
+
                                                             if ($(elem).attr('olap_tr_id_'+id_t)!=$(elem2).attr('olap_tr_id_'+id_t)) {
                                                                 var index_p=$(begin_tab_td).index();
                                                                 var elem_save;
@@ -3583,711 +4163,134 @@ $(document).ready(function() {
                                                                     }                                                                                                                                                                                                              
                                                                 });
                                                                 if ($(elem_save).length>0) {
-                                                                    $(elem_save).attr('colspan',(+$(elem_save).attr('colspan')-md_tab_val_length)); 
+                                                                    $(elem_save).attr('colspan',(+$(elem_save).attr('colspan')-md_tab_val_length));
+
+                                                                    var mass_index_cols=[],mass_left_cols=[];
+                                                                    $(table_all_tag).find('thead:first tr:last td:gt(0)').each(function(i,elem) {
+                                                                        var tek_index=$(elem).index();
+                                                                        mass_index_cols[tek_index]=$(elem).text();                
+                                                                        mass_left_cols[$(elem).offset().left]=tek_index;
+                                                                    });
+                                                                    var td_clone=$(elem_save).clone();
+                                                                    $(td_clone).removeClass().removeAttr('style').removeAttr('id').removeAttr('colspan').removeAttr('rowspan').html('').removeAttr('olap_td_class').removeAttr('olap_tab_id').removeAttr('olap_td_index').removeAttr('olap_tr_index').removeAttr('olap_td_id');
+                                                                    var tr_index=$(elem2).index();
+                                                                    for (var i = 1; i <= md_tab_val_length; i++) {
+                                                                        var tek_td=$(td_clone).clone();
+                                                                        $(elem_save).after(tek_td);
+                                                                    }
                                                                 }
                                                             }
                                                         }
+                                                        var tr_index=$(elem2).index();
+                                                        $(elem2).find('td:not([olap_td_class="td_pok"])').each(function(i3,elem3) {
+                                                            var td_index=+mass_left_cols[$(elem3).offset().left]-1;
+                                                            $(elem3).attr('id',(td_index+'-'+tr_index)).addClass('c'+td_index+' r'+tr_index);
+                                                        });
                                                     });
                                                     $(rep_tab_tr).filter('[olap_tr_class_'+id_t+'="tr_tab"]').each(function(i2,elem2) {
-                                                        for (var i = index_beg; i < (index_beg+md_tab_val_length); i++) {
-                                                            $(elem2).find('td:eq('+index_beg+')').remove();
+                                                        if ($(td_first_null).length>0) {
+                                                            var td_bord_last=$(elem2).find('[olap_td_class="td_val_val"]').last().css('border-right');
+                                                            if (td_bord_last!='') {
+                                                                var mass_index=$(td_first_null).prev().attr('id').split('-');
+                                                                $(elem2).find('#'+mass_index[0]+'-'+$(elem2).index()).css('border-right',td_bord_last);
+                                                            }
+                                                        }
 
+                                                        for (var i = index_beg; i < (index_beg+md_tab_val_length); i++) {
+                                                            var tek_td=$(elem2).find('td:eq('+i+')');
+                                                            var mass_index=$(tek_td).attr('id').split('-');
+                                                            $(tek_td).removeClass().removeAttr('style').addClass('c'+mass_index[0]+' r'+mass_index[1]).removeAttr('olap_td_class').removeAttr('olap_tab_id').removeAttr('olap_td_index').removeAttr('olap_tr_index').removeAttr('olap_td_id');
                                                         }                                                                                                             
                                                     });
-                                                    $(elem).remove();                                          
-                                                }
-                                        });
-
-                                    }
-                                }    
-                                
-                                var time4 = performance.now();
-                                console.log('время проверки/удаления пустот: '+secondstotime((time4-time3)/1000));
-                                
-                                if (!pr_encore_this) {
-                                    //выделяем итоги
-                                    $(rep_tab_tr).filter('[olap_tr_class_'+id_t+'="tr_itog"]').find('td[olap_tab_id='+id_t+']').addClass('font_bold').each(function(i,elem) {
-                                        var font_size=parseInt($(elem).css('font-size'))+1;
-                                        if (!!!font_size) {
-                                            font_size=13;
-                                        }
-                                        $(elem).css('font-size',(font_size+'px'));
-                                    }); 
-                                }    
-
-                                //восстанавливаем классы индексов
-                                if ((pr_null_all) || (pr_2D) || ($(rep_tab_tr).filter('[olap_tr_class_'+id_t+'="tr_pok"]').length===0)) {
-                                    olap_index_recalc(id_t);
-                                }
-                                else {
-                                    olap_index_recalc(id_t,true);
-                                }
-                                
-                                var time5 = performance.now();
-                                console.log('время пересчета индексов: '+secondstotime((time5-time4)/1000));
-
-                                if (pr_encore_this) {
-                                    //наименования полей показателей 
-                                    if (($(td_pok_name_first).length>0) & ($(rep_tab_tr_head).first().find('td[olap_td_class="td_pok_name"][olap_tab_id='+id_t+']').length>0)) {
-                                        $(rep_tab_tr_head).first().find('td[olap_td_class="td_pok_name"][olap_tab_id='+id_t+']').addClass($(td_pok_name_first).attr("class")).attr('style',$(td_pok_name_first).attr('style')); 
-                                        $(rep_tab_tr_head).find('[olap_td_class="td_pok_name"]').closest('tr').filter(':not(:first)').each(function(i,elem) {
-                                            $(elem).find('[olap_td_class="td_pok_name"]').each(function(i2,elem2) {
-                                                var tek_td_before=$(tab_before_olap_tr_pok).find('td[olap_td_class="td_pok_name"][olap_td_index="'+$(elem2).attr('olap_td_index')+'"][olap_tr_index="'+$(elem2).attr('olap_tr_index')+'"]');
-                                                if ($(tek_td_before).length===0) {
-                                                    tek_td_before=td_pok_name_all;
-                                                }                                                
-                                                $(elem2).addClass($(tek_td_before).attr("class")).attr('style',$(tek_td_before).attr('style'));
-                                            });
-                                        });
-                                    }                                        
-                                    
-                                    //наименования показателей
-                                    $(rep_tab_tr_head).find('[olap_td_class="td_pok"]').closest('tr').each(function(i,elem) {
-                                        var tek_td_before_last_index=$(tab_before_olap_tr_pok).find('td[olap_td_class="td_pok"][olap_tr_index="'+$(elem).attr('olap_tr_index_'+id_t)+'"]:last').attr('olap_td_index'),
-                                            elem_last_index=$(elem).find('td[olap_td_class="td_pok"]:last').attr('olap_td_index');
-                                        $(elem).find('[olap_td_class="td_pok"]').each(function(i2,elem2) {
-                                            var tek_td_before;
-                                            if ((tek_td_before_last_index<elem_last_index) & ($(elem2).attr('olap_td_index')==tek_td_before_last_index)) {
-                                                tek_td_before=tr_pok_td_last;
-                                            }
-                                            else {
-                                                tek_td_before=$(tab_before_olap_tr_pok).find('td[olap_td_class="td_pok"][olap_td_index="'+$(elem2).attr('olap_td_index')+'"][olap_tr_index="'+$(elem2).attr('olap_tr_index')+'"]');
-                                                if ($(tek_td_before).length===0) {
-                                                    tek_td_before=tr_pok_td_last;
-                                                }                                                
-                                            }
-                                            $(elem2).addClass($(tek_td_before).attr("class")).attr('style',$(tek_td_before).attr('style'));
-                                        });
-                                        if (td_pok_last_border) {
-                                            $(elem).find('td[olap_tab_id='+id_t+']:last').css('border-right',td_pok_last_border);
-                                        }    
-                                        if (td_pok_first_border) {
-                                            $(elem).find('td[olap_tab_id='+id_t+']:first').css('border-left',td_pok_first_border);
-                                        }                                            
-                                    });                                                                        
-                                    
-                                    one_str_design(id_t,rep_tab_tr,tr_name_col,'td_str_name','td_val_name');                                                                                                          
-                                                                        
-                                    tr_tab_last=$(tab_before_olap_tr).filter('[olap_tr_class_'+id_t+'="tr_tab"]').last();                                
-                                    if ($(tr_tab_last).length>0) {
-                                        one_str_design(id_t,rep_tab_tr,tr_tab_last,'td_str_val','td_val_val');                                                                     
-                                    }
-                                    
-                                    var tr_itog=$(tab_before_olap_tr).filter('[olap_tr_class_'+id_t+'="tr_itog"]').last();                                                                        
-                                    if ($(tr_itog).length>0) {
-                                        one_str_design(id_t,rep_tab_tr,tr_itog,'td_str_itog','td_val_itog');                                                                       
-                                    }   
-                                    
-                                }
-                                
-                                
-                                //если не 2D и благоприятный дизайн (из него удобно перестраивать)                               
-                                var td_pok_length=$(rep_tab_tr_head).filter('[olap_tr_class_'+id_t+'="tr_pok"]').last().find('td[olap_td_class="td_pok"]').length,
-                                    td_str_name_v=$(rep_tab_tr_head).last().find('td[olap_tab_id='+id_t+']'),
-                                    td_str_name_length=$(td_str_name_v).length;
-                                if ((!pr_2D) & (pr_olap_design) 
-                                     & ($(olap_design).filter('tr[olap_tr_class_'+id_t+'="tr_name_col"]').last().find('td[olap_tab_id='+id_t+']').length!=td_str_name_length)
-                                     & (td_pok_length>1)
-                                     & ($(td_str_name_v).filter('[olap_td_class="td_str_name"]').length>1)
-                                     & ($(data_tab_html_tr).filter('tr.tr_tab').length>1)
-                                    ) {                                
-                                    var tr_olap=$(table_tag_v).find('tr[olap_tr_class_'+id_t+']').clone(),
-                                        html_v_design='';
-                                    if ($(tr_olap).length>0) { 
-                                        $(tr_olap).filter('tr[olap_tr_class_'+id_t+'="tr_tab"]').find('td').empty();                
-                                        $(tr_olap).each(function(i,elem) {  
-                                            html_v_design+=elem.outerHTML;
-                                        });
-                                        $(table_tag_v).find('div.table_save_design_val[id="'+id_t+'"]').html(LZString.compressToUTF16(html_v_design));
-                                    }                                    
-                                }
-                                
-                                var time6 = performance.now();
-                                console.log('время дорисовки стилей: '+secondstotime((time6-time5)/1000));                                
-                                console.log('время общее 1: '+secondstotime((time6-time)/1000));
-                                if (!!time0) {
-                                    console.log('время общее: '+secondstotime((time6-time0)/1000));
-                                }
-                                console.log('время общее с SQL: '+secondstotime((time6-time00)/1000));
-                                save_tab_data();
-                                var time_save = performance.now();
-                                console.log('время общее c сохранением данных для jexcel: '+secondstotime((time_save-time00)/1000));
-                                pr_encore=false;
-                                $(in_action_value).trigger('after_load_data'+id_t);
-                            }
-                            else {
-                                time0 = performance.now();
-                                var rep_tab=tab_before;
-                                //если 2D-режим и разное (кол-во полей или разные поля) и мастердата загружается из репозитория, то надо перестроить
-                                var rep_tab_tr;
-                                if (!pr_olap_design) {
-                                    rep_tab_tr=$(rep_tab).closest('tr');
-                                }
-                                else {
-                                    rep_tab_tr=olap_design;
-                                }
-                                if ($(rep_tab_tr_head).length===0) {
-                                    rep_tab_tr_head=$(rep_tab_tr).filter('[olap_tr_class_'+id_t+'="tr_pok"],[olap_tr_class_'+id_t+'="tr_name_col"]');
-                                }
-                                var data_tab_tr_head_tek=$(data_tab_html_tr).filter('tr.tr_pok,tr.tr_name_col');
-                                if ((pr_2D) & (!!($(md).attr('mdr_class')))) {
-                                    var td_first_old=$(rep_tab_tr).first().find('td[olap_tab_id='+id_t+']'),
-                                        td_first_new=$(data_tab_html_tr).first().find('td');  
-                                    if ($(td_first_old).length===$(td_first_new).length) {
-                                        var td_first_new_tek=$(td_first_new).first();
-                                        $(td_first_old).each(function(i,elem) {
-                                            if ($(elem).attr('olap_td_id')!=$(td_first_new_tek).attr('id')) {
-                                                pr_encore_this=true;
-                                                return false;
-                                            }
-                                            td_first_new_tek=$(td_first_new_tek).next();
-                                        });
-                                    }
-                                    else {
-                                        pr_encore_this=true;
-                                    }    
-                                }
-                                else if ((!pr_2D) & 
-                                         ($(rep_tab_tr_head).last().find('td[olap_tab_id='+id_t+']').length!=
-                                         $(data_tab_tr_head_tek).filter('tr.tr_name_col').last().find('td').length)
-                                        ) {
-                                    //если не 2Д и кол-во наименований показателей разное, то анализируем шапки сначала, если есть
-                                    //кол-во анализируемое полей может расходиться по причине наличия алгоритма удаления "дыр"
-                                    if ($(data_tab_tr_head).length>0) {
-                                        if ($(data_tab_tr_head).length===$(data_tab_tr_head_tek).length) {
-                                            var tek_h_tr=$(data_tab_tr_head_tek).first();
-                                            $(data_tab_tr_head).each(function(i,elem) {
-                                                var el_td=$(elem).find('td'),
-                                                    el_td_tek=$(tek_h_tr).find('td');
-                                                if ($(el_td).length===$(el_td_tek).length) {
-                                                    var el_td_tek_one=$(el_td_tek).first();
-                                                    $(el_td).each(function(i2,elem2) {
-                                                        if (($(elem2).attr('class')!=$(el_td_tek_one).attr('class'))
-                                                            || ($(elem2).html()!=$(el_td_tek_one).html())){
-                                                            pr_encore_this=true;
-                                                            return false;
-                                                        }                                                        
-                                                        el_td_tek_one=$(el_td_tek_one).next();
-                                                    });
-                                                }
-                                                else {
-                                                    pr_encore_this=true;
-                                                    return false;
-                                                }    
-                                                    
-                                                tek_h_tr=$(tek_h_tr).next();
-                                            });
-                                        }
-                                        else {
-                                            pr_encore_this=true;
-                                        }
-                                    }
-                                    else {
-                                        pr_encore_this=true;
-                                    }    
-                                }
-                                
-                                var pr_end=false,tr_index_beg_del;
-                                tab_before_olap=tab_before;                                
-                                //кэшируем строки из которых возможно будем брать классы и стили оформления, необходимо только несколько вариантов в соответствии со структурой
-                                tab_before_olap_tr=$(rep_tab_tr).clone();
-                                tab_before_olap_tr_pok=$(tab_before_olap_tr).filter('[olap_tr_class_'+id_t+'="tr_pok"]');
-                                
-                                tr_name_col=$(tab_before_olap_tr).filter('[olap_tr_class_'+id_t+'="tr_name_col"]');                                
-
-                                var tr_tab_all_all=$(tab_before_olap_tr).filter('[olap_tr_class_'+id_t+'="tr_tab"]');
-                                tr_tab_all=$(tr_tab_all_all).first();
-                                td_val_val_last=$(tr_tab_all).find('td[olap_tab_id='+id_t+']:last');                                                              
-
-                                $(tr_tab_all).find('td[olap_tab_id='+id_t+']').each(function(i,elem) {
-                                    var mass_index=$(elem).attr('id').split('-');
-                                    $(elem).attr('id',mass_index[0]).removeClass('c'+mass_index[0]+' r'+mass_index[1]);
-                                });                                                               
-
-                                //также используется просто в качестве последней строки
-                                var tr_itog=$(tab_before_olap_tr).last().clone(),
-                                    pr_true_itog=false;
-                                $(tr_itog).find('td[olap_tab_id='+id_t+']').each(function(i,elem) {
-                                    var mass_index=$(elem).attr('id').split('-');
-                                    $(elem).attr('id',mass_index[0]).removeClass('c'+mass_index[0]+' r'+mass_index[1]); 
-                                    if (($(elem).hasClass('td_str_itog')) || ($(elem).hasClass('td_val_itog'))) {
-                                        pr_true_itog=true;
-                                    }    
-                                });                                                                
-                                if (($(tr_tab_all_all).length==1) & (!pr_true_itog)) {
-                                    //если в образцовой таблице только одна строка и нету итогов то меняем нижнюю рамку на дефолтную, так как она может соответствовать рамке всей таблицы                                        
-                                    $(tr_tab_all).find('td[olap_tab_id='+id_t+']').each(function(i,elem) {
-                                        if ($(elem).css('border-bottom')!='') {
-                                            $(elem).css('border-bottom','1px solid '+$(elem).css('border-bottom-color'));
-                                        }                                    
-                                    }); 
-                                }       
-
-                                var tab_before_olap_tr_true=$(table_tag_v).find('tr[olap_tr_class_'+id_t+']'),
-                                    tr_olap_last_index=$(tab_before_olap_tr_true).last().find('td[olap_tab_id='+id_t+']:last').attr('olap_tr_index');
-
-                                var tek_tr=$(begin_tab_td).closest('tr');
-                                tek_td=begin_tab_td;
-                                var pr_insert=false,
-                                    pr_del=false;
-                                if (!pr_encore_this) {
-                                    //добавляем/удаляем строки если есть разница                                                                
-                                    if  ($(tab_before_olap_tr_true).length<$(data_tab_html_tr).length) {
-                                        pr_insert=true;
-                                        var index_insert;
-                                        if ($(tab_before_olap_tr_true).length>0) {
-                                            index_insert=$(tab_before_olap_tr_true).last().index()+1;
-                                        }
-                                        else {
-                                            index_insert=$(tek_tr).index()+1;
-                                        }
-                                        $('#my').jexcel('insertRow',($(data_tab_html_tr).length-$(tab_before_olap_tr_true).length),index_insert,{updSelection:false,not_log:true});
-                                        index_recalc_true($(table_tag_v).find('tr:eq('+(index_insert+$(data_tab_html_tr).length-$(tab_before_olap_tr_true).length)+')'));
-                                    }    
-                                    else if ($(tab_before_olap_tr_true).length>$(data_tab_html_tr).length) {
-                                        pr_del=true;
-                                        $('#my').jexcel('deleteRow',($(tab_before_olap_tr_true).last().index()+1-$(tab_before_olap_tr_true).length+$(data_tab_html_tr).length) ,($(tab_before_olap_tr_true).length-$(data_tab_html_tr).length),{not_log:true});
-                                    }    
-                                }    
-                                //var tr_tab_all_length=$(tr_name_col).find('td[olap_tab_id='+id_t+']').length;
-                                var tr_tab_all_length=$(tab_before_olap_tr_true).filter('[olap_tr_class_'+id_t+'="tr_name_col"]').find('td[olap_tab_id='+id_t+']').length;
-
-                                var time2 = performance.now();
-                                console.log('время подготовки данных lite: '+secondstotime((time2-time0)/1000));
-                                if (!pr_encore_this) {
-                                    $(data_tab_html_tr).each(function(i,elem) { 
-                                        if (pr_2D) {
-                                            //для 2d режима возможно использование невидимых полей в атрибутах строки, для 3D пользуемся только "input type=hidden"
-                                            var olap_unvis_v=$(elem).attr('olap_unvis_'+id_t);
-                                            if (!!olap_unvis_v) {
-                                                $(tek_tr).attr('olap_unvis_'+id_t,olap_unvis_v);
-                                            }  
-                                        }                                        
-                                        var pr_insert_new=false;
-                                        $(elem).find('td').each(function(i2,elem2) {
-                                            //если удалили строки, нет итогов и текщая ячейка td_val_val или td_str_val, то надо просто заполнить ячейку
-                                            if ((($(elem2).hasClass('td_val_val')) || ($(elem2).hasClass('td_str_val')))
-                                                 & (pr_del) & (!pr_true_itog)
-                                                ) {
-                                                tek_td=$(tek_tr).find('td[olap_tab_id='+id_t+'][olap_td_index="'+i2+'"]');                                        
-                                                $(tek_td).html($(elem2).html());
-                                            }
-                                            else { 
-                                                tek_td=$(tek_tr).find('td[olap_tab_id='+id_t+'][olap_td_index="'+i2+'"][olap_tr_index="'+i+'"]');                                        
-                                                if ($(tek_td).length>0) {
-                                                    //если шапка, то должны совпадать значения , иначе будем строить по-другому
-                                                    if (!pr_2D) {
-                                                        if ($(tek_td).attr('olap_td_class').indexOf('td_pok')>-1) {
-                                                            var tek_td_pok=$(rep_tab_tr_head).find('td[olap_td_index="'+i2+'"][olap_tr_index="'+i+'"]');
-                                                            if (String($(tek_td_pok).html())!==String($(elem2).html())) {
-                                                                pr_encore_this=true;
-                                                                return false;
-                                                            }                                                        
-                                                        }   
-                                                    }  
-
-                                                    $(tek_td).html($(elem2).html());   
-                                                    var mass_index=$(tek_td).attr('id').split('-'),
-                                                        tek_tr_index2=mass_index[1],
-                                                        tek_td_index2=mass_index[0];                                    
-                                                    //если новая таблица короче и в ней есть итоги
-                                                    if ((($(elem2).hasClass('td_str_itog')) || ($(elem2).hasClass('td_val_itog'))) 
-                                                         & ($(tek_td).attr('olap_td_class').indexOf('td_str_itog')==-1) & ($(tek_td).attr('olap_td_class').indexOf('td_val_itog')==-1)) {
-                                                        var tek_td_clon=$(tr_itog).find('#'+tek_td_index2).clone();
-                                                        $(tek_td).removeClass().addClass($(tek_td_clon).attr("class")).attr('style',$(tek_td_clon).attr('style'))
-                                                                .attr('olap_td_class',elem2.className).addClass('c'+tek_td_index2+' r'+tek_tr_index2);
-                                                        pr_end=true; 
-                                                        tr_index_beg_del=tek_tr_index2;
-                                                    } 
-                                                    else if ((($(elem2).hasClass('td_val_val')) || ($(elem2).hasClass('td_str_val'))) 
-                                                         & (($(tek_td).attr('olap_td_class').indexOf('td_str_itog')>-1) || ($(tek_td).attr('olap_td_class').indexOf('td_val_itog')>-1))) {
-                                                        //если новая таблица длиннее, то надо удалить форматирование итогов когда они встретятся 
-                                                        var mass_index=$(tek_td).attr('id').split('-');
-                                                        var tek_tr_index2=mass_index[1];
-                                                        var tek_td_index2=mass_index[0];  
-                                                        var tek_td_clon=$(tr_tab_all).find('#'+tek_td_index2).clone();
-                                                        $(tek_td).removeClass().addClass($(tek_td_clon).attr("class")).removeAttr('style').attr('style',$(tek_td_clon).attr('style')).addClass('c'+tek_td_index2+' r'+tek_tr_index2)
-                                                                .attr('olap_td_class',elem2.className).attr('olap_td_id',elem2.id).attr('olap_td_index',i2).attr('olap_tr_index',i);
-                                                        pr_insert_new=true;
-                                                    }
-                                                    else if ((pr_insert) & (!pr_true_itog) & (tr_olap_last_index==i)) {
-                                                        //если вставили строки и нет итогов, то когда встретится последняя строка, то надо взять стили и класы из первой строки
-                                                        var mass_index=$(tek_td).attr('id').split('-');
-                                                        var tek_tr_index2=mass_index[1];
-                                                        var tek_td_index2=mass_index[0];  
-                                                        var tek_td_clon=$(tr_tab_all).find('#'+tek_td_index2).clone();
-                                                        $(tek_td).removeClass().addClass($(tek_td_clon).attr("class")).removeAttr('style').attr('style',$(tek_td_clon).attr('style')).addClass('c'+tek_td_index2+' r'+tek_tr_index2)
-                                                                .attr('olap_td_class',elem2.className).attr('olap_td_id',elem2.id).attr('olap_td_index',i2).attr('olap_tr_index',i);                                                    
-                                                    }                                                                                                              
-
-                                                }
-                                                //смотрим это отсутствующая строка или столбец, если столбец, то строим по-другому
-                                                else if (($(elem2).hasClass('td_val_val')) || ($(elem2).hasClass('td_str_val'))
-                                                         || ($(elem2).hasClass('td_str_itog')) || ($(elem2).hasClass('td_val_itog'))) {
-                                                    var tek_td_before; 
-                                                    if (($(elem2).hasClass('td_val_val')) || ($(elem2).hasClass('td_str_val'))) {
-                                                        tek_td_before=$(tr_tab_all).find('[olap_td_index="'+i2+'"]');
-                                                    }   
-                                                    else {
-                                                        tek_td_before=$(tr_itog).find('[olap_td_index="'+i2+'"]'); 
-                                                    }
-                                                    //если существует такой слобец, то нам надо записывать в сл. строку с её предворительным добавлением
-                                                    if ($(tek_td_before).length>0) {
-                                                        tek_td=$(tek_tr).find('td[id^="'+$(tek_td_before).attr('id')+'-"]');
-                                                        if (!pr_insert_new) {
-                                                            $(tek_tr).attr('olap_tr_class_'+id_t,elem.className).attr('olap_tr_id_'+id_t,elem.id).attr('olap_tr_index_'+id_t,i);
-                                                            if ($(tek_tr).find('td[olap_tab_id='+id_t+'][olap_tr_index="'+i+'"]').length==0) {                                                        
-                                                                pr_insert_new=true;
-                                                            }    
-                                                        }  
-                                                        $(tek_td).html($(elem2).html()).addClass($(tek_td_before).attr("class")).attr('style',$(tek_td_before).attr('style'))
-                                                            .attr('olap_td_class',elem2.className).attr('olap_td_id',elem2.id).attr('olap_tab_id',id_t).attr('colspan',$(elem2).attr('colspan')).attr('rowspan',$(elem2).attr('rowspan')).attr('olap_td_index',i2).attr('olap_tr_index',i);
-                                                    }
-                                                    else if ($(elem2).html().trim()!=''){   
-                                                        pr_encore_this=true;
-                                                        return false;
-                                                    }
-                                                }
-                                                else if ((($(elem2).hasClass('td_pok_name')) || ($(elem2).hasClass('td_pok'))
-                                                         || ($(elem2).hasClass('td_str_name')) || ($(elem2).hasClass('td_val_name'))
-                                                         || ($(elem2).hasClass('null')))
-                                                         & pr_olap_design & ($(data_tab_tr_head).length===0)){
-                                                    //если отсутствуют ячейки, то это возможно первый запуск после сохранения, надо посмотреть в структуре дизайна наличие строк и ячейки, если все совпадает то, ок
-                                                    //нет перестраиваем
-                                                    //но только в случае отсутствия переменной шапки, т.к. по ней мы точно проверяем и знаем что 100% все гуд                                                    
-                                                    var tek_td_before;
-                                                    if (($(elem2).hasClass('td_pok_name')) || ($(elem2).hasClass('td_pok'))) {
-                                                        tek_td_before=$(rep_tab_tr_head).find('td[olap_td_index="'+i2+'"][olap_tr_index="'+i+'"]');
-                                                    }
-                                                    else if ($(elem2).hasClass('null')) {
-                                                        tek_td_before=$(tab_before_olap_tr).first().find('td[olap_td_index="'+i2+'"][olap_tr_index="'+i+'"]');
-                                                    }                                                    
-                                                    else {
-                                                        tek_td_before=$(tr_name_col).find('td[olap_td_index="'+i2+'"][olap_tr_index="'+i+'"]');
-                                                    }
-                                                    if ($(tek_td_before).length>0) {
-                                                        $(tek_tr).attr('olap_tr_class_'+id_t,elem.className).attr('olap_tr_id_'+id_t,elem.id).attr('olap_tr_index_'+id_t,i);
-                                                        if ($(tek_td_before).attr('olap_td_class')==elem2.className) {
-                                                            tek_td=$(tek_tr).find('td[id="'+$(tek_td_before).attr('id')+'"]');
-                                                            if ($(tek_td).length>0) {
-                                                                var colspan_v=parseInt($(tek_td_before).attr('colspan')),
-                                                                    rowspan_v=parseInt($(tek_td_before).attr('rowspan'));                                                                
-                                                                if (colspan_v>1) {
-                                                                    for (var icsp = 1; icsp < (colspan_v); icsp++) {
-                                                                        $(tek_td).next().remove();
-                                                                    }
-                                                                }
-                                                                if (rowspan_v>1) {
-                                                                    var tek_tr_null=$(tek_tr);
-                                                                    for (var jcsp = 1; jcsp < (rowspan_v); jcsp++) {
-                                                                        tek_tr_null=$(tek_tr_null).next();
-                                                                        var tek_td_null=$(tek_tr_null).find('td[id^="'+$(tek_td).attr('id').split('-')[0]+'-"]').prev();
-                                                                        for (var icsp = 1; icsp <= (colspan_v); icsp++) {
-                                                                            $(tek_td_null).next().remove();
-                                                                        }
-                                                                    }
-                                                                }
-                                                                $(tek_td).html($(elem2).html()).addClass($(tek_td_before).attr("class")).attr('style',$(tek_td_before).attr('style'))
-                                                                    .attr('olap_td_class',elem2.className).attr('olap_td_id',elem2.id).attr('olap_tab_id',id_t).attr('colspan',$(elem2).attr('colspan')).attr('rowspan',$(elem2).attr('rowspan')).attr('olap_td_index',i2).attr('olap_tr_index',i);
-                                                            }
-                                                            else {
-                                                                pr_encore_this=true;
-                                                                return false;
-                                                            }
-                                                        }
-                                                        else {
-                                                            pr_encore_this=true;
-                                                            return false;
-                                                        }
-                                                    }
-                                                    else {   
-                                                        pr_encore_this=true;
-                                                        return false;
-                                                    }
-                                                }
-                                            }    
-
-                                            //tek_td=$(tek_td).next();
-                                        });
-                                        if ((pr_encore_this) || (pr_end)) {
-                                            return false;
-                                        }
-
-
-                                        //в новых вставленных строках вконце м.б. пустота, т.к. приходят такие данные
-                                        if (pr_insert_new) {
-                                            var tek_tr_td=$(tek_tr).find('td[olap_tab_id='+id_t+']');
-                                            var tek_tr_length;
-                                            if (($(tek_tr_td).filter('[olap_td_class="td_val_itog"]').length>0) & ($(tek_tr_td).filter('[olap_td_class="td_str_val"]').length>0)) {
-                                                tek_tr_length=$(tek_tr_td).filter('[olap_td_class="td_val_val"]').length+$(tek_tr_td).filter('[olap_td_class="td_str_val"]').length;                                            
-                                            }
-                                            else {
-                                                tek_tr_length=$(tek_tr_td).length;
-                                            }
-                                            if (tr_tab_all_length>tek_tr_length) {
-                                                var tek_td_null=$(tek_td).next();
-                                                var tek_td_before;
-                                                for (var i = 1; i <= (tr_tab_all_length-tek_tr_length-1); i++) {
-                                                    if ($(tek_td_null).length==0) { 
-                                                        pr_encore_this=true;
-                                                        return false;
-                                                        break;                                                    
-                                                    }
-                                                    var mass_index=$(tek_td_null).attr('id').split('-');
-                                                    tek_td_before=$(tr_tab_all).find('#'+mass_index[0]); 
-                                                    $(tek_td_null).addClass($(tek_td_before).attr("class")).attr('style',$(tek_td_before).attr('style'))
-                                                        .attr('olap_td_class','td_val_val').attr('olap_td_id','null').attr('olap_tab_id',id_t).attr('colspan',1).attr('rowspan',1).attr('olap_td_index',$(tek_td_before).attr('olap_td_index')).attr('olap_tr_index',i);
-                                                    tek_td_null=$(tek_td_null).next();
-                                                }
-                                                tek_td_before=td_val_val_last; 
-                                                $(tek_td_null).addClass($(tek_td_before).attr("class")).attr('style',$(tek_td_before).attr('style'))
-                                                    .attr('olap_td_class','td_val_val').attr('olap_td_id','null').attr('olap_tab_id',id_t).attr('colspan',1).attr('rowspan',1).attr('olap_td_index',$(tek_td_before).attr('olap_td_index')).attr('olap_tr_index',i);                                            
-
-                                            }
-                                        }
-                                        
-                                        //т.к. стили ячеек могут браться из olap_design, а размеры могут не совпадать для 3D, то в таком случае для последней ячейки всегда проставляем стиль последней ячейки
-                                        if ((pr_olap_design) & (!pr_2D) & ($(tek_tr).is('[olap_tr_class_'+id_t+'="tr_tab"'))) {
-                                            $(tek_tr).find('td[olap_tab_id="'+id_t+'"]').last()
-                                                .addClass($(td_val_val_last).attr("class")).attr('style',$(td_val_val_last).attr('style'));
-                                        }
-                                    
-                                        tek_tr=$(tek_tr).next();
-                                    });
-
-                                    var olap_td_class1,olap_td_class2;
-                                    if ($(tr_itog).length>0) {
-                                        tek_tr=$(tek_tr).prev();
-                                        if ($(tek_tr).is('[olap_tr_class_'+id_t+'="tr_itog"]')) {
-                                            if ($(tr_itog).is('[olap_tr_class_'+id_t+'="tr_itog"]')) {                                        
-                                                olap_td_class1='td_str_itog';
-                                                olap_td_class2='td_val_itog';
-                                                one_str_design(id_t,tek_tr,tr_itog,olap_td_class1,olap_td_class2);
-                                            } 
-                                            var tr_tab_last=$(tab_before_olap_tr).filter('[olap_tr_class_'+id_t+'="tr_tab"]').last();
-                                            if (($(tr_tab_last).length>0) & ($(tek_tr).prev().is('[olap_tr_class_'+id_t+'="tr_tab"]'))) {
-                                                tek_tr=$(tek_tr).prev();                                            
-                                                olap_td_class1='td_str_val';
-                                                olap_td_class2='td_val_val';                                        
-                                                one_str_design(id_t,tek_tr,tr_tab_last,olap_td_class1,olap_td_class2);
-                                                tek_tr=$(tek_tr).next();
-                                            }                                        
-                                        }
-                                        else {
-                                            olap_td_class1='td_str_val';
-                                            olap_td_class2='td_val_val';
-                                            one_str_design(id_t,tek_tr,tr_itog,olap_td_class1,olap_td_class2);
-                                        }
-                                        tek_tr=$(tek_tr).next();
-                                    }
-
-                                    var time3 = performance.now();
-                                    console.log('время заполнения данными lite: '+secondstotime((time3-time2)/1000)); 
-                                }
-                                    //pr_encore=false;
-                                if (!pr_encore_this) { 
-                                    //удаляем пустоты, которые могут образоваться вконце (справа отсутсвуют данные, но до этого все показатели совпадают, таблицу в этом случае перестраивать не надо)
-                                    var pr_null_all=false;
-                                    if (!pr_2D) {
-                                        var pr_td_val_name=false;
-                                        var td_first_null;
-                                        var md_tab_val_length=$(md).find('.structure.d-table .d-table[id="tab_val"] .SYSNAME').length;
-                                        $(rep_tab_tr).filter('[olap_tr_class_'+id_t+'="tr_pok"]:last').find('[olap_td_class="td_pok"]').each(function(i,elem) {
-                                            var pr_null=false;
-                                            var index_beg=$(begin_tab_td).index()+$(md).find('.structure.d-table .d-table[id="tab_str"] .SYSNAME').length+($(elem).index()-$(begin_tab_td).index())*$(md).find('.structure.d-table .d-table[id="tab_val"] .SYSNAME').length;
-                                            if ($(elem).text().trim().length==0) {
-                                                pr_null=true;
-                                                pr_null_all=true;
-                                            }
-                                            if (pr_null) {
-                                                //ищем последнюю заполненную ячейку наименования полей и присваиваем ей стиль конечной ячейки,только 1 раз
-                                                if (!pr_td_val_name) {   
-                                                    var tr_name_col=$(rep_tab_tr).filter('[olap_tr_class_'+id_t+'="tr_name_col"]');
-                                                    var td_last_bord=$(tr_name_col).find('[olap_td_class="td_val_name"]').last().css('border-right');
-                                                    if (td_last_bord!='') {
-                                                        $(tr_name_col).find('[olap_td_class="td_val_name"]').each(function(i2,elem2) {
-                                                            if ($(elem2).text().trim().length==0) {
-                                                                td_first_null=elem2;
-                                                                return false;
-                                                            }
-                                                        });
+                                                    $(rep_tab_tr).filter('[olap_tr_class_'+id_t+'="tr_itog"]').each(function(i2,elem2) {
                                                         if ($(td_first_null).length>0) {
-                                                            $(td_first_null).prev().css('border-right',td_last_bord);
-                                                        } 
-                                                    }
-                                                    pr_td_val_name=true;
-                                                }
-                                                for (var i = index_beg; i < (index_beg+md_tab_val_length); i++) {
-                                                    var tek_td=$(rep_tab_tr).filter('[olap_tr_class_'+id_t+'="tr_name_col"]').find('td:eq('+i+')');
-                                                    var mass_index=$(tek_td).attr('id').split('-');
-                                                    $(tek_td).removeClass().removeAttr('style').addClass('c'+mass_index[0]+' r'+mass_index[1]).removeAttr('olap_td_class').removeAttr('olap_tab_id').removeAttr('olap_td_index').removeAttr('olap_tr_index').removeAttr('olap_td_id');
-                                                } 
-                                                $(rep_tab_tr).filter('tr[olap_tr_class_'+id_t+'="tr_pok"]:not(tr[olap_tr_class_'+id_t+'="null"])').each(function(i2,elem2) {
-                                                    if ($(elem2).find('[olap_td_class="td_pok_name"]').length>0) {
-                                                        $(elem2).find('[olap_td_class="td_pok_name"]').attr('colspan',(+$(elem2).find('[olap_td_class="td_pok_name"]').attr('colspan')-$(md).find('.structure.d-table .d-table[id="tab_val"] .SYSNAME').length));
-                                                        var mass_index_cols=[],mass_left_cols=[];
-                                                        $(table_all_tag).find('thead:first tr:last td:gt(0)').each(function(i,elem) {
-                                                            var tek_index=$(elem).index();
-                                                            mass_index_cols[tek_index]=$(elem).text();                
-                                                            mass_left_cols[$(elem).offset().left]=tek_index;
-                                                        });
-                                                        var td_clone=$(elem2).find('[olap_td_class="td_pok_name"]').clone();
-                                                        $(td_clone).removeClass().removeAttr('style').removeAttr('id').removeAttr('colspan').removeAttr('rowspan').html('').removeAttr('olap_td_class').removeAttr('olap_tab_id').removeAttr('olap_td_index').removeAttr('olap_tr_index').removeAttr('olap_td_id');                                                
-                                                        for (var i = 1; i <= md_tab_val_length; i++) {
-                                                            var tek_td=$(td_clone).clone();
-                                                            $(elem2).find('[olap_td_class="td_pok_name"]').after(tek_td);
-                                                        }                                                                                                
-                                                    }
-                                                    else {
-                                                        var td_first_null;
-                                                        $(elem2).find('[olap_td_class="td_pok"]').each(function(i3,elem3) {
-                                                            if ($(elem3).text().trim().length==0) {
-                                                                td_first_null=elem3;
-                                                                return false;
-                                                            }
-                                                        });
-                                                        if ($(td_first_null).length>0) {
-                                                            $(td_first_null).prev().attr('style',$(elem2).find('[olap_td_class="td_pok"]').last().attr('style'));
-                                                        }    
-
-                                                        if ($(elem).attr('olap_tr_id_'+id_t)!=$(elem2).attr('olap_tr_id_'+id_t)) {
-                                                            var index_p=$(begin_tab_td).index();
-                                                            var elem_save;
-                                                            $(elem2).find('td[olap_td_class="td_pok"][olap_tab_id='+id_t+']').each(function(i21,elem211) {
-                                                                index_p+=+$(elem211).attr('colspan')/md_tab_val_length;
-                                                                if (index_p>=($(elem).index()+1)) {
-                                                                    elem_save=$(elem211);
-                                                                    return false;
-                                                                }                                                                                                                                                                                                              
-                                                            });
-                                                            if ($(elem_save).length>0) {
-                                                                $(elem_save).attr('colspan',(+$(elem_save).attr('colspan')-md_tab_val_length));
-
-                                                                var mass_index_cols=[],mass_left_cols=[];
-                                                                $(table_all_tag).find('thead:first tr:last td:gt(0)').each(function(i,elem) {
-                                                                    var tek_index=$(elem).index();
-                                                                    mass_index_cols[tek_index]=$(elem).text();                
-                                                                    mass_left_cols[$(elem).offset().left]=tek_index;
-                                                                });
-                                                                var td_clone=$(elem_save).clone();
-                                                                $(td_clone).removeClass().removeAttr('style').removeAttr('id').removeAttr('colspan').removeAttr('rowspan').html('').removeAttr('olap_td_class').removeAttr('olap_tab_id').removeAttr('olap_td_index').removeAttr('olap_tr_index').removeAttr('olap_td_id');
-                                                                var tr_index=$(elem2).index();
-                                                                for (var i = 1; i <= md_tab_val_length; i++) {
-                                                                    var tek_td=$(td_clone).clone();
-                                                                    $(elem_save).after(tek_td);
-                                                                }
+                                                            var td_bord_last=$(elem2).find('[olap_td_class="td_val_itog"]').last().css('border-right');
+                                                            if (td_bord_last!='') {
+                                                                var mass_index=$(td_first_null).prev().attr('id').split('-');
+                                                                $(elem2).find('#'+mass_index[0]+'-'+$(elem2).index()).css('border-right',td_bord_last);
                                                             }
                                                         }
-                                                    }
-                                                    var tr_index=$(elem2).index();
-                                                    $(elem2).find('td:not([olap_td_class="td_pok"])').each(function(i3,elem3) {
-                                                        var td_index=+mass_left_cols[$(elem3).offset().left]-1;
-                                                        $(elem3).attr('id',(td_index+'-'+tr_index)).addClass('c'+td_index+' r'+tr_index);
+
+                                                        for (var i = index_beg; i < (index_beg+md_tab_val_length); i++) {
+                                                            var tek_td=$(elem2).find('td:eq('+i+')');
+                                                            var mass_index=$(tek_td).attr('id').split('-');
+                                                            $(tek_td).removeClass().removeAttr('style').addClass('c'+mass_index[0]+' r'+mass_index[1]).removeAttr('olap_td_class').removeAttr('olap_tab_id').removeAttr('olap_td_index').removeAttr('olap_tr_index').removeAttr('olap_td_id');
+                                                        }                                                                                                             
                                                     });
-                                                });
-                                                $(rep_tab_tr).filter('[olap_tr_class_'+id_t+'="tr_tab"]').each(function(i2,elem2) {
-                                                    if ($(td_first_null).length>0) {
-                                                        var td_bord_last=$(elem2).find('[olap_td_class="td_val_val"]').last().css('border-right');
-                                                        if (td_bord_last!='') {
-                                                            var mass_index=$(td_first_null).prev().attr('id').split('-');
-                                                            $(elem2).find('#'+mass_index[0]+'-'+$(elem2).index()).css('border-right',td_bord_last);
-                                                        }
-                                                    }
+                                                    var mass_index=$(elem).attr('id').split('-');
+                                                    $(elem).removeClass().removeAttr('style').addClass('c'+mass_index[0]+' r'+mass_index[1]).removeAttr('olap_td_class').removeAttr('olap_tab_id').removeAttr('olap_td_index').removeAttr('olap_tr_index').removeAttr('olap_td_id');
+                                                }
+                                            }); 
+                                        }
+                                        //восстанавливаем индексы после таблицы, т.к. произодилась вставка/удаление строк
+                                        index_recalc_true(tek_tr);
 
-                                                    for (var i = index_beg; i < (index_beg+md_tab_val_length); i++) {
-                                                        var tek_td=$(elem2).find('td:eq('+i+')');
-                                                        var mass_index=$(tek_td).attr('id').split('-');
-                                                        $(tek_td).removeClass().removeAttr('style').addClass('c'+mass_index[0]+' r'+mass_index[1]).removeAttr('olap_td_class').removeAttr('olap_tab_id').removeAttr('olap_td_index').removeAttr('olap_tr_index').removeAttr('olap_td_id');
-                                                    }                                                                                                             
-                                                });
-                                                $(rep_tab_tr).filter('[olap_tr_class_'+id_t+'="tr_itog"]').each(function(i2,elem2) {
-                                                    if ($(td_first_null).length>0) {
-                                                        var td_bord_last=$(elem2).find('[olap_td_class="td_val_itog"]').last().css('border-right');
-                                                        if (td_bord_last!='') {
-                                                            var mass_index=$(td_first_null).prev().attr('id').split('-');
-                                                            $(elem2).find('#'+mass_index[0]+'-'+$(elem2).index()).css('border-right',td_bord_last);
-                                                        }
-                                                    }
+                                        pr_encore=false;
+                                        $('#my').jexcel('updateSelection', begin_tab_td, begin_tab_td, 1); 
+                                    } 
+                                    else {  
+                                        tab_before_olap_tr_true=$(table_tag_v).find('tr[olap_tr_class_'+id_t+']');
+                                        var count_del;
+                                        if ((pr_insert) || (pr_del)) {
+                                            count_del=$(data_tab_html_tr).length;
+                                        }
+                                        else {
+                                            count_del=$(tab_before_olap_tr_true).length;
+                                        }
+                                        $('#my').jexcel ('deleteRow',($(begin_tab_td).closest('tr').index()) ,count_del,{not_log:true});
+                                        pr_tab_before=false;
+                                    }                                
 
-                                                    for (var i = index_beg; i < (index_beg+md_tab_val_length); i++) {
-                                                        var tek_td=$(elem2).find('td:eq('+i+')');
-                                                        var mass_index=$(tek_td).attr('id').split('-');
-                                                        $(tek_td).removeClass().removeAttr('style').addClass('c'+mass_index[0]+' r'+mass_index[1]).removeAttr('olap_td_class').removeAttr('olap_tab_id').removeAttr('olap_td_index').removeAttr('olap_tr_index').removeAttr('olap_td_id');
-                                                    }                                                                                                             
-                                                });
-                                                var mass_index=$(elem).attr('id').split('-');
-                                                $(elem).removeClass().removeAttr('style').addClass('c'+mass_index[0]+' r'+mass_index[1]).removeAttr('olap_td_class').removeAttr('olap_tab_id').removeAttr('olap_td_index').removeAttr('olap_tr_index').removeAttr('olap_td_id');
-                                            }
-                                        }); 
+                                    var time4 = performance.now();
+                                    console.log('время удаления пустот/удаления строк для перерисовки по другому алгоритму lite: '+secondstotime((time4-time3)/1000)); 
+                                    console.log('время общее lite: '+secondstotime((time4-time0)/1000));
+                                    console.log('время общее lite с SQL: '+secondstotime((time4-time00)/1000));
+
+                                    if (!pr_encore_this) {
+                                        save_tab_data();
+                                        var time_save = performance.now();
+                                        console.log('время общее lite c сохранением данных для jexcel: '+secondstotime((time_save-time00)/1000));
+                                        $(in_action_value).trigger('after_load_data'+id_t);
                                     }
-                                    //восстанавливаем индексы после таблицы, т.к. произодилась вставка/удаление строк
-                                    index_recalc_true(tek_tr);
+                                }                                   
 
-                                    pr_encore=false;
-                                    $('#my').jexcel('updateSelection', begin_tab_td, begin_tab_td, 1); 
-                                } 
-                                else {  
-                                    tab_before_olap_tr_true=$(table_tag_v).find('tr[olap_tr_class_'+id_t+']');
-                                    var count_del;
-                                    if ((pr_insert) || (pr_del)) {
-                                        count_del=$(data_tab_html_tr).length;
-                                    }
-                                    else {
-                                        count_del=$(tab_before_olap_tr_true).length;
-                                    }
-                                    $('#my').jexcel ('deleteRow',($(begin_tab_td).closest('tr').index()) ,count_del,{not_log:true});
-                                    pr_tab_before=false;
-                                }                                
-
-                                var time4 = performance.now();
-                                console.log('время удаления пустот/удаления строк для перерисовки по другому алгоритму lite: '+secondstotime((time4-time3)/1000)); 
-                                console.log('время общее lite: '+secondstotime((time4-time0)/1000));
-                                console.log('время общее lite с SQL: '+secondstotime((time4-time00)/1000));
-
-                                if (!pr_encore_this) {
-                                    save_tab_data();
-                                    var time_save = performance.now();
-                                    console.log('время общее lite c сохранением данных для jexcel: '+secondstotime((time_save-time00)/1000));
-                                    $(in_action_value).trigger('after_load_data'+id_t);
-                                }
-                            }                                   
-                            
-                        }
-                    }
-                    else {
-                        //если есть отформатированная ранее таблица, то оставляем 2 строки и в первый столбец пишем текст
-                        if (pr_tab_before) {
-                            var tr_tab_all_all=$(table_tag_v).find('tr[olap_tr_class_'+id_t+'="tr_tab"],tr[olap_tr_class_'+id_t+'="tr_itog"]'),
-                                tr_tab_all_all_noi=$(tr_tab_all_all).filter('tr[olap_tr_class_'+id_t+'="tr_tab"]');
-                            if ($(tr_tab_all_all).length>2) {
-                                $('#my').jexcel('deleteRow',$(tr_tab_all_all_noi).first().index(),($(tr_tab_all_all_noi).length-2),{not_log:true});
                             }
-                            $(begin_tab_td).html(begin_tab_td_old);
-                            var tr_olap_td=$(tr_tab_all_all).find('td[olap_tab_id='+id_t+']').empty();
-                            $(tr_olap_td).first().html(data.pr_null_text);
                         }
                         else {
-                            $(begin_tab_td).html(data.pr_null_text);
-                        }    
-                        
+                            //если есть отформатированная ранее таблица, то оставляем 2 строки и в первый столбец пишем текст
+                            if (pr_tab_before) {
+                                var tr_tab_all_all=$(table_tag_v).find('tr[olap_tr_class_'+id_t+'="tr_tab"],tr[olap_tr_class_'+id_t+'="tr_itog"]'),
+                                    tr_tab_all_all_noi=$(tr_tab_all_all).filter('tr[olap_tr_class_'+id_t+'="tr_tab"]');
+                                if ($(tr_tab_all_all).length>2) {
+                                    $('#my').jexcel('deleteRow',$(tr_tab_all_all_noi).first().index(),($(tr_tab_all_all_noi).length-2),{not_log:true});
+                                }
+                                $(begin_tab_td).html(begin_tab_td_old);
+                                var tr_olap_td=$(tr_tab_all_all).find('td[olap_tab_id='+id_t+']').empty();
+                                $(tr_olap_td).first().html(data.pr_null_text);
+                            }
+                            else {
+                                $(begin_tab_td).html(data.pr_null_text);
+                            }    
+
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        $(begin_tab_td).empty();
+                        var timeErrSQL = performance.now();
+                        alert('Запуск оказался неудачным.\n'+
+                               'Время с момента запуска запроса: '+secondstotime((timeErrSQL-time00)/1000)+'\n'+
+                               'Ошибка '+xhr.responseText+ ' ' + status + ' ' +error);
+                        //console.log('время с момента запуска запроса: '+secondstotime((timeErrSQL-time00)/1000));
+                        console.log(xhr.responseText + '|\n' + status + '|\n' +error);
+                        save_tab_data();
+                        var time_save = performance.now();
+                        console.log('время общее c сохранением данных для jexcel: '+secondstotime((time_save-time00)/1000));
                     }
-                },
-                error: function(xhr, status, error) {
-                    $(begin_tab_td).empty();
-                    var timeErrSQL = performance.now();
-                    alert('Запуск оказался неудачным.\n'+
-                           'Время с момента запуска запроса: '+secondstotime((timeErrSQL-time00)/1000)+'\n'+
-                           'Ошибка '+xhr.responseText+ ' ' + status + ' ' +error);
-                    //console.log('время с момента запуска запроса: '+secondstotime((timeErrSQL-time00)/1000));
-                    console.log(xhr.responseText + '|\n' + status + '|\n' +error);
-                    save_tab_data();
-                    var time_save = performance.now();
-                    console.log('время общее c сохранением данных для jexcel: '+secondstotime((time_save-time00)/1000));
-                }
-            });
-            
-            set_tab_width_true();
-            //modal_close();
+                });
+
+                set_tab_width_true();
+                //modal_close();
+            }    
         }}
     }
     

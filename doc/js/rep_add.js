@@ -2424,7 +2424,7 @@ $(document).ready(function(){
                                                      action_olap_code_one+'\n});\n'; 
                                 }
                                 else if  (action_id!='freedom_action') {                            
-                                    action_olap_code+='$(".no_panel").on("'+action_id+olap_id+'", "#in_action_value", function(e){ \n'+ 
+                                    action_olap_code+='$(".no_panel").on("'+action_id+olap_id+'", "#in_action_value", function(e,params){ \n'+ 
                                                      '  var id_t='+olap_id+';\n'+action_olap_code_one+'\n});\n'; 
                                 }
                                 else if  (action_id='freedom_action') {                            
@@ -2947,9 +2947,11 @@ $(document).ready(function(){
                                              '</li>\n'+
                                              '<li id="number" class="li_cons in_type_one" title="Число" style="height: 20px;width: 80px;color:#0088cc;" action_type="input_add">Число'+
                                              '</li>\n'+  
+                                             '<li id="password" class="li_cons in_type_one" title="Пароль" style="height: 20px;width: 80px;color:#0088cc;" action_type="input_add">Пароль'+
+                                             '</li>\n'+  
                                              '<li id="date" class="li_cons in_type_one" title="Дата" style="height: 20px;width: 80px;color:#0088cc;" action_type="input_add">Дата'+
                                              '</li>\n'+ 
-                                             '<li id="datetime" class="li_cons in_type_one" title="Дата-время" style="height: 20px;width: 80px;color:#0088cc;" action_type="input_add">Дата-время'+
+                                             '<li id="datetime-local" class="li_cons in_type_one" title="Дата-время" style="height: 20px;width: 80px;color:#0088cc;" action_type="input_add">Дата-время'+
                                              '</li>\n'+ 
                                              '<li id="checkbox" class="li_cons in_type_one" title="Логическое" style="height: 20px;width: 80px;color:#0088cc;" action_type="input_add">Логическое'+
                                              '</li>\n'+
@@ -5245,6 +5247,8 @@ $(document).ready(function(){
             $(this).attr('pr_change_style','').css({'background' : '#d1ffff', 'border-bottom-color':'white','color':'black'});
             $('.input_add[id='+$(settings_group_panel_active).attr('id')+']').attr('type',this.id);
         }
+        var settings_group_panel=$('.settings_group_panel[action_type="'+$(this).attr('action_type')+'"][id="'+$(settings_group_panel_active).attr('id')+'"]');        
+        $(settings_group_panel).html($(settings_group_panel_active).html());
     });
     
     $('.no_panel').on('click','li.select_add_sql', function(e) {
