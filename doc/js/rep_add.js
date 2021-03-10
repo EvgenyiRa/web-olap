@@ -3509,6 +3509,16 @@ $(document).ready(function(){
                 setting_id=tek_set;
             }                   
         });
+        //ищем ещё по всем панелям (в сжатом виде лежат, напрямую не обратиться)
+        $(table).find('div[data-pws-tab]').each(function(i,elem) {
+            let panelOne=$(LZString.decompressFromUTF16($(elem).text()));
+            $(panelOne).find('.settings_group_panel').each(function(i2,elem2) {
+                var tek_set=Number($(elem2).attr('id'));
+                if (tek_set>setting_id) {
+                    setting_id=tek_set;
+                }                   
+            });
+        });
         setting_id+=1;
         if (action_type=='form_header') {
             setting_id=1;
@@ -5127,62 +5137,24 @@ $(document).ready(function(){
                 pa_tr_all=$(pa_td).closest('tr'),
                 pa_tr_first=$(pa_tr_all).first(),
                 pa_tr=$(pa_tr_all).filter(':not(:first)'),
-                //pa_tab=$(panel_add_v).find('div[data-pws-tab="'+p_a_tek_id+'"]'),
                 pa_tab_str='',
-                //pa_tab_tek=$(panel_add_v).find('div[data-pws-tab="'+tek_dpt+'"] .d-td');
                 pa_tab_tek=$(panel_add_v).find('div[data-pws-tab="'+tek_dpt+'"]');
             $(pa_tr).each(function(i,elem0) {    
-                /*var pa_td_one=$(elem0).find('td[panel_add_id="'+$(panel_add_v).attr('id')+'"]');
-                $(pa_td_one).each(function(i,elem) {  
-                    var m_ids=$(elem).attr('id').split('-'),
-                        el_clone=$(elem).clone().removeAttr('id').removeClass('c'+m_ids[0]+' r'+m_ids[1]);
-                    pa_tab_str+='<div id="d'+m_ids[0]+'-'+m_ids[1]+'"';
-                    $.each(el_clone[0].attributes, function ( index, attribute ) {
-                        //attrs[attribute.name] = attribute.value;
-                        if (attribute.name=='class') {
-                            pa_tab_str+=' class="d-td '+attribute.value+'"';
-                        }
-                        else {
-                            pa_tab_str+=' '+attribute.name+'="'+attribute.value+'"';
-                        }
-                    });
-                    //добавляем метку в masterdata, чтобы корректно обрабатывать другие masterdata вне панели или masterdata из активной панели
-                    $(el_clone).find('.masterdata').attr('pr_panel_add','');
-                    pa_tab_str+='>'+$(el_clone).html()+'</div>';
-                }); */ 
                 pa_tab_str+=elem0.outerHTML;
-            });
-            //$(panel_add_v).pwstabs('destroy');
-            var pa_tab=$(panel_add_v).find('div[data-pws-tab="'+p_a_tek_id+'"]');
+            });        
+            var pa_tab=$(panel_add_v).find('div[data-pws-tab="'+p_a_tek_id+'"]'),
+                tr_old_length=$(pa_tr).length,
+                tr_new=$(LZString.decompressFromUTF16($(pa_tab_tek).text())),
+                tr_new_length=$(tr_new).length;
             $(pa_tab).text(LZString.compressToUTF16(pa_tab_str));
             $(pa_tr).remove();
-            $(pa_tr_first).after(LZString.decompressFromUTF16($(pa_tab_tek).text()));
+            $(pa_tr_first).after(tr_new);
             //если разное кол-во строк, то надо переиндексировать строки ниже
-            //$(panel_add_v).pwstabs('rebuild');            
-            /*$(pa_tab_tek).each(function(i,elem) {  
-                var el_clone=$(elem).clone().removeClass('d-td').removeAttr('id'),
-                    tek_id=$(elem).attr('id').slice(1),
-                    m_ids=tek_id.split('-'),
-                    tek_el=$(pa_td).filter('[id="'+tek_id+'"]');
-                if ($(tek_el).length===0) {
-                    tek_el=$(table_tag_v).find('td[id="'+tek_id+'"]');
-                }  
-                if ($(tek_el).length>0) {
-                    $.each(el_clone[0].attributes, function ( index, attribute ) {
-                        //attrs[attribute.name] = attribute.value;
-                        if (attribute.name=='class') {
-                            $(tek_el).attr('class','c'+m_ids[0]+' r'+m_ids[1]+' '+attribute.value);
-                        }
-                        else {
-                            $(tek_el).attr(attribute.name,attribute.value);
-                        }
-                    });
-                    //удаляем метку в masterdata, чтобы корректно обрабатывать другие masterdata вне панели или masterdata из активной панели
-                    $(el_clone).find('.masterdata').removeAttr('pr_panel_add');
-                    $(tek_el).html($(el_clone).html())
-                             .attr('panel_add_id',panel_add_id_v);
-                }
-            });*/
+            if (tr_old_length!==tr_new_length) {
+                let index_l=+$(pa_tr_first).attr('id').split('-')[1],
+                    tr_last_l=$(table_tag_v).find('tr#row-'+String(index_l+tr_new_length));
+                index_recalc_true($(tr_last_l).next());
+            }
             p_a_tek_id=tek_dpt;
         }
     });
