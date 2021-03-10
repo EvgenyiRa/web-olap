@@ -1382,3 +1382,7 @@ table.olap_taa_modal_mc tr td {
 ul.olap_dop_action li:hover {
     background: #d1ffff;
 }
+
+div.panel_add, div.pws_tab_single {
+    display: none;
+}

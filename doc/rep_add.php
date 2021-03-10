@@ -122,7 +122,7 @@ along with WEB-OLAP.  If not, see <https://www.gnu.org/licenses/>.-->
         </div>        
         <div id="overlay"></div><!-- Пoдлoжкa модального окна-->  
 	
-<div class="container" style="display:none;">
+<div class="container editor" style="display:none;">
   <div class="hero-unit">
     <div id="alerts"></div>
     <div class="btn-toolbar" data-role="editor-toolbar" data-target="#editor">

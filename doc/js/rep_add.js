@@ -1680,7 +1680,12 @@ function showErrorAlert (reason, detail) {
      '<strong>File upload error</strong> '+msg+' </div>').prependTo('#alerts');
 };
 
+//костыль, т.к. не понятно куда иногда пропадает блок кода
+var editorBlock; 
 function initToolbarBootstrapBindingsTrue() {
+    if ((!!!editorBlock) & (!tab_obj.pr_view)) {
+        editorBlock=$('div.container.editor')[0].outerHTML;
+    }
     initToolbarBootstrapBindings(); 
     $('#editor').wysiwyg({ fileUploadError: showErrorAlert} );
     window.prettyPrint && prettyPrint();
@@ -2087,10 +2092,11 @@ $(document).ready(function(){
     $('#Inline').jPicker({window:{title:'Выберите цвет'},color:{active:new $.jPicker.Color({ahex:'000000'})}});                
     $('#Inline_td').jPicker({window:{title:'Выберите цвет'},color:{active:new $.jPicker.Color({ahex:'ffffff'})}}); 
     $('#Inline_bc').jPicker({window:{title:'Выберите цвет'},color:{active:new $.jPicker.Color({ahex:'000000'})}}); 
+    rep_id=$('#div_name_rep #in_rep_id');    
+    tab_obj.pr_view=$(rep_id).is('[pr_view]');
     
     initToolbarBootstrapBindingsTrue();
     
-    rep_id=$('#div_name_rep #in_rep_id');
     var loading_img=$('#loading_img');
     in_rep_last_upd=$('#in_rep_last_upd');
     in_action_value=$('#in_action_value');    
@@ -2604,7 +2610,8 @@ $(document).ready(function(){
             }
             $(tds).each(function(i,elem) {
                 $(elem).empty();
-                $(elem).attr('style','');
+                $(elem).attr('style','')
+                       .removeAttr('panel_add_id');
                 if ($(settings_group_panel_active).is(':visible')) {
                     $(settings_group_panel_active).hide();
                 }
@@ -3319,23 +3326,23 @@ $(document).ready(function(){
         
         else if (this.id=='panel_add') {            
             var tds=$('#my').jexcel('getSelectedCells'),
-                tds_tr=$(tds).closest('tr');           
+                tds_tr=$(tds).closest('tr'); 
             if ($(tds_tr).length>1) {
+                //панель занимает полностью строку
+                tds=$(tds_tr).find('td:not(.jexcel_label)');            
                 var setting_id=get_setting_id("panel_add"),
                     str_tab=''; 
-                $(tds).each(function(i2,elem2) {
-                    $(elem2).attr('panel_add_id',setting_id);
-                });    
+                $(tds).attr('panel_add_id',setting_id);    
                 $(tds_tr).filter(':not(:first)').each(function(i,elem) {
-                    //str_tab+='<div class="d-tr" id="'+$(elem).attr('id')+'">';
-                    $(tds).each(function(i2,elem2) {
+                    /*$(tds).each(function(i2,elem2) {
                         var tek_elem=$(elem).find('td[id="'+$(elem2).attr('id')+'"]');
                         if ($(tek_elem).length>0) {
                             str_tab+='<div class="d-td" id="d'+$(elem2).attr('id')+'"></div>';
                         }
-                    });
-                    //str_tab+='</div>';
+                    });*/
+                    str_tab+=elem.outerHTML;
                 });
+                str_tab=LZString.compressToUTF16(str_tab);
                 //выделенные ячейки первой строки
                 var tds_tr_ftd=$(tds_tr).first().find('td[panel_add_id="'+setting_id+'"]');
                 if ($(tds_tr_ftd).length>1) {
@@ -3467,10 +3474,11 @@ $(document).ready(function(){
                                  '</ul>'+                                
                             '</div>\n\
                             <div class="panel_add" id="'+setting_id+'" action_type="panel_add">\n\
-                                <div data-pws-tab="anynameyouwant1" data-pws-tab-name="Tab Title 1">'+str_tab+'</div>\n\
-                                <div data-pws-tab="anynameyouwant2" data-pws-tab-name="Tab Title 2">'+str_tab+'</div>\n\
-                            </div>');
-                $('.panel_add[action_type="panel_add"][id="'+setting_id+'"]').pwstabs();
+                                <div data-pws-tab="anynameyouwant1" data-pws-tab-name="Tab Title 1"></div>\n\
+                                <div data-pws-tab="anynameyouwant2" data-pws-tab-name="Tab Title 2"></div>\n\
+                            </div>');  
+                $(tds_tr_ftd).first().find('div[data-pws-tab]').text(str_tab);
+                $(tds_tr_ftd).first().find('.panel_add[action_type="panel_add"][id="'+setting_id+'"]').pwstabs();
             }
             else {
                 alert('Необходимо выбрать не менее двух ячеек расположенных в разных строках');
@@ -4343,6 +4351,7 @@ $(document).ready(function(){
         if ($(pr_active_mod).attr('id')!='none') {
             $('#modal_head_p').html('Редактирование действия "'+$(pr_active_mod).attr('title')+'"');
             if ($('div#editor').length===0) {
+                $('div#overlay').after(editorBlock);
                 initToolbarBootstrapBindingsTrue();
             }    
             set_ace_edit('javascript',$(pr_active_mod).attr('data-edit_ace-theme'),$(pr_active_mod).attr('data-edit_ace-size'),LZString.decompressFromUTF16($(pr_active_mod).find('.div_hidden').text()));            
@@ -5068,25 +5077,30 @@ $(document).ready(function(){
                 mass_tab=[],
                 tab_new='',tab_one='',
                 tek_panel_add_td=$(tek_panel_add).closest('td'),
-                sgp=$(tek_panel_add_td).find('.settings_group_panel[action_type="panel_add"][id="'+tek_id+'"]').clone();            
-            $(tek_panel_add).find('div[data-pws-tab]').each(function(i,elem) {
-                mass_tab[$(elem).attr('data-pws-tab')]=$(elem).html();
+                sgp=$(tek_panel_add_td).find('.settings_group_panel[action_type="panel_add"][id="'+tek_id+'"]').clone(),
+                data_pws_tab_all=$(tek_panel_add).find('div[data-pws-tab]');            
+            $(data_pws_tab_all).each(function(i,elem) {
+                mass_tab[$(elem).attr('data-pws-tab')]=$(elem).text();
             });
-            $(tek_panel_add).find('div[data-pws-tab]').first().find('.d-td').each(function(i,elem) {
+            tab_one=$(data_pws_tab_all).first().text();
+            /*$(tek_panel_add).find('div[data-pws-tab]').first().find('.d-td').each(function(i,elem) {
                 tab_one+='<div class="d-td" id="'+$(elem).attr('id')+'"></div>';
-            });
+            });*/
             $(tek_panel_add).pwstabs('destroy');
             tab_new='<div class="panel_add" id="'+tek_id+'" action_type="panel_add">\n';
             $(panel_add_md_tr).each(function(i,elem) {
-                var tab_one_tek=tab_one;  
-                if (!!mass_tab[mass_sname[i]])  {
-                    tab_one_tek=mass_tab[mass_sname[i]];
-                }  
-                tab_new+='<div data-pws-tab="'+mass_sname[i]+'" data-pws-tab-name="'+mass_name[i]+'">'+tab_one_tek+'</div>\n';
+                tab_new+='<div data-pws-tab="'+mass_sname[i]+'" data-pws-tab-name="'+mass_name[i]+'"></div>\n';
             });
             tab_new+='</div>';
             $(sgp).find('.panel_add_struct .div_hidden').html(panel_add_md[0].outerHTML);
             $(tek_panel_add_td).html(sgp[0].outerHTML+tab_new);
+            $(tek_panel_add_td).find('div[data-pws-tab]').each(function(i,elem) {
+                var tab_one_tek=tab_one;  
+                if (!!mass_tab[mass_sname[i]])  {
+                    tab_one_tek=mass_tab[mass_sname[i]];
+                }  
+                $(elem).text(tab_one_tek);
+            });
             $(tek_panel_add_td).find('.panel_add').pwstabs();
             p_a_tek_id=mass_sname[0];
             modal_close();
@@ -5108,13 +5122,17 @@ $(document).ready(function(){
         if (tek_dpt!=p_a_tek_id) {
             var panel_add_v=$(this).closest('.pws_tabs_container').find('.panel_add'),
                 table_tag_v=$(table_tag),
-                pa_td=$(table_tag_v).find('td[panel_add_id="'+$(panel_add_v).attr('id')+'"]'),
-                pa_tr=$(pa_td).closest('tr').filter(':not(:first)'),
+                panel_add_id_v=$(panel_add_v).attr('id'),
+                pa_td=$(table_tag_v).find('td[panel_add_id="'+panel_add_id_v+'"]'),
+                pa_tr_all=$(pa_td).closest('tr'),
+                pa_tr_first=$(pa_tr_all).first(),
+                pa_tr=$(pa_tr_all).filter(':not(:first)'),
                 //pa_tab=$(panel_add_v).find('div[data-pws-tab="'+p_a_tek_id+'"]'),
                 pa_tab_str='',
-                pa_tab_tek=$(panel_add_v).find('div[data-pws-tab="'+tek_dpt+'"] .d-td');
+                //pa_tab_tek=$(panel_add_v).find('div[data-pws-tab="'+tek_dpt+'"] .d-td');
+                pa_tab_tek=$(panel_add_v).find('div[data-pws-tab="'+tek_dpt+'"]');
             $(pa_tr).each(function(i,elem0) {    
-                var pa_td_one=$(elem0).find('td[panel_add_id="'+$(panel_add_v).attr('id')+'"]');
+                /*var pa_td_one=$(elem0).find('td[panel_add_id="'+$(panel_add_v).attr('id')+'"]');
                 $(pa_td_one).each(function(i,elem) {  
                     var m_ids=$(elem).attr('id').split('-'),
                         el_clone=$(elem).clone().removeAttr('id').removeClass('c'+m_ids[0]+' r'+m_ids[1]);
@@ -5128,14 +5146,20 @@ $(document).ready(function(){
                             pa_tab_str+=' '+attribute.name+'="'+attribute.value+'"';
                         }
                     });
+                    //добавляем метку в masterdata, чтобы корректно обрабатывать другие masterdata вне панели или masterdata из активной панели
+                    $(el_clone).find('.masterdata').attr('pr_panel_add','');
                     pa_tab_str+='>'+$(el_clone).html()+'</div>';
-                });    
+                }); */ 
+                pa_tab_str+=elem0.outerHTML;
             });
             //$(panel_add_v).pwstabs('destroy');
             var pa_tab=$(panel_add_v).find('div[data-pws-tab="'+p_a_tek_id+'"]');
-            $(pa_tab).html(pa_tab_str);
+            $(pa_tab).text(LZString.compressToUTF16(pa_tab_str));
+            $(pa_tr).remove();
+            $(pa_tr_first).after(LZString.decompressFromUTF16($(pa_tab_tek).text()));
+            //если разное кол-во строк, то надо переиндексировать строки ниже
             //$(panel_add_v).pwstabs('rebuild');            
-            $(pa_tab_tek).each(function(i,elem) {  
+            /*$(pa_tab_tek).each(function(i,elem) {  
                 var el_clone=$(elem).clone().removeClass('d-td').removeAttr('id'),
                     tek_id=$(elem).attr('id').slice(1),
                     m_ids=tek_id.split('-'),
@@ -5153,9 +5177,12 @@ $(document).ready(function(){
                             $(tek_el).attr(attribute.name,attribute.value);
                         }
                     });
-                    $(tek_el).html($(el_clone).html());
+                    //удаляем метку в masterdata, чтобы корректно обрабатывать другие masterdata вне панели или masterdata из активной панели
+                    $(el_clone).find('.masterdata').removeAttr('pr_panel_add');
+                    $(tek_el).html($(el_clone).html())
+                             .attr('panel_add_id',panel_add_id_v);
                 }
-            });
+            });*/
             p_a_tek_id=tek_dpt;
         }
     });
