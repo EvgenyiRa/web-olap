@@ -218,6 +218,7 @@ function set_olap_params_all(group_tab) {
     else {
         $(params_group_v).empty().hide();
     }
+    $(params_group_v).find('select.olap_param_sql').attr('pr_panel_init','');
     $(params_group_v).trigger('after_build',params_group_clon);
 }
 
