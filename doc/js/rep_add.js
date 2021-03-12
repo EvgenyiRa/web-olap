@@ -2600,7 +2600,8 @@ $(document).ready(function(){
             }            
         }
         else if (this.id=='tab_clear') {
-            $('#my').jexcel(tab_obj_default);
+            delete tab_obj.data;
+            $('#my').jexcel(tab_obj);
         }
         else if (this.id=='td_clear') {
             var tds=$('#my').jexcel('getSelectedCells');
@@ -4308,6 +4309,7 @@ $(document).ready(function(){
                 tab_obj.columns[i]={ type: 'text' };
             }   
             tab_obj.minDimensions=[count_cols,count_rows];
+            delete tab_obj.data;
             $('#my').jexcel(tab_obj);
         }
         else {
@@ -5156,6 +5158,39 @@ $(document).ready(function(){
                 index_recalc_true($(tr_last_l).next());
             }
             p_a_tek_id=tek_dpt;
+            
+            //делаем рабочими элементы внутри панели  
+            pa_td=$(table_tag_v).find('td[panel_add_id="'+panel_add_id_v+'"]');
+            var group_tab_v=$(pa_td).find('div[id="group_tab"][olap_id]');
+            $(group_tab_v).each(function(i,elem) {
+                //подгружаем класс MD если используется
+                var md=$(elem).find('.masterdata'),
+                    mdr_class_v=$(md).attr('mdr_class'),
+                    mdr_str_v=$(md).attr('mdr_str');
+                if (!!mdr_class_v) {
+                    var chkbx_msl_odta_v=false;
+                    if (mdr_str_v!='all') {
+                        chkbx_msl_odta_v=true;
+                    }
+                    md_get_class_set(mdr_class_v,$(md).attr('id'),md,true,chkbx_msl_odta_v,false);
+                }
+                set_olap_params_all(elem);
+            });
+
+            $(pa_td).find('.settings_group_panel[action_type="select_add"],.settings_group_panel[action_type="in_modal_add"]').each(function(i,elem) {
+                var tek_td=$(elem).closest('td'),
+                    sql,tek_id=$(elem).attr('id');
+                if ($(elem).is('[action_type="select_add"]')) {
+                    $(tek_td).find('div.btn-group').remove();
+                    select_add_init($(tek_td).find('.select_add[id="'+tek_id+'"]'));
+                    sql=$(elem).find('li.select_add_sql .div_hidden').text();             
+                } 
+                else {
+                    sql=$(elem).find('.in_mod_sql_value').text();
+                }
+                var params_r=param_create(sql,null,$(table_tag_v).find('.select_add[id!="'+tek_id+'"],.in_modal_add_val[id!="'+tek_id+'"]'));
+                set_rel(params_r['params_str'],tek_id);
+            });
         }
     });
     
