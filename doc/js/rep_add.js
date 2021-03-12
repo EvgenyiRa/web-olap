@@ -2616,10 +2616,14 @@ $(document).ready(function(){
                 alert('Необходимо выбрать не менее одной ячейки');
                 return;
             }
+            //если ячекйка содержит панель с настройками, то удаляем атрибут относящийся к панели
+            let table_tag_v=$(table_tag);
+            $(tds).find('.settings_group_panel[action_type="panel_add"]').each(function(i,elem) {
+                $(table_tag_v).find('td[panel_add_id="'+elem.id+'"]').removeAttr('panel_add_id');
+            });
             $(tds).each(function(i,elem) {
                 $(elem).empty();
-                $(elem).attr('style','')
-                       .removeAttr('panel_add_id');
+                $(elem).attr('style','');
                 if ($(settings_group_panel_active).is(':visible')) {
                     $(settings_group_panel_active).hide();
                 }
