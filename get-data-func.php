@@ -1643,16 +1643,16 @@ function save_rep($mass,$user) {
 class FormValue_".$id_rep_real."
 {
     public function getName() {
-        return '".str_replace ("'" , "\'", $mass['name_rep'])."';
+        return '".str_replace ("'" , "\\'", $mass['name_rep'])."';
     }
 
     public function getSName() {
-        return '".str_replace ("'" , "\'", $mass['sname_rep'])."';
+        return '".str_replace ("'" , "\\'", $mass['sname_rep'])."';
     }
                 
     public function getData()
     {
-        return '".str_replace ("'" , "\'", $mass['data_rep'])."';
+        return '".str_replace ("'" , "\\'", str_replace ("\\" , "\\\\",$mass['data_rep']))."';
     }
 }";    
     file_put_contents( $class_path , $class_value);
