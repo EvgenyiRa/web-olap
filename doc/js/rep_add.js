@@ -1420,8 +1420,9 @@ function save_tab_data(no_data) {
         }
     });
     $(div_panel_add).each(function(i,elem) {
-        let panel_all=$(elem).find('div[data-pws-tab]');
-        $(elem).attr('default_tab',$(panel_all).filter('.pws_show').attr('data-pws-tab'));
+        let panel_all=$(elem).find('div[data-pws-tab]'),
+            defaultTab=$(panel_all).filter('.pws_show').index()+1;
+        $(elem).attr('default_tab',defaultTab);
         $(panel_all).each(function(i2,elem2) {
             let vkladka=$(LZString.decompressFromUTF16($(elem2).text())),
                 select_olap_param_sql=$(vkladka).find('select.olap_param_sql');
@@ -1433,7 +1434,8 @@ function save_tab_data(no_data) {
                 });
                 $(elem2).text(LZString.compressToUTF16(vkladka_html));
             }    
-        });            
+        });
+        $(elem).pwstabs({defaultTab:defaultTab});
         $(elem).pwstabs('destroy');
     });
     tab_obj.html=$(table_all_tag).html();
@@ -1445,7 +1447,6 @@ function save_tab_data(no_data) {
     });
     $(div_panel_add).each(function(i,elem) {
         $(elem).pwstabs('rebuild');
-        $(elem).prev().find('a[data-tab-id="'+$(elem).attr('default_tab')+'"]').trigger('click');
     });
     $('#my').jexcel('updateData',tab_obj.data,tab_obj.colHeaders);
     
@@ -2177,8 +2178,9 @@ $(document).ready(function(){
                 //активируем панели
                 var div_panel_add=$(table_tag_v).find('div.panel_add');
                 $(div_panel_add).each(function(i,elem) {
-                    p_a_tek_id=$(elem).find('div[data-pws-tab="'+$(elem).attr('default_tab')+'"]').index()+1;
-                    $(elem).pwstabs({defaultTab:p_a_tek_id});                    
+                    let defaultTab=+$(elem).attr('default_tab');
+                    p_a_tek_id=$(elem).find('div[data-pws-tab]:eq('+(defaultTab-1)+')').attr('data-pws-tab');
+                    $(elem).pwstabs({defaultTab:defaultTab});                    
                 });
                 
                 var group_tab_v=$(table_all_tag_v).find('div[id="group_tab"][olap_id]');
