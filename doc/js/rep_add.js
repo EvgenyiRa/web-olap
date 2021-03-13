@@ -1420,11 +1420,18 @@ function save_tab_data(no_data) {
         }
     });
     $(div_panel_add).each(function(i,elem) {
-        $(elem).find('div[data-pws-tab]').each(function(i2,elem2) {
-            let vkladka=LZString.decompressFromUTF16($(elem2).text()),
+        let panel_all=$(elem).find('div[data-pws-tab]');
+        $(elem).attr('default_tab',$(panel_all).filter('.pws_show').attr('data-pws-tab'));
+        $(panel_all).each(function(i2,elem2) {
+            let vkladka=$(LZString.decompressFromUTF16($(elem2).text())),
                 select_olap_param_sql=$(vkladka).find('select.olap_param_sql');
-            if ($(select_olap_param_sql).removeAttr('pr_panel_init'))  { 
-                $(elem2).text(LZString.compressToUTF16(vkladka));
+            if ($(select_olap_param_sql).length>0)  { 
+                $(select_olap_param_sql).removeAttr('pr_panel_init');
+                let vkladka_html='';
+                $(vkladka).each(function(i3,elem3) {
+                    vkladka_html+=elem3.outerHTML;
+                });
+                $(elem2).text(LZString.compressToUTF16(vkladka_html));
             }    
         });            
         $(elem).pwstabs('destroy');
@@ -1438,6 +1445,7 @@ function save_tab_data(no_data) {
     });
     $(div_panel_add).each(function(i,elem) {
         $(elem).pwstabs('rebuild');
+        $(elem).prev().find('a[data-tab-id="'+$(elem).attr('default_tab')+'"]').trigger('click');
     });
     $('#my').jexcel('updateData',tab_obj.data,tab_obj.colHeaders);
     
@@ -2164,7 +2172,15 @@ $(document).ready(function(){
                         $(elem).show();
                         set_olap_params(elem);
                     }
-                });*/ 
+                });*/
+                var table_tag_v=$(table_tag);
+                //активируем панели
+                var div_panel_add=$(table_tag_v).find('div.panel_add');
+                $(div_panel_add).each(function(i,elem) {
+                    p_a_tek_id=$(elem).find('div[data-pws-tab="'+$(elem).attr('default_tab')+'"]').index()+1;
+                    $(elem).pwstabs({defaultTab:p_a_tek_id});                    
+                });
+                
                 var group_tab_v=$(table_all_tag_v).find('div[id="group_tab"][olap_id]');
                 $(group_tab_v).each(function(i,elem) {
                     //подгружаем класс MD если используется
@@ -2194,8 +2210,7 @@ $(document).ready(function(){
                     $(in_rep_last_upd).val(olap_str).trigger('change');
                 }                  
                 
-                //обновляем элементы select/in_modal
-                var table_tag_v=$(table_tag);
+                //обновляем элементы select/in_modal                
                 $(table_tag_v).find('.settings_group_panel[action_type="select_add"],.settings_group_panel[action_type="in_modal_add"]').each(function(i,elem) {
                     var tek_td=$(elem).closest('td'),
                         sql,tek_id=$(elem).attr('id');
@@ -2210,13 +2225,7 @@ $(document).ready(function(){
                     var params_r=param_create(sql,null,$(table_tag_v).find('.select_add[id!="'+tek_id+'"],.in_modal_add_val[id!="'+tek_id+'"]'));
                     set_rel(params_r['params_str'],tek_id);
                 });
-                
-                //активируем панели
-                var div_panel_add=$(table_tag_v).find('div.panel_add');
-                $(div_panel_add).each(function(i,elem) {
-                    p_a_tek_id=$(elem).find('div[data-pws-tab]').first().attr('data-pws-tab');
-                    $(elem).pwstabs();                    
-                });
+                                
                 
                 tab_obj.pr_view=$(rep_id).is('[pr_view]');
                 if (tab_obj.pr_view) {
@@ -5154,7 +5163,8 @@ $(document).ready(function(){
                 pa_tab_tek=$(panel_add_v).find('div[data-pws-tab="'+tek_dpt+'"]');
             $(pa_tr).each(function(i,elem0) {    
                 pa_tab_str+=elem0.outerHTML;
-            });        
+            });  
+            $(pa_td).find('select.olap_param_sql').attr('pr_panel_init','');
             var pa_tab=$(panel_add_v).find('div[data-pws-tab="'+p_a_tek_id+'"]'),
                 tr_old_length=$(pa_tr).length,
                 tr_new=$(LZString.decompressFromUTF16($(pa_tab_tek).text())),
