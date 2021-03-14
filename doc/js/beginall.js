@@ -3716,7 +3716,8 @@ $(document).ready(function() {
                                             console.log('время общее: '+secondstotime((time6-time0)/1000));
                                         }
                                         console.log('время общее с SQL: '+secondstotime((time6-time00)/1000));
-                                        save_tab_data();
+                                        //save_tab_data();перебор с действиями, отпала надобность после введения table_save_design
+                                        create_tab_data();
                                         var time_save = performance.now();
                                         console.log('время общее c сохранением данных для jexcel: '+secondstotime((time_save-time00)/1000));
                                         pr_encore=false;
@@ -4252,7 +4253,8 @@ $(document).ready(function() {
                                         console.log('время общее lite с SQL: '+secondstotime((time4-time00)/1000));
 
                                         if (!pr_encore_this) {
-                                            save_tab_data();
+                                            //save_tab_data();перебор с действиями, отпала надобность после введения table_save_design
+                                            create_tab_data();
                                             var time_save = performance.now();
                                             console.log('время общее lite c сохранением данных для jexcel: '+secondstotime((time_save-time00)/1000));
                                             $(in_action_value).trigger('after_load_data'+id_t);
@@ -4279,7 +4281,7 @@ $(document).ready(function() {
 
                             }
                             if ($(parend_td).is('[panel_add_id]')) {
-                                $(table_tag_v).find('td[olap_tab_id='+id_t+']').attr('panel_add_id',$(parend_td).attr('panel_add_id'))
+                                $(table_tag_v).find('td[olap_tab_id='+id_t+']').attr('panel_add_id',$(parend_td).attr('panel_add_id'));
                             }
                         },
                         error: function(xhr, status, error) {
@@ -4290,7 +4292,8 @@ $(document).ready(function() {
                                    'Ошибка '+xhr.responseText+ ' ' + status + ' ' +error);
                             //console.log('время с момента запуска запроса: '+secondstotime((timeErrSQL-time00)/1000));
                             console.log(xhr.responseText + '|\n' + status + '|\n' +error);
-                            save_tab_data();
+                            //save_tab_data();перебор с действиями, отпала надобность после введения table_save_design
+                            create_tab_data();
                             var time_save = performance.now();
                             console.log('время общее c сохранением данных для jexcel: '+secondstotime((time_save-time00)/1000));
                         }

@@ -1371,12 +1371,14 @@ function olap_tab_clear(id_t) {
 }   
 
 function create_tab_data(table) {
-    var thead;
+    var thead,
+        prUpd=true;
     if (!!!table) {
         table=$(table_tag);
         thead=$(table_all_tag).find('thead:first');
     }
     else {
+        prUpd=false;
         thead=$(table).filter('thead:first'); 
         table=$(table).filter('tbody:first');        
     }
@@ -1397,7 +1399,10 @@ function create_tab_data(table) {
         tab_obj.colHeaders[col]=$(elem).attr('title');
         tab_obj.columns[col]={ type: 'text' };
     });
-    tab_obj.minDimensions=[tab_obj.columns.length,$(tr_all).length];
+    tab_obj.minDimensions=[tab_obj.columns.length,$(tr_all).length]; 
+    if (prUpd) {
+        $('#my').jexcel('updateData',tab_obj.data,tab_obj.colHeaders);
+    }    
 }
 
 
@@ -1447,9 +1452,9 @@ function save_tab_data(no_data) {
     });
     $(div_panel_add).each(function(i,elem) {
         $(elem).pwstabs('rebuild');
-    });
-    $('#my').jexcel('updateData',tab_obj.data,tab_obj.colHeaders);
-    
+        //баг пересборки панелей, пересобирается со "старой" активной панелью, явно указываем активную
+        $(elem).prev().find('a[data-tab-id]:eq('+(+$(elem).attr('default_tab')-1)+')').trigger('click');
+    });    
     
 }
 
