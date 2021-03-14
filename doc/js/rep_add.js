@@ -3892,18 +3892,14 @@ $(document).ready(function(){
     
     $("div#my" ).on("click", ".table_graf", function() {        
         //console.log('работает');
-        var id_t=this.id,
-        width=window.innerWidth/*/1.1*/,
-        height=window.innerHeight/*/1.1*/;
-        /*if (width>height) {
-            width=height;
+        var id_t=this.id;
+        if ($(table_tag).find('td[olap_tab_id="'+id_t+'"]').length===0) {
+            alert('Отсутствуют данные для построения');
+            return false;
         }
-        else {
-            height=width;
-        }*/
-        //var newWin = window.open('/graf.php', '3D-график OLAP-куба', 'width='+width+',height='+height+',top='+((screen.height-height)/2)+',left='+((screen.width-width)/2)+', resizable=yes, scrollbars=no, status=yes');
+        var width=window.innerWidth/*/1.1*/,
+        height=window.innerHeight/*/1.1*/;
         var newWin = window.open('/graf.php', '3D-график OLAP-куба', 'width='+width+',height='+height+', resizable=true, scrollbars=no, status=yes');
-
         newWin.onload = function() {
             //передаем id доступа к данным olap-куба в новое окно  
             var newWin_doc=newWin.document;

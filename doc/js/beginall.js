@@ -2985,6 +2985,10 @@ $(document).ready(function() {
         
         params['tab_id']=id_t;
         params['sql_true']=LZString.decompressFromUTF16($(md).find('.sql_value[id="'+id_t+'"]').text());
+        if ((params['sql_true']===null) || (String(params['sql_true']).trim().length===0)) {
+            alert('Для запуска необходимо добавить SQL-запрос и создать структуру');
+            return false;
+        }
         //console.log(params['sql_true']); 
         if (pr_2D) {
             params['pr_2D']=1;
@@ -4552,9 +4556,20 @@ $(document).ready(function() {
         var tds=$('#my').jexcel('getSelectedCells');
         var olap_id=0;
         $(table).find('div[id="group_tab"][olap_id]').each(function(i,elem) {
-            if ($(elem).attr('olap_id')>olap_id) {
-                olap_id=+$(elem).attr('olap_id');
+            let olap_id_tek=+$(elem).attr('olap_id');
+            if (olap_id_tek>olap_id) {
+                olap_id=olap_id_tek;
             }                   
+        });
+        //ищем ещё по всем панелям (в сжатом виде лежат, напрямую не обратиться)
+        $(table).find('div[data-pws-tab]').each(function(i,elem) {
+            let panelOne=$(LZString.decompressFromUTF16($(elem).text()));
+            $(panelOne).find('div[id="group_tab"][olap_id]').each(function(i2,elem2) {
+                let olap_id_tek=+$(elem2).attr('olap_id');
+                if (olap_id_tek>olap_id) {
+                    olap_id=olap_id_tek;
+                }                   
+            });
         });
         olap_id+=1;
         if ($(tds).length==1) {
