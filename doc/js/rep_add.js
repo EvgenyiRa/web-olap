@@ -2424,7 +2424,7 @@ $(document).ready(function(){
                     alert('Отчет, возможно, не будет сохранен по причине большого объёма занимаемой памяти ('+byteLength_data_rep+' байт)');
                 }
                                 
-                var table_all=$(table_all_tag),
+                let table_all=$(table_all_tag),
                     table_tag_v=$(table_all).find('tbody:first'),
                     no_create_sl=$(table_all).find('thead div.settings_group_panel[action_type="form_header"] li.no_create_sl input'),
                     no_create_sl_v=($(no_create_sl).length>0) ? $(no_create_sl).prop('checked'):false;
@@ -2433,66 +2433,106 @@ $(document).ready(function(){
                     var form_js='';                                                                                             
 
                     //события кубов
-                    var action_olap_code='',
-                        action_olap_all=$(table_tag_v).find('li.action[action_type="olap"] li[pr_change_style]');
-                    $(action_olap_all).each(function(i,elem) {
-                        var action_olap_code_one=$(elem).find('.div_hidden').text();
+                    let action_olap_code='',
+                        action_olap_all=$(table_tag_v).find('li.action[action_type="olap"] li[pr_change_style]'),
+                        action_olap_all_liaction=$(action_olap_all).closest('li.action');
+                    function setOneOOLAP(elem) {
+                        var action_olap_code_one=$(elem).find('.div_hidden').text().trim();
                         if (action_olap_code_one!='') {
-                            action_olap_code_one=LZString.decompressFromUTF16($(elem).find('.div_hidden').text()).trim();
-                            if (action_olap_code_one.length>0) {
-                                var olap_id=$(elem).closest('li.action').attr('id'),
-                                    action_id=$(elem).attr('id');
-                                if ((action_id=='tr_click') || (action_id=='tr_dclick')) {
-                                    if (action_id=='tr_click') {
-                                        action_id='click';
+                            action_olap_code_one=LZString.decompressFromUTF16($(elem).find('.div_hidden').text());
+                            if (action_olap_code_one!==null) {
+                                action_olap_code_one=action_olap_code_one.trim();
+                                if (action_olap_code_one.length>0) {
+                                    var olap_id=$(elem).closest('li.action').attr('id'),
+                                        action_id=$(elem).attr('id');
+                                    if ((action_id=='tr_click') || (action_id=='tr_dclick')) {
+                                        if (action_id=='tr_click') {
+                                            action_id='click';
+                                        }
+                                        else if (action_id=='tr_dclick') {
+                                            action_id='dblclick';
+                                        }
+                                        action_olap_code+='\n$(".no_panel").on("'+action_id+'","'+table_tag+' td[olap_td_class=\'td_val_val\'][olap_tab_id=\''+olap_id+'\'],'+table_tag+' td[olap_td_class=\'td_str_val\'][olap_tab_id=\''+olap_id+'\']", function(e){ \n'+
+                                                         action_olap_code_one+'\n});\n'; 
                                     }
-                                    else if (action_id=='tr_dclick') {
-                                        action_id='dblclick';
+                                    else if  (action_id!='freedom_action') {                            
+                                        action_olap_code+='$(".no_panel").on("'+action_id+olap_id+'", "#in_action_value", function(e,params){ \n'+ 
+                                                         '  var id_t='+olap_id+';\n'+action_olap_code_one+'\n});\n'; 
                                     }
-                                    action_olap_code+='\n$(".no_panel").on("'+action_id+'","'+table_tag+' td[olap_td_class=\'td_val_val\'][olap_tab_id=\''+olap_id+'\'],'+table_tag+' td[olap_td_class=\'td_str_val\'][olap_tab_id=\''+olap_id+'\']", function(e){ \n'+
-                                                     action_olap_code_one+'\n});\n'; 
-                                }
-                                else if  (action_id!='freedom_action') {                            
-                                    action_olap_code+='$(".no_panel").on("'+action_id+olap_id+'", "#in_action_value", function(e,params){ \n'+ 
-                                                     '  var id_t='+olap_id+';\n'+action_olap_code_one+'\n});\n'; 
-                                }
-                                else if  (action_id='freedom_action') {                            
-                                    action_olap_code+=action_olap_code_one+'\n'; 
-                                }
-                            }   
-                        }    
+                                    else if  (action_id='freedom_action') {                            
+                                        action_olap_code+=action_olap_code_one+'\n'; 
+                                    }
+                                } 
+                            }    
+                        } 
+                    }    
+                    //добавляем к скрипту кубы на вкладках
+                    //добавляем в отдельную переменные все вкладки в разжатом виде для возможного повторного использования
+                    let panel_all=$(table_tag_v).find('div[data-pws-tab]'),
+                        panel_all_decompress=[];
+                    $(panel_all).each(function(i,elem) {
+                        let vkladka=$(LZString.decompressFromUTF16($(elem).text())),
+                            action_olap_all_v=$(vkladka).find('li.action[action_type="olap"] li[pr_change_style]');
+                        panel_all_decompress.push(vkladka);    
+                        $(action_olap_all_v).each(function(i2,elem2) {
+                            let action_olap_all_liaction_v=$(elem2).closest('li.action');
+                            if ($(action_olap_all_liaction).filter('[id="'+$(action_olap_all_liaction_v).attr('id')+'"]').length===0) {
+                                setOneOOLAP(elem2);
+                            }
+                        });
+                    });
+                    $(action_olap_all).each(function(i,elem) {
+                        setOneOOLAP(elem);
                     });
                     if (action_olap_code!=='') {
                         form_js+=action_olap_code;
                     }
 
                     //события таблиц кубов
-                    var action_olap_code='';                
-                    var action_olap_all=$(table_tag_v).find('.masterdata li.action_set_table .div_hidden.action_set_table_v .dt_tab_action .d-table[id="tab_taa_value"] .d-tr .taa_action_v');
-
-                    if ($(action_olap_all).length>0) {
-                        var om=String.fromCharCode(3840);
-                        $(action_olap_all).each(function(i,elem) {
-                            var kod_txt=$(elem).text(),
-                                olap_id=$(elem).closest('.tab_action_add_md').attr('id')
-                                id=$(elem).closest('.d-tr').find('.SYSNAME input').val().trim();
-                            if (kod_txt.length>0) {
-                                var kod_txt0=LZString.decompressFromUTF16(kod_txt),
-                                    kod_txt_m=[];                            
-                                try {
-                                    kod_txt_m=kod_txt0.split(om);
-                                }
-                                catch(e) {
-                                    kod_txt_m[0]=kod_txt0;
-                                }
-                                action_olap_code+='\n$(".no_panel").on("click", "a.olap_dop_action_one[olap_id='+olap_id+'][id=\''+id+'\']", function(e) { \n'+kod_txt_m[0]+'\n'+
-                                                  '});\n'; 
-                                if (!!kod_txt_m[1])  {
-                                    action_olap_code+=kod_txt_m[1]+'\n';
-                                }        
+                    action_olap_code='';                
+                    action_olap_all=$(table_tag_v).find('.masterdata li.action_set_table .div_hidden.action_set_table_v .dt_tab_action .d-table[id="tab_taa_value"] .d-tr .taa_action_v');
+                    function setOneOLAPTable(elem,om) {
+                        var kod_txt=$(elem).text(),
+                            olap_id=$(elem).closest('.tab_action_add_md').attr('id')
+                            id=$(elem).closest('.d-tr').find('.SYSNAME input').val().trim();
+                        if (kod_txt.length>0) {
+                            var kod_txt0=LZString.decompressFromUTF16(kod_txt),
+                                kod_txt_m=[];                            
+                            try {
+                                kod_txt_m=kod_txt0.split(om);
                             }
+                            catch(e) {
+                                kod_txt_m[0]=kod_txt0;
+                            }
+                            if (kod_txt_m[0]!==null) {
+                                kod_txt_m[0]=kod_txt_m[0].trim();
+                                if (kod_txt_m[0].length>0) {
+                                    action_olap_code+='\n$(".no_panel").on("click", "a.olap_dop_action_one[olap_id='+olap_id+'][id=\''+id+'\']", function(e) { \n'+kod_txt_m[0]+'\n'+
+                                                      '});\n';
+                                }    
+                            }    
+                            if (!!kod_txt_m[1])  {
+                                if (kod_txt_m[1]!==null) {
+                                    kod_txt_m[1]=kod_txt_m[1].trim();
+                                    if (kod_txt_m[1].length>0) {
+                                        action_olap_code+=kod_txt_m[1]+'\n';
+                                    }    
+                                }    
+                            }        
+                        }
+                    }
+                    let om=String.fromCharCode(3840);                        
+                    if ($(action_olap_all).length>0) {
+                        $(action_olap_all).each(function(i,elem) {
+                            setOneOLAPTable(elem,om)
                         }); 
                     }
+                    $(panel_all_decompress).each(function(i,elem) {
+                        let action_olap_all_v=$(elem).find('.masterdata li.action_set_table .div_hidden.action_set_table_v .dt_tab_action .d-table[id="tab_taa_value"] .d-tr .taa_action_v');
+                        $(action_olap_all_v).each(function(i2,elem2) {
+                            setOneOLAPTable(elem2,om);
+                        }); 
+                    });
                     if (action_olap_code!=='') {
                         form_js+=action_olap_code;
                     }
@@ -2510,9 +2550,15 @@ $(document).ready(function(){
                         });
                         if (action_form_header_all_true.length>0) {
                             for (var i=0; i<action_form_header_all_true.length; i++) {
-                                action_form_header_code+='$(".no_panel" ).on("'+$(action_form_header_all_true[i]).attr('id')+'", "#in_action_value", function(e) {\n'+
-                                                     '    '+LZString.decompressFromUTF16($(action_form_header_all_true[i]).find('.div_hidden').text())+'\n'+
-                                                     '  });\n'; 
+                                let codeDecompress=LZString.decompressFromUTF16($(action_form_header_all_true[i]).find('.div_hidden').text());
+                                if (codeDecompress!==null) {
+                                    codeDecompress=codeDecompress.trim();
+                                    if (codeDecompress.length>0) {
+                                        action_form_header_code+='$(".no_panel" ).on("'+$(action_form_header_all_true[i]).attr('id')+'", "#in_action_value", function(e) {\n'+
+                                                             '    '+codeDecompress+'\n'+
+                                                             '  });\n'; 
+                                    }                 
+                                }                 
                             }
                         }                    
                     }
@@ -2521,76 +2567,90 @@ $(document).ready(function(){
                     }
 
                     //события добавленных элементов
-                    var action_img_add_code='';
+                    let action_img_add_code='';
                     var action_img_add_all=$(settings_all).find('a.action_one[id!="none"]:not([action_type="form_header"])');
-                    if ($(action_img_add_all).length>0) {
-                        var action_img_add_all_true=[];
-                        $(action_img_add_all).each(function(i,elem) {
-                            if ($(elem).find('.div_hidden').html().trim().length>0) {
-                                action_img_add_all_true.push(elem);
+                    function setOneAdd(elem) {
+                        function get_action_name(el_ac) {
+                            var action_name_v='';
+                            if ($(el_ac).attr('id')=='l_click') {
+                                action_name_v='click';
+                            } 
+                            else if ($(el_ac).attr('id')=='dl_click') {
+                                action_name_v='dblclick';
                             }
-                        });
-                        if (action_img_add_all_true.length>0) {
-                            function get_action_name(el_ac) {
-                                var action_name_v='';
-                                if ($(el_ac).attr('id')=='l_click') {
-                                    action_name_v='click';
-                                } 
-                                else if ($(el_ac).attr('id')=='dl_click') {
-                                    action_name_v='dblclick';
-                                }
-                                else if ($(el_ac).attr('id')=='r_click') {
-                                    action_name_v='contextmenu';
-                                }  
-                                else if ($(el_ac).attr('id')=='hover') {
-                                    action_name_v='mouseover';
-                                }  
-                                else if ($(el_ac).attr('id')=='hoveroff') {
-                                    action_name_v='mouseout';
-                                }
-                                else if ($(el_ac).attr('id')=='hoveroff') {
-                                    action_name_v='mouseout';
-                                }
-                                else if ($(el_ac).attr('id')=='input') {
-                                    action_name_v='click keyup';
-                                }                            
-                                else {
-                                    action_name_v=$(el_ac).attr('id');
-                                }
-                                return action_name_v;
-                            }                                                
-                            for (var i=0; i<action_img_add_all_true.length; i++) {                            
-                                var id_v=$(action_img_add_all_true[i]).closest('.settings_group_panel').attr('id'),
-                                    for_class=$(action_img_add_all_true[i]).attr('for_class'),
-                                    action_name=get_action_name(action_img_add_all_true[i]),
-                                    action_type=$(action_img_add_all_true[i]).attr('action_type'); 
-                                if (action_name!='freedom_action') {
-                                    if (action_type=='select_add') {
-                                        for_class='select_add';
-                                    }
-                                    else if (action_type=='input_add') {
-                                        for_class='input_add';
-                                    }
-                                    else if (action_type=='img_add') {
-                                        for_class='img_add';
-                                    }                                
-                                    if (!!for_class) {
-                                        for_class='.'+for_class;
-                                    }  
-                                    else {
-                                        for_class='';
-                                    }    
-                                    action_img_add_code+='\n$(".no_panel" ).on("'+action_name+'", "'+for_class+'[action_type=\''+action_type+'\'][id='+id_v+']", function(e) {\n'+
-                                                            '    '+LZString.decompressFromUTF16($(action_img_add_all_true[i]).find('.div_hidden').text())+'\n'+
-                                                         '});';  
-                                }   
-                                else {
-                                    action_img_add_code+='\n'+LZString.decompressFromUTF16($(action_img_add_all_true[i]).find('.div_hidden').text())+'\n';
-                                }
+                            else if ($(el_ac).attr('id')=='r_click') {
+                                action_name_v='contextmenu';
+                            }  
+                            else if ($(el_ac).attr('id')=='hover') {
+                                action_name_v='mouseover';
+                            }  
+                            else if ($(el_ac).attr('id')=='hoveroff') {
+                                action_name_v='mouseout';
                             }
-
-                        }                    
+                            else if ($(el_ac).attr('id')=='hoveroff') {
+                                action_name_v='mouseout';
+                            }
+                            else if ($(el_ac).attr('id')=='input') {
+                                action_name_v='click keyup';
+                            }                            
+                            else {
+                                action_name_v=$(el_ac).attr('id');
+                            }
+                            return action_name_v;
+                        } 
+                        let codeCompress=$(elem).find('.div_hidden').text().trim();
+                        if (codeCompress.length>0) {
+                            let codeDecompress=LZString.decompressFromUTF16(codeCompress);
+                            if (codeDecompress!==null) {
+                                codeDecompress=codeDecompress.trim();
+                                if (codeDecompress.length>0) {
+                                    let id_v=$(elem).closest('.settings_group_panel').attr('id'),
+                                        for_class=$(elem).attr('for_class'),
+                                        action_name=get_action_name(elem),
+                                        action_type=$(elem).attr('action_type') 
+                                    if (codeDecompress.length>0) {
+                                        if (action_name!='freedom_action') {
+                                            if (action_type=='select_add') {
+                                                for_class='select_add';
+                                            }
+                                            else if (action_type=='input_add') {
+                                                for_class='input_add';
+                                            }
+                                            else if (action_type=='img_add') {
+                                                for_class='img_add';
+                                            }                                
+                                            if (!!for_class) {
+                                                for_class='.'+for_class;
+                                            }  
+                                            else {
+                                                for_class='';
+                                            }  
+                                            action_img_add_code+='\n$(".no_panel" ).on("'+action_name+'", "'+for_class+'[action_type=\''+action_type+'\'][id='+id_v+']", function(e) {\n'+
+                                                                    '    '+codeDecompress+'\n'+
+                                                                 '});';  
+                                        }   
+                                        else {
+                                            action_img_add_code+='\n'+codeDecompress+'\n';
+                                        }
+                                    } 
+                                }    
+                            }    
+                        }    
                     }
+                  
+                    $(action_img_add_all).each(function(i,elem) {
+                        /*if ($(elem).find('.div_hidden').text().trim().length>0) {
+                            action_img_add_all_true.push(elem);
+                        }*/
+                        setOneAdd(elem);
+                    }); 
+                    $(panel_all_decompress).each(function(i,elem) {
+                        let action_img_add_all_v=$(elem).find('.settings_group_panel').find('a.action_one[id!="none"]:not([action_type="form_header"])');
+                        $(action_img_add_all_v).each(function(i2,elem2) {
+                            setOneAdd(elem2);
+                        }); 
+                    });
+                    
                     if (action_img_add_code!=='') {
                         form_js+=action_img_add_code;
                     }
