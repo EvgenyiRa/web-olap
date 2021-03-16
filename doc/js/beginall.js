@@ -308,8 +308,17 @@ function param_create(sql_true,md_v,params_group_v,unolap_id,is_olap_ma) {
                 if ($(settings_group_panel).find('li.type li#number[pr_change_style]').length>0) {
                     prNumber=true;
                 }
-                if ($(elem).hasClass('select_add')) {
-                    if (mass_val.length>0) {
+                let prNull=false;
+                if (mass_val===null) {
+                    prNull=true;
+                }
+                else {
+                    if (mass_val.length===0) {
+                        prNull=true;
+                    }
+                }
+                if ($(elem).hasClass('select_add')) {                    
+                    if (!prNull) {
                         set_mass_par_sql_one(mass_par_sql,id_par,mass_val,prNumber,$(settings_group_panel).find('.multi_add input').prop('checked'));
                     }
                     else {
@@ -324,7 +333,7 @@ function param_create(sql_true,md_v,params_group_v,unolap_id,is_olap_ma) {
                     }
                 }
                 else {
-                    if (mass_val.length>0) {
+                    if (!prNull) {
                         if (mass_val.indexOf("','")>-1) {
                             mass_val=mass_val.substr(1);
                             mass_val=mass_val.slice(0,-1);
