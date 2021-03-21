@@ -2435,7 +2435,7 @@ $(document).ready(function(){
                     //события кубов
                     let action_olap_code='',
                         action_olap_all=$(table_tag_v).find('li.action[action_type="olap"] li[pr_change_style]'),
-                        action_olap_all_liaction=$(action_olap_all).closest('li.action');
+                        action_olap_all_parent=$(action_olap_all).closest('li.action');
                     function setOneOOLAP(elem) {
                         var action_olap_code_one=$(elem).find('.div_hidden').text().trim();
                         if (action_olap_code_one!='') {
@@ -2476,7 +2476,7 @@ $(document).ready(function(){
                         panel_all_decompress.push(vkladka);    
                         $(action_olap_all_v).each(function(i2,elem2) {
                             let action_olap_all_liaction_v=$(elem2).closest('li.action');
-                            if ($(action_olap_all_liaction).filter('[id="'+$(action_olap_all_liaction_v).attr('id')+'"]').length===0) {
+                            if ($(action_olap_all_parent).filter('[id="'+$(action_olap_all_liaction_v).attr('id')+'"]').length===0) {
                                 setOneOOLAP(elem2);
                             }
                         });
@@ -2491,6 +2491,7 @@ $(document).ready(function(){
                     //события таблиц кубов
                     action_olap_code='';                
                     action_olap_all=$(table_tag_v).find('.masterdata li.action_set_table .div_hidden.action_set_table_v .dt_tab_action .d-table[id="tab_taa_value"] .d-tr .taa_action_v');
+                    action_olap_all_parent=$(action_olap_all).closest('.tab_action_add_md');
                     function setOneOLAPTable(elem,om) {
                         var kod_txt=$(elem).text(),
                             olap_id=$(elem).closest('.tab_action_add_md').attr('id')
@@ -2530,7 +2531,10 @@ $(document).ready(function(){
                     $(panel_all_decompress).each(function(i,elem) {
                         let action_olap_all_v=$(elem).find('.masterdata li.action_set_table .div_hidden.action_set_table_v .dt_tab_action .d-table[id="tab_taa_value"] .d-tr .taa_action_v');
                         $(action_olap_all_v).each(function(i2,elem2) {
-                            setOneOLAPTable(elem2,om);
+                            let action_olap_all_parent_v=$(elem2).closest('.tab_action_add_md');
+                            if ($(action_olap_all_parent).filter('[id="'+$(action_olap_all_parent_v).attr('id')+'"]').length===0) {                                
+                                setOneOLAPTable(elem2,om);
+                            }
                         }); 
                     });
                     if (action_olap_code!=='') {
@@ -2567,8 +2571,9 @@ $(document).ready(function(){
                     }
 
                     //события добавленных элементов
-                    let action_img_add_code='';
-                    var action_img_add_all=$(settings_all).find('a.action_one[id!="none"]:not([action_type="form_header"])');
+                    let action_img_add_code='',
+                        action_img_add_all=$(settings_all).find('a.action_one[id!="none"]:not([action_type="form_header"])'),
+                        action_img_add_all_parent=$(action_img_add_all).closest('.settings_group_panel');                    
                     function setOneAdd(elem) {
                         function get_action_name(el_ac) {
                             var action_name_v='';
@@ -2639,15 +2644,15 @@ $(document).ready(function(){
                     }
                   
                     $(action_img_add_all).each(function(i,elem) {
-                        /*if ($(elem).find('.div_hidden').text().trim().length>0) {
-                            action_img_add_all_true.push(elem);
-                        }*/
                         setOneAdd(elem);
                     }); 
                     $(panel_all_decompress).each(function(i,elem) {
                         let action_img_add_all_v=$(elem).find('.settings_group_panel').find('a.action_one[id!="none"]:not([action_type="form_header"])');
-                        $(action_img_add_all_v).each(function(i2,elem2) {
-                            setOneAdd(elem2);
+                        $(action_img_add_all_v).each(function(i2,elem2) {                                                        
+                            let action_img_add_all_parent_v=$(elem2).closest('.settings_group_panel');
+                            if ($(action_img_add_all_parent).filter('[id="'+$(action_img_add_all_parent_v).attr('id')+'"]').length===0) {
+                                setOneAdd(elem2);
+                            }
                         }); 
                     });
                     
