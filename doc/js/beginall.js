@@ -269,7 +269,12 @@ function param_create(sql_true,md_v,params_group_v,unolap_id,is_olap_ma) {
                 mass_par_sql[id_par]['str']+='?';
             }
             else {
-                mass_par_sql[id_par]['str']+=':p'+id_par+'_0';
+                if (isNaN(parseInt(id_par))) {
+                    mass_par_sql[id_par]['str']+=':'+id_par+'_0';
+                }
+                else {
+                    mass_par_sql[id_par]['str']+=':p'+id_par+'_0';
+                }
             }
         }
     }
