@@ -34,18 +34,17 @@ along with WEB-OLAP.  If not, see <https://www.gnu.org/licenses/>.*/
             if (empty($this->form_id)) {
                 $this->form_id=-1;
             }            
-            //делаем активной первую форму в категории если она выбрана и существует форма в категории
+            //если не выбрана форма отображаем дефолтную форму
             if ($this->cat_id!=-1) {
                 if ($this->form_id==-1) {
-                    if (!empty($this->mass_menu[$this->cat_id]['FORMS'])) {
-                        $this->form_id=getFirstKeyArray($this->mass_menu[$this->cat_id]['FORMS']);
-                        //var_dump($this->form_id);                        
+                    /*if (!empty($this->mass_menu[$this->cat_id]['FORMS'])) {
+                        $this->form_id=getFirstKeyArray($this->mass_menu[$this->cat_id]['FORMS']);                       
                     }
                     else {
                         $this->form_id=get_gen_form_id();
-                    }
+                    }*/
+                    $this->form_id=get_gen_form_id();
                 }
-                //$this->form_id=get_gen_form_id();
             }
             elseif ($this->form_id==-1) {
                 $this->form_id=get_gen_form_id();

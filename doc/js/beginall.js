@@ -256,6 +256,19 @@ function param_create(sql_true,md_v,params_group_v,unolap_id,is_olap_ma) {
             if (mass_par_sql[id_par]['str'].length>0) {
                 mass_par_sql[id_par]['str']=mass_par_sql[id_par]['str'].slice(0,-1);
             }
+            else {
+                if (db_type=='mssql') {
+                    mass_par_sql[id_par]['str']+='?';
+                }
+                else {
+                    if (isNaN(parseInt(id_par))) {
+                        mass_par_sql[id_par]['str']+=':'+id_par+'_0';
+                    }
+                    else {
+                        mass_par_sql[id_par]['str']+=':p'+id_par+'_0';
+                    }
+                }                
+            }
         }
         else {
             if (prNumber) {
@@ -849,14 +862,24 @@ function set_param_val_olap(params_group,params_r,params_val) {
             else {
                 let val=$(param_one).val();
                 if (Array.isArray(val)) {
-                    val.forEach(function(item, index){
+                    if (val.length>0) {
+                        val.forEach(function(item, index){
+                            if (db_type=='mssql') {            
+                                params_val[key+'_'+params_r_da[key]+'_'+index]=item;
+                            }
+                            else if (db_type=='ora'){
+                                params_val[':'+params_r_da[key]+'_'+index]=item;
+                            }
+                        });
+                    }
+                    else {
                         if (db_type=='mssql') {            
-                            params_val[key+'_'+params_r_da[key]+'_'+index]=item;
+                            params_val[key+'_'+params_r_da[key]+'_0']=null;
                         }
                         else if (db_type=='ora'){
-                            params_val[':'+params_r_da[key]+'_'+index]=item;
+                            params_val[':'+params_r_da[key]+'_0']=null;
                         }
-                    });
+                    }
                 }
                 else {
                     if (db_type=='mssql') {            

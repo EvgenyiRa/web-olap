@@ -952,8 +952,9 @@ div.content_value {
 }    
 
 .content_value {
-    width: fit-content;
-    width: -moz-fit-content;
+    width: max-content;
+    width: -moz-max-content; 
+    width: intrinsic; 
     height: auto;
     position: relative;
     margin: 0 auto;
