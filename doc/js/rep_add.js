@@ -594,10 +594,14 @@ function calc_xlsx(tab_tr,pr_only_olap) {
                     //передаем максимальную страницу, если ещё не подгрузилось            
                     params['max_page']=$(paginPageControl).last().text();
                 }
+                if (!!phpsessionid) {
+                    params['phpsessionid']=phpsessionid;
+                }
                 $.ajax({
                     type: "POST",
                     url: "/get-olap.php",
                     data: params,
+                    crossDomain :(!!phpsessionid),
                     dataType:'json',
                     async: false,                            
                     success: function(data){
@@ -1286,11 +1290,15 @@ function run_export_xlsx() {
    <tableStyles count="0" defaultTableStyle="TableStyleMedium2" defaultPivotStyle="PivotStyleMedium9" />\n\
 </styleSheet>';
             params['get_styles_xml']=xml_style_list;
-            console.log(params);  
+            if (!!phpsessionid) {
+                params['phpsessionid']=phpsessionid;
+            }
+            console.log(params);            
             $.ajax({
                 type: "POST",
                 url: "/imp_xlsx.php",
                 data: params,
+                crossDomain :(!!phpsessionid),
                 //dataType:'json',
                 success: function(data){ 
                     var hiddenFrame=$('.hiddenFrame');
@@ -1357,7 +1365,8 @@ var tab_obj={minDimensions:[7,53],
     rep_id,
     host_service,
     toTop,
-    data_tab_tr_head;      
+    data_tab_tr_head,
+    phpsessionid;      
 
     
 function olap_tab_clear(id_t) {
@@ -1863,10 +1872,14 @@ function upd_select_add(sql,tek_id,pr_modal) {
         if ($(tek_el).hasClass('select_add')) {
             var select_add=$(table_tag_v).find('.select_add[id="'+tek_id+'"]');
             $(select_add).trigger('before_select',params);
+            if (!!phpsessionid) {
+                params['phpsessionid']=phpsessionid;
+            }
             $.ajax({
                 type: "POST",
                 url: "/get-data.php",
                 data: params,
+                crossDomain :(!!phpsessionid),
                 async: false,
                 success: function(html){
                     $(select_add).html(html);
@@ -1882,10 +1895,14 @@ function upd_select_add(sql,tek_id,pr_modal) {
         else { 
             params['code_in']='getRowsDiv_DB_conn';
             $(tek_el).trigger('before_select',params);
+            if (!!phpsessionid) {
+                params['phpsessionid']=phpsessionid;
+            }
             $.ajax({
                 type: "POST",
                 url: "/get-data.php",
                 data: params,
+                crossDomain :(!!phpsessionid),
                 async: false,
                 success: function(html){
                     var tek_tab=$(table_tag_v).find('.tab_in_modal[id="'+tek_id+'"]'),
@@ -2022,11 +2039,15 @@ function get_in_mod_struct_by_sql(id_t,md) {
             params_r_da=params_r['params'];
         }
         params['params']=JSON.stringify(params_r_da);
+        if (!!phpsessionid) {
+            params['phpsessionid']=phpsessionid;
+        }
         console.log(params);
         $.ajax({
             type: "POST",
             url: "/get-data.php",
             data: params,
+            crossDomain :(!!phpsessionid),
             success: function(html){
 //                console.log(html);
                 var structure_old=$(md).find('.structure_old'),
@@ -2130,14 +2151,22 @@ $(document).ready(function(){
     modal_header=$(modal_form).find('div.modal_header'),
     modal_footer=$(modal_form).find('div.modal_footer');
     tab_obj.pr_view=$(rep_id).is('[pr_view]');
+    if ($(rep_id).is('[phpsessionid]')) {
+        phpsessionid=$(rep_id).attr('phpsessionid');
+    }
+        
     if (!tab_obj.pr_view) {
         //кэшируем все формы для возможного указания родительской формы
         var params_forms = new Object();
-        params_forms['code_in']='get_rep_all';       
+        params_forms['code_in']='get_rep_all';
+        if (!!phpsessionid) {
+            params_forms['phpsessionid']=phpsessionid;
+        }
         $.ajax({
             type: "POST",
             url: "/get-data.php",
             data: params_forms,
+            crossDomain :(!!phpsessionid),
             success: function(data){
                 all_forms=data;
             }
@@ -2150,7 +2179,10 @@ $(document).ready(function(){
     if ($(rep_id).val()!='') {                
         var params = new Object();
         params['code_in']='get_rep_data';
-        params['id_rep']=$(rep_id).val();        
+        params['id_rep']=$(rep_id).val();  
+        if (!!phpsessionid) {
+            params['phpsessionid']=phpsessionid;
+        }
         console.log(params);
         var width=window.innerWidth,
             height=window.innerHeight;
@@ -2160,6 +2192,8 @@ $(document).ready(function(){
             url: "/get-data.php",
             data: params,
             dataType:'json',
+            crossDomain :(!!phpsessionid),
+            //xhrFields: { withCredentials: true },
             success: function(data){
                 //генерируем событие перед открытием, для обработки в "скрипте жизни"
                 $(in_action_value).trigger("before_open_form");
@@ -2662,12 +2696,16 @@ $(document).ready(function(){
 
                     form_js='$(document).ready(function(){\n'+form_js+'\n});';
                     params['js_data']=form_js;
-                }    
+                }  
                 
+                if (!!phpsessionid) {
+                    params['phpsessionid']=phpsessionid;
+                }
                 $.ajax({
                     type: "POST",
                     url: "/get-data.php",
                     data: params,
+                    crossDomain :(!!phpsessionid),
                     dataType:'json',
                     success: function(data){
                         //console.log(data);
@@ -4045,10 +4083,14 @@ $(document).ready(function(){
         //params['tsql']=$(editor).html().replace(/<[^>]+>/g," ").trim(); 
         params['tsql']=editor.getValue();
         params['is_editor']=7;
+        if (!!phpsessionid) {
+            params['phpsessionid']=phpsessionid;
+        }
         console.log(params);
         $.ajax({
             type: "POST",
             url: "/get-data.php",
+            crossDomain :(!!phpsessionid),
             data: params,
             success: function(html){
 //                console.log(html);
@@ -4094,10 +4136,14 @@ $(document).ready(function(){
         params['code_in']='getRowsDB_conn'; 
         params['tsql']=$('.sql_group[id="'+sql_id+'"]').html().replace(/<[^>]+>/g," ").trim(); 
         params['is_editor']=7;
+        if (!!phpsessionid) {
+            params['phpsessionid']=phpsessionid;
+        }
         console.log(params);
         $.ajax({
             type: "POST",
             url: "/get-data.php",
+            crossDomain :(!!phpsessionid),
             data: params,
             success: function(html){
 //                console.log(html);
@@ -5059,12 +5105,16 @@ $(document).ready(function(){
                             data_type_v='text';
                         }
                         
-                    }    
+                    }  
+                    if (!!phpsessionid) {
+                        params['phpsessionid']=phpsessionid;
+                    }
                     loading_img_show();
                     $.ajax({
                         type: "POST",
                         url: "/get-data.php",
                         data: params,
+                        crossDomain :(!!phpsessionid),
                         dataType:data_type_v,
                         success: function(data){  
                             //console.log(data);

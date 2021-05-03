@@ -122,11 +122,15 @@ function olap_param_upd_child(id_t,tek_param) {
             if (!$.isEmptyObject(params_val)) {
                 params['params_val']=JSON.stringify(params_val);
             }
+            if (!!phpsessionid) {
+                params['phpsessionid']=phpsessionid;
+            }
             //console.log(params);                        
             $.ajax({
                 type: "POST",
                 url: "/get-data.php",
                 data: params,
+                crossDomain :(!!phpsessionid),
                 async: false,
                 success: function(html){
                     $(params_group).find('.olap_param_sql[id="'+id_par+'"]').html(html);
@@ -184,11 +188,15 @@ function set_olap_params_all(group_tab) {
                     pr_parent_all=true;
                 }
                 if (!pr_parent_one) {
-                    //console.log(params);                        
+                    //console.log(params); 
+                    if (!!phpsessionid) {
+                        params['phpsessionid']=phpsessionid;
+                    }
                     $.ajax({
                         type: "POST",
                         url: "/get-data.php",
                         data: params,
+                        crossDomain :(!!phpsessionid),
                         async: false,
                         success: function(html){
                             params_html+='<p class="p_param" id="'+$(elem).attr('id')+'">'+name_par_one+'<select id="'+$(elem).attr('id')+'" class="olap_param_sql" '+($(elem).find('.in_param_multi').prop('checked') ? 'multiple="multiple"' : '')+' title="Выберите значение" style="margin:0;">'+html+'</select></p><br>';
@@ -582,11 +590,15 @@ function md_get_class_set(sname_v,id_t,md,chkbx_msl_alfr_v,chkbx_msl_odta_v,pr_m
     params['code_in']='get_md_struct_load_one_rep';        
     params['sname']=sname_v;
     params['olap_id']=id_t;
+    if (!!phpsessionid) {
+        params['phpsessionid']=phpsessionid;
+    }
     console.log(params);
     $.ajax({
         type: "POST",
         url: "/get-mdr.php",
         data: params,
+        crossDomain :(!!phpsessionid),
         success: function(data){
 //                console.log(html);
             if (chkbx_msl_alfr_v) {
@@ -645,11 +657,15 @@ function md_get_class_set(sname_v,id_t,md,chkbx_msl_alfr_v,chkbx_msl_odta_v,pr_m
                         params3['md_sname_old']=md_sname_old;
                     }
                     params3['mdr_str']=mdr_str;
-                    params3['rep_id']=$('#div_name_rep #in_rep_id').val();                
+                    params3['rep_id']=$('#div_name_rep #in_rep_id').val(); 
+                    if (!!phpsessionid) {
+                        params3['phpsessionid']=phpsessionid;
+                    }
                     $.ajax({
                         type: "POST",
                         url: "/get-mdr.php",
                         data: params3,
+                        crossDomain :(!!phpsessionid),
                         success: function(data3){
                             console.log(data3);
                         },
@@ -715,11 +731,15 @@ function get_olap_taa_modal_html(pr_active_mod) {
                         pr_parent_all=true;
                     }
                     if (!pr_parent_one) {
-                        //console.log(params);  */                      
+                        //console.log(params);  */
+                        if (!!phpsessionid) {
+                            params['phpsessionid']=phpsessionid;
+                        }
                         $.ajax({
                             type: "POST",
                             url: "/get-data.php",
                             data: params,
+                            crossDomain :(!!phpsessionid),
                             async: false,
                             success: function(html){
                                 html_v+='<select id="'+id_v+'" class="olap_taa_db_dropbox" '+($(elem).find('.in_taa_pol_multi').prop('checked') ? 'multiple="multiple"' : '')+' title="Выберите значение" style="margin:0;"'+required_v+' type_v="'+$(elem).find('.sel_taa_pol_type_fdb').val()+'">'+html+'</select>';
@@ -1168,10 +1188,15 @@ $(document).ready(function() {
 			if (($('table[id="'+id_tab+'"]').length==0) & ($('#loading_'+id_tab).length==0)) {
                                 console.log('tuta');
 				$(this).after('<img src="/img/loading.gif" id="loading_'+id_tab+'" width=250 height="auto">');
+                                let params="code_in=3&month="+$(this).attr('month')+"&year="+$(this).attr('year');
+                                if (!!phpsessionid) {
+                                    params+='&phpsessionid'+phpsessionid;
+                                }                                
 				$.ajax({
 				    type: "POST",
 					url: "/get-data.php",
-					data: "code_in=3&month="+$(this).attr('month')+"&year="+$(this).attr('year'),
+					data: params,
+                                        crossDomain :(!!phpsessionid),
 					success: function(html){
 						 //console.log( "Прибыли данные: " + html);
 						 /*$(a_tek).after('<div id="table_'+id_tab+'" class="f"><table id="'+id_tab+'" border="1"><tbody>'+$(names_col).html()+
@@ -1290,13 +1315,17 @@ $(document).ready(function() {
 
                                                             if (pr_ok) {
                                                                 $(a_tek).after('<table class="rep_tab" id="'+id_tab+'" border="1" style=""></table>')
-                                                                rep_tab=$('.rep_tab[id="'+id_tab+'"]');  
+                                                                rep_tab=$('.rep_tab[id="'+id_tab+'"]'); 
+                                                                if (!!phpsessionid) {
+                                                                    params['phpsessionid']=phpsessionid;
+                                                                }
                                                                 //$(rep_tab).before('<img src="/img/loading.gif" id="loading_'+id_t_tek+'" width=250 height="auto">').hide();
                                                                 console.log(params);
                                                                 $.ajax({
                                                                     type: "POST",
                                                                     url: "/get-data.php",
                                                                     data: params,
+                                                                    crossDomain :(!!phpsessionid),
                                                                     dataType:'json',
                                                                     success: function(data){
                                                                         pr_load[0]=true;
@@ -1351,12 +1380,16 @@ $(document).ready(function() {
                                                                         params2['i_loc']=i_loc;                                                                        
                                                                         //params2['tab_pok_cool']=tab_pok_cool;
                                                                         params2['sql_true']='EXEC RK7SQLPROCOVERALL3 ?,?,'+cashid_loc+';';
+                                                                        if (!!phpsessionid) {
+                                                                            params2['phpsessionid']=phpsessionid;
+                                                                        }
                                                                         //итоги в этом случае можно выводить только js, а это для sql
                                                                         console.log(params2);
                                                                         $.ajax({
                                                                             type: "POST",
                                                                             url: "/get-data.php",
                                                                             data: params2,
+                                                                            crossDomain :(!!phpsessionid),
                                                                             dataType:'json',
                                                                             success: function(data2)	{
                                                                                 //console.log(data2);
@@ -1529,10 +1562,14 @@ $(document).ready(function() {
                     params['rep']=1;
                     params['set']='REP_HEAD';
                     params['value']=$(editor).html();
+                    if (!!phpsessionid) {
+                        params['phpsessionid']=phpsessionid;
+                    }
                     $.ajax({
                         type: "POST",
                         url: "/get-data.php",
                         data: params,
+                        crossDomain :(!!phpsessionid),
                         success: function(){
                                console.log('Успешно сохранено');					 
                         },
@@ -1603,11 +1640,15 @@ $(document).ready(function() {
                         WHERE SO.type =N'V' \n\
                         AND SO.NAME LIKE N'VRK7CUBEVIEW%' \n\
                         ORDER BY 1"; 
+        if (!!phpsessionid) {
+            params['phpsessionid']=phpsessionid;
+        }
         console.log(params);
         $.ajax({
             type: "POST",
             url: "/get-data.php",
             data: params,
+            crossDomain :(!!phpsessionid),
             success: function(html){
 //                console.log(html);
                 var html_str='<a class="md_back" md_id="'+id_t+'" title="Назад" id="md_sql_load_back" style="z-index: 500000;">\n\
@@ -1660,12 +1701,16 @@ $(document).ready(function() {
         $(table_tag).find('.r_table[id="'+id_t+'"]').prepend(md);
         $(md).hide();
         var params = new Object();
-        params['code_in']='get_md_struct_load';        
+        params['code_in']='get_md_struct_load'; 
+        if (!!phpsessionid) {
+            params['phpsessionid']=phpsessionid;
+        }
         console.log(params);
         $.ajax({
             type: "POST",
             url: "/get-mdr.php",
             data: params,
+            crossDomain :(!!phpsessionid),
             success: function(html){
 //                console.log(html);
                 var html_str='<div class="mdsl_panel">\n\
@@ -1757,12 +1802,16 @@ $(document).ready(function() {
         else {
             params['code_in']='get_exist_md_to_repos';        
             params['md_sname']=md_unload_sname;
+            if (!!phpsessionid) {
+                params['phpsessionid']=phpsessionid;
+            }
             //console.log(params);
             $.ajax({
                 type: "POST",
                 url: "/get-mdr.php",
                 data: params,
                 dataType:'json',
+                crossDomain :(!!phpsessionid),
                 success: function(data){
                     var pr_ok=true;
                     if (parseInt(data.exist)===1) {
@@ -1790,10 +1839,14 @@ $(document).ready(function() {
                         params2['olap_id']=id_t;
                         params2['sql']=LZString.decompressFromUTF16($(md).find('.sql_value').text()).trim();
                         //console.log(params);
+                        if (!!phpsessionid) {
+                            params2['phpsessionid']=phpsessionid;
+                        }
                         $.ajax({
                             type: "POST",
                             url: "/get-mdr.php",
                             data: params2,
+                            crossDomain :(!!phpsessionid),
                             success: function(data2){
                                 if (chkbx_msu_alfr_v) {
                                     var mdr_str='all',
@@ -1811,11 +1864,15 @@ $(document).ready(function() {
                                         params3['md_sname_old']=md_sname_old;
                                     }
                                     params3['mdr_str']=mdr_str;
-                                    params3['rep_id']=$('#div_name_rep #in_rep_id').val();                
+                                    params3['rep_id']=$('#div_name_rep #in_rep_id').val(); 
+                                    if (!!phpsessionid) {
+                                        params3['phpsessionid']=phpsessionid;
+                                    }
                                     $.ajax({
                                         type: "POST",
                                         url: "/get-mdr.php",
                                         data: params3,
+                                        crossDomain :(!!phpsessionid),
                                         success: function(data3){
                                             console.log(data3);
                                         },
@@ -2046,10 +2103,14 @@ $(document).ready(function() {
             //console.log(params);
             $('#overlay').after($('.container').hide());
             pr_active_mod=$(gp).find('.table_active[id="'+id_t+'"]');
+            if (!!phpsessionid) {
+                params['phpsessionid']=phpsessionid;
+            }
             $.ajax({
                 type: "POST",
                 url: "/get-data.php",
                 data: params,
+                crossDomain :(!!phpsessionid),
                 success: function(html){
     //                console.log(html); 
                     function upd_str_par(html) {
@@ -2819,11 +2880,15 @@ $(document).ready(function() {
         else {
             delete params['err_txt'];
             delete params['pr_ok'];
+            if (!!phpsessionid) {
+                params['phpsessionid']=phpsessionid;
+            }
             $.ajax({
                 type: "POST",
                 url: "/get-data.php",
                 data: params,
                 dataType:data_type_v,
+                crossDomain :(!!phpsessionid),
                 success: function(data){  
                     //console.log(data);
                     if (db_type=='ora') {
@@ -2937,10 +3002,14 @@ $(document).ready(function() {
         var width=window.innerWidth,
             height=window.innerHeight;
         $(loading_img).show().css({top:((height-$(loading_img).height())/2),left:((width-$(loading_img).width())/2)});
+        if (!!phpsessionid) {
+            params['phpsessionid']=phpsessionid;
+        }
         $.ajax({
             type: "POST",
             url: "/get-data.php",
             data: params,
+            crossDomain :(!!phpsessionid),
             success: function(html){
                 $(modal_form).find('.modal_content').html('<a class="in_mod_tab_searche" id="'+md_id_v+'" title="Активировать поля поиска в таблице">🔍</a>\n\
                                                           <div class="tab_in_modal d-table" id="'+md_id_v+'" style="display: block;"></div>\n\
@@ -3248,10 +3317,14 @@ $(document).ready(function() {
                     var width=window.innerWidth,
                         height=window.innerHeight;
                     $(loading_img).show().css({top:((height-$(loading_img).height())/2),left:((width-$(loading_img).width())/2)});
+                    if (!!phpsessionid) {
+                        params['phpsessionid']=phpsessionid;
+                    }
                     $.ajax({
                         type: "POST",
                         url: "/imp_xlsx_olap.php",
                         data: params,
+                        crossDomain :(!!phpsessionid),
                         //dataType:'json',
                         success: function(data){ 
                             var hiddenFrame=$('.hiddenFrame');
@@ -3311,11 +3384,15 @@ $(document).ready(function() {
                         page_panel=undefined;
                         d2_load_page[id_t]=undefined;
                     }
+                    if (!!phpsessionid) {
+                        params['phpsessionid']=phpsessionid;
+                    }
                     $.ajax({
                         type: "POST",
                         url: "/get-olap.php",
                         data: params,
                         dataType:'json',
+                        crossDomain :(!!phpsessionid),
                         success: function(data){                                                        
                             console.log(data); 
                             //console.log(JSON.parse(data)); 
@@ -3342,10 +3419,14 @@ $(document).ready(function() {
                                                     params2['max_page']=$(page_panel).find('a.page_control[id!="next"]:last').text();
                                                     params2['tab_id']=id_t;
                                                     pr_ajax_return=false;
+                                                    if (!!phpsessionid) {
+                                                        params2['phpsessionid']=phpsessionid;
+                                                    }
                                                     $.ajax({
                                                         type: "POST",
                                                         url: "/get-data.php",
                                                         data: params2,
+                                                        crossDomain :(!!phpsessionid),
                                                         dataType:'json',  
                                                         success: function(html) {                    
                                                             console.log(html);
@@ -4630,13 +4711,17 @@ $(document).ready(function() {
             //формируем таблицу с параметрами
             params['sql_true']='';
             params['params']='';
-            params['params_olap']='';            
+            params['params_olap']=''; 
+            if (!!phpsessionid) {
+                params['phpsessionid']=phpsessionid;
+            }
             console.log(params);
-            $('#overlay').after($('.container').hide());
+            $('#overlay').after($('.container').hide());            
             $.ajax({
                 type: "POST",
                 url: "/get-data.php",
                 data: params,
+                crossDomain :(!!phpsessionid),
                 success: function(html){
     //                console.log(html);
                     $(tds).html('<div id="group_tab" olap_id='+olap_id+'>'+
