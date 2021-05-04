@@ -1,4 +1,7 @@
 <?php 
+if (!empty($_POST['phpsessionid'])) {
+    session_id($_POST['phpsessionid']);
+}
 session_start();
 require_once(realpath('../classes/MDRepository.php')); 
 if ((!$_SESSION['user_info']) & ($_POST['code_in']!='but_enter')) {

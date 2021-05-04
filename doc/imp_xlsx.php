@@ -17,6 +17,9 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with WEB-OLAP.  If not, see <https://www.gnu.org/licenses/>.*/
 require_once(realpath('../get-data-func.php'));
+if (!empty($_POST['phpsessionid'])) {
+    session_id($_POST['phpsessionid']);
+} 
 session_start();
 if (!$_SESSION['user_info']) {
     exit();

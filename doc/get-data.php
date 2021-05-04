@@ -1,4 +1,7 @@
 <?php require_once(realpath('../get-data-func.php'));
+if (!empty($_POST['phpsessionid'])) {
+    session_id($_POST['phpsessionid']);
+}    
 session_start();
 /*ini_set('error_reporting', E_ALL);
 ini_set('display_errors', 1);
