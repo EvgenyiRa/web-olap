@@ -39,10 +39,14 @@ $(document).ready(function(){
                              WHERE RIGHTS_ID="+right_id; 
             params['is_editor']=7;
             //console.log(params);
+            if (!!phpsessionid) {
+                params['phpsessionid']=phpsessionid;
+            }
             $.ajax({
                 type: "POST",
                 url: "/get-data.php",
                 data: params,
+                crossDomain :(!!phpsessionid),                
                 success: function(html){
                     if (html!='') {  
                         open_modal(e);
@@ -88,11 +92,15 @@ $(document).ready(function(){
                              WHERE SYSNAME=:sysname"; 
             params['params_val']=JSON.stringify({':sysname':sysname});
             params['is_editor']=7;
+            if (!!phpsessionid) {
+                params['phpsessionid']=phpsessionid;
+            }
             console.log(params);
             $.ajax({
                 type: "POST",
                 url: "/get-data.php",
                 data: params,
+                crossDomain :(!!phpsessionid),
                 async:false,
                 success: function(html){
                     if (html!='') {
@@ -115,11 +123,15 @@ $(document).ready(function(){
             params['code_in']='SQLexec';
             params['params_val_in']=JSON.stringify({':right_name':right_name,':sysname':sysname});
             params['params_val_out']=JSON.stringify({':right_id':{'val':'','maxlength':5}});
+            if (!!phpsessionid) {
+                params['phpsessionid']=phpsessionid;
+            }
             loading_img_show();
             $.ajax({
                 type: "POST",
                 url: "/get-data.php",
                 data: params,
+                crossDomain :(!!phpsessionid),
                 dataType:'json',
                 success: function(data){  
                     //console.log(data);
@@ -167,11 +179,15 @@ $(document).ready(function(){
                                AND RIGHTS_ID!="+right_id; 
             params['params_val']=JSON.stringify({':sysname':sysname});
             params['is_editor']=7;
+            if (!!phpsessionid) {
+                params['phpsessionid']=phpsessionid;
+            }
             console.log(params);
             $.ajax({
                 type: "POST",
                 url: "/get-data.php",
                 data: params,
+                crossDomain :(!!phpsessionid),
                 async:false,
                 success: function(html){
                     if (html!='') {
@@ -194,11 +210,15 @@ $(document).ready(function(){
                             WHERE RIGHTS_ID="+right_id;
             params['code_in']='SQLexec';
             params['params_val_in']=JSON.stringify({':right_name':right_name,':sysname':sysname});
+            if (!!phpsessionid) {
+                params['phpsessionid']=phpsessionid;
+            }
             loading_img_show();
             $.ajax({
                 type: "POST",
                 url: "/get-data.php",
                 data: params,
+                crossDomain :(!!phpsessionid),
                 dataType:'json',
                 success: function(data){  
                     //console.log(data);
@@ -239,10 +259,14 @@ $(document).ready(function(){
                                   FROM REP_RIGHTS \n\
                                  WHERE RIGHTS_ID="+right_id+";\n\
                                END;"; 
+                if (!!phpsessionid) {
+                    params['phpsessionid']=phpsessionid;
+                }
                 $.ajax({
                     type: "POST",
                     url: "/get-data.php",
                     data: params,
+                    crossDomain :(!!phpsessionid),
                     dataType:'json',                  
                     success: function(data){
                         if (data.ex_state!="Успех") {
@@ -299,10 +323,14 @@ $(document).ready(function(){
                     var params={};
                     params['code_in']='getPswrdSol';
                     params['password']=$(pwd).val().trim();
+                    if (!!phpsessionid) {
+                        params['phpsessionid']=phpsessionid;
+                    }
                     $.ajax({
                         type: "POST",
                         url: "/get-data.php",
                         data: params,
+                        crossDomain :(!!phpsessionid),
                         async:false,
                         dataType:'json',
                         success: function(data){                            
@@ -324,11 +352,15 @@ $(document).ready(function(){
                                  WHERE login=:login"; 
                 params['params_val']=JSON.stringify({':login':$(login).val().trim()});
                 params['is_editor']=7;
+                if (!!phpsessionid) {
+                    params['phpsessionid']=phpsessionid;
+                }
                 console.log(params);
                 $.ajax({
                     type: "POST",
                     url: "/get-data.php",
                     data: params,
+                    crossDomain :(!!phpsessionid),
                     async:false,
                     success: function(html){
                         if (html!='') {
@@ -368,10 +400,14 @@ $(document).ready(function(){
                                  WHERE USER_ID="+user_id+" AND RIGHT_ID="+right_id;
             }
             params4['code_in']='SQLexec';
+            if (!!phpsessionid) {
+                params4['phpsessionid']=phpsessionid;
+            }
             $.ajax({
                 type: "POST",
                 url: "/get-data.php",
                 data: params4,
+                crossDomain :(!!phpsessionid),
                 dataType:'json',  
                 success: function(html) {                    
                     console.log(html);                    
@@ -485,10 +521,14 @@ $(document).ready(function(){
                     params['code_in']='getPswrdSol';
                     params['password']=$(pwd).val().trim();
                     params['sol']=$(tr_tab).find('input#sol').val().trim();
+                    if (!!phpsessionid) {
+                        params['phpsessionid']=phpsessionid;
+                    }
                     $.ajax({
                         type: "POST",
                         url: "/get-data.php",
                         data: params,
+                        crossDomain :(!!phpsessionid),
                         async:false,
                         dataType:'json',
                         success: function(data){                            
@@ -511,11 +551,15 @@ $(document).ready(function(){
                                    AND USER_ID!="+$(tr_tab).find('input#user_id').val().trim(); 
                 params['params_val']=JSON.stringify({':login':$(login).val().trim()});
                 params['is_editor']=7;
+                if (!!phpsessionid) {
+                    params['phpsessionid']=phpsessionid;
+                }
                 console.log(params);
                 $.ajax({
                     type: "POST",
                     url: "/get-data.php",
                     data: params,
+                    crossDomain :(!!phpsessionid),
                     async:false,
                     success: function(html){
                         if (html!='') {
@@ -560,12 +604,16 @@ $(document).ready(function(){
     
     $(".no_panel").on("click",'.img_add[id="2"][action_type="img_add"]', function(e){
         var params={};
-        params['code_in']='getSaveCacheRight';  
+        params['code_in']='getSaveCacheRight'; 
+        if (!!phpsessionid) {
+            params['phpsessionid']=phpsessionid;
+        }
         loading_img_show();
         $.ajax({
             type: "POST",
             url: "/get-data.php",
             data: params,
+            crossDomain :(!!phpsessionid),
             success: function(html){                
                 $(loading_img).hide();
                 alert('Кэш прав сохранен');
