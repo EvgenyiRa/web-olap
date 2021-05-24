@@ -297,10 +297,12 @@ $(document).ready(function(){
     });
     
     $(".no_panel" ).on("after_open_form", "#in_action_value", function(e) {
-        var table_tag_v=$(table_tag);
-        $(table_tag_v).find('select.olap_param_sql[id="user_id"] option').attr('selected','selected');
-        $(table_tag_v).find('select.olap_param_sql[id="right_id"] option').attr('selected','selected');
-        $(table_tag_v).find('a.table_play[id="1"]').trigger('click');
+        var table_tag_v=$(table_tag),
+            group_tab=$(table_tag_v).find('div[id="group_tab"][olap_id=1]');;
+        $(group_tab).find('select.olap_param_sql[id="user_id"] option').attr('selected','selected');
+        $(group_tab).find('select.olap_param_sql[id="right_id"] option').attr('selected','selected');
+        set_olap_params(group_tab);
+        $(group_tab).find('a.table_play[id="1"]').trigger('click');
     });
     
     $(".no_panel" ).on("after_open", "a.olap_tr_add", function(e) {
@@ -379,10 +381,11 @@ $(document).ready(function(){
     });
     
     $(".no_panel" ).on("after_save", "a.olap_tr_add", function(e,params0) {
-        var table_tag_v=$(table_tag);
-        $(table_tag_v).find('select.olap_param_sql[id="user_id"]')
+        var table_tag_v=$(table_tag),
+            group_tab=$(table_tag_v).find('div[id="group_tab"][olap_id=1]');
+        $(group_tab).find('select.olap_param_sql[id="user_id"]')
             .append('<option value="'+$(params0).find('td#USER_ID').text()+'" selected="selected">'+$(modal_form).find('.modal_content input#fio').val()+'</option');
-        $(table_tag_v).find('a.table_play[id="1"]').trigger('click');
+        $(group_tab).find('a.table_play[id="1"]').trigger('click');
     });
     
     $(".no_panel" ).on("change", "input.usr_right_value", function() {
