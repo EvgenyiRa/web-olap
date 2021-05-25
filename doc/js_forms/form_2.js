@@ -315,17 +315,17 @@ $(document).ready(function(){
     $(".no_panel" ).on("before_save", "a.olap_tr_add", function(e,params0) {
         if (this.id=='1') {
             var tr_tab=$(modal_form).find('.modal_content table.olap_taa_modal_mc tbody'),
-                pwd=$(tr_tab).find('input#password_vis'),
+                pwd=$(tr_tab).find('input#password_vis').val().trim(),
                 login=$(tr_tab).find('input#login');
-            if ($(pwd).val()!='') {
-                if ($(pwd).val().trim().length<6) {
+            if (pwd!='') {
+                if (pwd.length<6) {
                     params0['err_txt']+='Пароль должен быть не менее шести символов\n';
                     params0['pr_ok']=false;
                 }
                 else {
                     var params={};
                     params['code_in']='getPswrdSol';
-                    params['password']=$(pwd).val().trim();
+                    params['password']=pwd;
                     if (!!phpsessionid) {
                         params['phpsessionid']=phpsessionid;
                     }
